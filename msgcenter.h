@@ -4,7 +4,7 @@
 #include <QObject>
 #include "common.h"
 #include "protocol.h"
-#include "dispatchtcpclient.h"
+#include "serverconnection.h"
 
 class MsgCenter : public QObject
 {
@@ -12,13 +12,14 @@ class MsgCenter : public QObject
 public:
     explicit MsgCenter(QObject *parent = nullptr);
 
+    ~MsgCenter();
+
     void init();
 
-    //和TCP连接相关函数
-    void push(const Client_Response_Msg msg);
-    void onConnected();
-    void onDisconnected();
-    void onConnectting();
+    void resetIpPort(QString ip,int port);
+
+    QString getServerIp();
+    int getServerPort();
 
     ///////////////////////////////////用户管理
     //登录调用
@@ -40,8 +41,8 @@ public:
     ////////////////////////////////agv管理
     //用户列表调用(发送获取userList的请求)
     void agvList();
-    //服务器的列表已经返回后，qml调用该函数获取model
-    QList<AgvInfo> getAgvListModel(){return agvinfos;}
+    //
+    QList<AGV_BASE_INFO> getAgvListModel(){return agvbaseinfos;}
     //删除用户
     void deleteAgv(int id);
     //添加用户
@@ -62,7 +63,7 @@ public:
 
     void loadMapImg();
 
-    QList<AGV_LOG> getLogListModel(){return loginfos;}
+    QList<USER_LOG> getLogListModel(){return loginfos;}
     //获取线路
     QList<AGV_LINE> getMapLineListModel(){return mapLines;}
 
@@ -132,7 +133,6 @@ signals:
     void modifyAgvSuccess();
 
     ////////////////////////日志查询
-
     void queryLogSuccess();
 
     ////////////////////////地图信息
@@ -143,38 +143,40 @@ signals:
     //任务
     void taskDetailSuccess();
 public slots:
+    void push(const MSG_Response msg);
 
-    void parseOneMsg(const Client_Response_Msg msg);
-
-    //用户部分
-    void response_user_login(const Client_Response_Msg msg);
-    void response_user_logout(const Client_Response_Msg msg);
-    void response_user_changePassword(const Client_Response_Msg msg);
-    void response_user_list(const Client_Response_Msg msg);
-    void response_user_remove(const Client_Response_Msg msg);
-    void response_user_add(const Client_Response_Msg msg);
-    void response_user_modify(const Client_Response_Msg msg);
-
-    //地图部分
-    void response_map_create_start(const Client_Response_Msg msg);
-    void response_map_create_add_line(const Client_Response_Msg msg);
-    void response_map_create_add_station(const Client_Response_Msg msg);
-    void response_map_create_add_arc(const Client_Response_Msg msg);
-    void response_map_create_finish(const Client_Response_Msg msg);
-    void response_map_list_station(const Client_Response_Msg msg);
-    void response_map_list_line(const Client_Response_Msg msg);
-    void response_map_list_arc(const Client_Response_Msg msg);
-
-    //AGV 管理
-    void response_agv_list(const Client_Response_Msg msg);
-    void response_agv_add(const Client_Response_Msg msg);
-    void response_agv_delete(const Client_Response_Msg msg);
-    void response_agv_modify(const Client_Response_Msg msg);
 
 private:
-    void iniRequsttMsg(Client_Request_Msg &msg);
+    //用户部分
+    void response_user_login(const MSG_Response msg);
+    void response_user_logout(const MSG_Response msg);
+    void response_user_changePassword(const MSG_Response msg);
+    void response_user_list(const MSG_Response msg);
+    void response_user_remove(const MSG_Response msg);
+    void response_user_add(const MSG_Response msg);
+    void response_user_modify(const MSG_Response msg);
 
-    void requestWaitResponse(const Client_Request_Msg &msg);
+    //地图部分
+    void response_map_create_start(const MSG_Response msg);
+    void response_map_create_add_line(const MSG_Response msg);
+    void response_map_create_add_station(const MSG_Response msg);
+    void response_map_create_add_arc(const MSG_Response msg);
+    void response_map_create_finish(const MSG_Response msg);
+    void response_map_list_station(const MSG_Response msg);
+    void response_map_list_line(const MSG_Response msg);
+    void response_map_list_arc(const MSG_Response msg);
+
+    //AGV 管理
+    void response_agv_list(const MSG_Response msg);
+    void response_agv_add(const MSG_Response msg);
+    void response_agv_delete(const MSG_Response msg);
+    void response_agv_modify(const MSG_Response msg);
+
+    void parseOneMsg(const MSG_Response msg);
+
+    void iniRequsttMsg(MSG_Request &msg);
+
+    void requestWaitResponse(const MSG_Request &msg);
 
     std::atomic_int queueNumber;
 
@@ -182,17 +184,15 @@ private:
 
     QList<USER_INFO> userinfos;
 
-    QList<AGV_BASE_INFO> agvinfos;
+    QList<AGV_BASE_INFO> agvbaseinfos;
 
-    QList<AGV_POSITION_INFO> agvinfos;
+    QList<AGV_POSITION_INFO> agvpositioninfos;
 
     QList<STATION_INFO> mapStations;
 
     QList<AGV_LINE> mapLines;
 
-    QList<AGV_ARC> mapArcs;
-
-    QList<AGV_LOG> loginfos;
+    QList<USER_LOG> loginfos;
 
     QList<TASK_INFO> agvtasknodes;
 
@@ -200,11 +200,12 @@ private:
 
     USER_INFO current_user_info;
 
-    DispatchTcpClient tcpClient;
+    ServerConnection tcpClient;
 
-    std::queue<Client_Response_Msg> responses;
-    std::mutex responsesMtx;
+    QQueue<MSG_Response> responses;
+    QMutex responsesMtx;
 
+    volatile bool quit;
 };
 
 #endif // MSGCENTER_H

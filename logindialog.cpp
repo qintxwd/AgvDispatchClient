@@ -9,7 +9,12 @@ LoginDialog::LoginDialog()
 
 
 void LoginDialog::initUi(){
+
     //登录界面
+    Qt::WindowFlags flags=Qt::Dialog;
+    flags |=Qt::WindowCloseButtonHint;
+    setWindowFlags(flags);
+
     loginWidget = new QWidget;
     nameInputLabel = new QLabel(QStringLiteral("用户名:"));
     nameInput = new QLineEdit(QStringLiteral(""));
@@ -87,9 +92,15 @@ void LoginDialog::initUi(){
 
     QMetaObject::connectSlotsByName(this);
 
-//    connect(g_server_connection,SIGNAL(sig_connected()),this,SLOT(onConnected()));
-//    connect(g_server_connection,SIGNAL(sig_conntecting()),this,SLOT(onConnecting()));
-//    connect(g_server_connection,SIGNAL(sig_disconnected()),this,SLOT(onDisconnected()));
+    connect(&msgCenter,SIGNAL(sig_connection_connected()),this,SLOT(onConnected()));
+    connect(&msgCenter,SIGNAL(sig_connection_disconnected()),this,SLOT(onConnecting()));
+    connect(&msgCenter,SIGNAL(sig_connection_conntectting()),this,SLOT(onDisconnected()));
+    connect(&msgCenter,SIGNAL(loginSuccess(int)),this,SLOT(onLoginSuccess(int)));
+
+    connect(&msgCenter,SIGNAL(sendRequestFail()),this,SLOT(onSendFail()));
+    connect(&msgCenter,SIGNAL(waitResponseTimeOut()),this,SLOT(onWaitTimeOut()));
+    connect(&msgCenter,SIGNAL(tip(QString)),this,SLOT(onTip(QString)));
+    connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
 }
 
 void LoginDialog::onConnected()
@@ -112,6 +123,28 @@ void LoginDialog::onTip(QString tip)
     tipLabel->setText(tip);
 }
 
+void LoginDialog::onSendFail()
+{
+    onTip(QStringLiteral("发送请求失败，请检查链接"));
+}
+
+void LoginDialog::onWaitTimeOut()
+{
+    onTip(QStringLiteral("等待服务器响应超时"));
+}
+
+void LoginDialog::onErr(int code,QString info)
+{
+    onTip(QStringLiteral("错误:")+code+" info:"+info);
+}
+
+void LoginDialog::onLoginSuccess(int role)
+{
+    //根据role的不同，显示不同的界面
+    //TODO
+
+}
+
 void LoginDialog::on_nameInput_textChanged()
 {
     tipLabel->setText("");
@@ -124,8 +157,8 @@ void LoginDialog::on_pwdInput_textChanged()
 
 void LoginDialog::on_configBtn_clicked()
 {
-    ipInput->setText(g_server_connection->getIp());
-    portInput->setText(QString("%1").arg(g_server_connection->getPort()));
+    ipInput->setText(msgCenter.getServerIp());
+    portInput->setText(QString("%1").arg(msgCenter.getServerPort()));
     pagesWidget->setCurrentIndex(1);
 }
 
@@ -133,11 +166,12 @@ void LoginDialog::on_loginBtn_clicked()
 {
     //TODO:
     onTip(QStringLiteral("正在登录"));
+    msgCenter.login(nameInput->text(),pwdInput->text());
 }
 
 void LoginDialog::on_okBtn_clicked()
 {
-    g_server_connection->connectToServer(ipInput->text(),portInput->text().toInt());
+    msgCenter.resetIpPort(ipInput->text(),portInput->text().toInt());
     pagesWidget->setCurrentIndex(0);
 }
 

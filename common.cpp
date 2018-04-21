@@ -1,38 +1,4 @@
-﻿#include "common.h"
-#include <ctime>
-
-unsigned char checkSum(unsigned char *data, int len)
-{
-    int sum = 0;
-    for (int i = 0;i < len;++i) {
-        //int v = data[i] &0xFF;
-        sum += data[i] & 0xFF;
-        sum &= 0xFF;
-    }
-    return sum & 0xFF;
-}
-
-
-int getInt32FromByte(char *data)
-{
-    int j = data[0] & 0x000000ff;
-    j |= ((data[1] << 8) & 0x0000ff00);
-    j |= ((data[2] << 16) & 0x00ff0000);
-    j |= ((data[3] << 24) & 0xff000000);
-    return j;
-}
-
-uint16_t getInt16FromByte(char *data)
-{
-    uint16_t j = data[0] & 0x000000ff;
-    j |= ((data[1] << 8) & 0x0000ff00);
-    return j;
-}
-
-uint8_t getInt8FromByte(char *data)
-{
-    return (uint8_t)(data[0]);
-}
+﻿#include "Common.h"
 
 std::string getTimeStrNow()
 {
@@ -47,7 +13,61 @@ std::string getTimeStrNow()
 
     std::stringstream ss;
 
+
+    //gcc 4.9及之前版本不支持 std::put_time//需要gcc 5.0+
     ss << std::put_time(std::localtime(&tt), "%Y-%m-%d %H:%M:%S") << "." << ms;
 
     return ss.str();
+}
+
+std::string getTimeStrToday()
+{
+    using std::chrono::system_clock;
+
+    //获取当前时间
+    auto time_now = std::chrono::system_clock::now();
+
+    std::time_t tt = std::chrono::system_clock::to_time_t(time_now);
+
+    std::stringstream ss;
+
+    //gcc 4.9及之前版本不支持 std::put_time//需要gcc 5.0+
+    ss << std::put_time(std::localtime(&tt), "%Y-%m-%d 00:00:00") << "." << 0;
+
+    return ss.str();
+}
+std::string getTimeStrTomorrow()
+{
+    using std::chrono::system_clock;
+
+    //获取当前时间
+    auto time_now = std::chrono::system_clock::now();
+    std::chrono::duration<int,std::ratio<60*60*24> > one_day(1);
+    system_clock::time_point tomorrow = time_now + one_day;
+
+    std::time_t tt = std::chrono::system_clock::to_time_t(tomorrow);
+
+    std::stringstream ss;
+
+    //gcc 4.9及之前版本不支持 std::put_time//需要gcc 5.0+
+    ss << std::put_time(std::localtime(&tt), "%Y-%m-%d 00:00:00") << "." << 0;
+
+    return ss.str();
+}
+
+std::string toHexString(char *data,int len)
+{
+    std::ostringstream out;
+    out<<std::hex<<std::setfill('0');
+    for(int i=0;i<len;++i){
+        out<<std::setw(2)<<(0xff &(data[i]))<<std::setw(1)<<" ";
+    }
+    return out.str();
+}
+
+std::string intToString(int i)
+{
+    std::ostringstream out;
+    out<<i;
+    return out.str();
 }

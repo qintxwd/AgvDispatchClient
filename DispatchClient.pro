@@ -29,7 +29,9 @@ SOURCES += \
     logindialog.cpp \
     common.cpp \
     msgcenter.cpp \
-    dispatchtcpclient.cpp
+    configure.cpp \
+    serverconnection.cpp \
+    test.cpp
 
 HEADERS += \
     global.h \
@@ -38,7 +40,12 @@ HEADERS += \
     msgcenter.h \
     commonhead.h \
     protocol.h \
-    dispatchtcpclient.h \
-    threadpool.h
+    threadpool.h \
+    configure.h \
+    test.h \
+    serverconnection.h
 
 FORMS +=
+
+DISTFILES += \
+    config.conf

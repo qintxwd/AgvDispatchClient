@@ -1,4 +1,6 @@
-﻿#include "dispatchtcpclient.h"
+#include "serverconnection.h"
+#include "global.h"
+
 
 #ifdef WIN32
 #define _WIN32_WINNT _WIN32_WINNT_WIN8
@@ -23,23 +25,20 @@
 #pragma comment(lib,"ws2_32.lib")
 #endif
 
-#include "global.h"
-
-DispatchTcpClient::DispatchTcpClient():
+ServerConnection::ServerConnection(QObject *parent) : QObject(parent),
     need_reconnect(true),
     socketFd(0),
     quit(false)
 {
+
 }
 
-void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _readcallback, QyhClientConnectCallback _connectcallback, QyhClientDisconnectCallback _disconnectcallback, QyhClientConnecttingCallback _connectingcallback){
-    serverip = (ip);
+void ServerConnection::init(QString ip, int _port)
+{
+    serverip = (ip.toStdString());
     port = (_port);
-    readcallback = (_readcallback);
-    connectcallback = (_connectcallback);
-    disconnectcallback = (_disconnectcallback);
-    connecttingcallback = (_connectingcallback);
-    thread_pool.enqueue([&](){
+
+    g_threadPool.enqueue([&](){
         while(!quit)
         {
             if(!need_reconnect){
@@ -48,7 +47,7 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                 continue;
             }
             //创建连接
-            connecttingcallback();
+            emit onConnecting();
 
             if(!initConnect()){
                 //如果创建失败，过会重新创建(5s)
@@ -57,11 +56,11 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                 continue;
             }
 
-            connectcallback();
+            emit onConnect();
 
             while(!quit && socketFd>0){
-                int rectlen = 0;
-                rectlen = ::recv(socketFd, responsMsg.head, sizeof(Client_Common_Head), 0);
+                int recvLen = 0;
+                recvLen = ::recv(socketFd, (char *)&(responsMsg.head), sizeof(MSG_Head), 0);
 
                 if (recvLen <= 0)
                 {
@@ -76,15 +75,15 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                         close(socketFd);
 #endif
                         socketFd = 0;
-                        disconnectcallback();
+                        emit onDisconnect();
                         continue;
                     }
                 }
 
 
-                if(responsMsg.head.head == CLIENT_COMMON_HEAD_HEAD && responsMsg.head.tail ==CLIENT_COMMON_HEAD_TAIL )
+                if(responsMsg.head.head == MSG_MSG_Head_HEAD && responsMsg.head.tail == MSG_MSG_Head_TAIL )
                 {
-                    rectlen = ::recv(socketFd,responsMsg.return_head,sizeof(CLIENT_RETURN_MSG_HEAD),0);
+                    recvLen = ::recv(socketFd,(char*)&(responsMsg.return_head),sizeof(MSG_RESPONSE_HEAD),0);
                     if (recvLen <= 0)
                     {
                         if (errno == EINTR || errno == EAGAIN)
@@ -98,12 +97,12 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                             close(socketFd);
 #endif
                             socketFd = 0;
-                            disconnectcallback();
+                            emit onDisconnect();
                             continue;
                         }
                     }
                     if(responsMsg.head.body_length>0){
-                        rectlen = ::recv(socketFd,responsMsg.body,responsMsg.head.body_length,0);
+                        recvLen = ::recv(socketFd,responsMsg.body,responsMsg.head.body_length,0);
                         if (recvLen <= 0)
                         {
                             if (errno == EINTR || errno == EAGAIN)
@@ -117,20 +116,20 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                                 close(socketFd);
 #endif
                                 socketFd = 0;
-                                disconnectcallback();
+                                emit onDisconnect();
                                 continue;
                             }
                         }
                     }
 
                     //TODO:入队一个消息
-
+                    emit onRead(responsMsg);
                 }
             }
         }
     });
 
-    thread_pool.enqueue([&](){
+    g_threadPool.enqueue([&](){
         while(!quit){
             if(socketFd<0){
                 std::chrono::milliseconds dura(50);
@@ -145,12 +144,12 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
                 continue;
             }
             write_one_msg = m_queue.front();
-            m_queue.pop();
+            m_queue.pop_front();
 
-            if(sizeof(Client_Common_Head)== ::send(socketFd,&(write_one_msg.head),sizeof(Client_Common_Head),0))
+            if(sizeof(MSG_Head)== ::send(socketFd,(char *)&(write_one_msg.head),sizeof(MSG_Head),0))
             {
                 if(write_one_msg.head.body_length>0)
-                    ::send(socketFd,&(write_one_msg.body), write_one_msg.head.body_length,0);
+                    ::send(socketFd,(char *)&(write_one_msg.body), write_one_msg.head.body_length,0);
             }
             sendQueueMtx.unlock();
         }
@@ -158,24 +157,24 @@ void DispatchTcpClient::init(std::string ip, int _port, QyhClientReadCallback _r
 }
 
 
-void DispatchTcpClient::connectToServer(QString ip,int port)
+void ServerConnection::reset(QString ip,int _port)
 {
     //断开链接
     disconnect();
-    serverip = _ip;
+    serverip = ip.toStdString();
     port = (_port);
     need_reconnect = true;
 }
 
-bool DispatchTcpClient::send(const Client_Request_Msg &msg){
+bool ServerConnection::send(const MSG_Request &msg){
     if(socketFd<=0)return false;
     sendQueueMtx.lock();
-    m_queue.push(msg);
+    m_queue.push_back(msg);
     sendQueueMtx.unlock();
     return true;
 }
 
-void DispatchTcpClient::disconnect()
+void ServerConnection::disconnect()
 {
     need_reconnect = false;
 #ifdef WIN32
@@ -186,7 +185,7 @@ void DispatchTcpClient::disconnect()
     socketFd = 0;
 }
 
-bool DispatchTcpClient::initConnect()
+bool ServerConnection::initConnect()
 {
 #ifdef WIN32
     //加载winsocket的库

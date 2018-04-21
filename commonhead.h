@@ -1,7 +1,8 @@
 ﻿#ifndef COMMONHEAD_H
 #define COMMONHEAD_H
 //公用头文件和函数
-
+#include <QApplication>
+#include <QCoreApplication>
 #include <QMainWindow>
 #include <QWidget>
 #include <QDialog>
@@ -17,5 +18,6 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QGroupBox>
+#include <QDir>
 
 #endif // COMMONHEAD_H

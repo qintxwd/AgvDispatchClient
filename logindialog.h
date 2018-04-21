@@ -16,6 +16,10 @@ public slots:
     void onDisconnected();
     void onConnecting();
     void onTip(QString tip);
+    void onLoginSuccess(int role);
+    void onSendFail();
+    void onWaitTimeOut();
+    void onErr(int code,QString info);
 private slots:
     void on_nameInput_textChanged();
     void on_pwdInput_textChanged();
