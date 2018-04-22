@@ -31,7 +31,6 @@ SOURCES += \
     msgcenter.cpp \
     configure.cpp \
     serverconnection.cpp \
-    test.cpp
 
 HEADERS += \
     global.h \
@@ -42,7 +41,6 @@ HEADERS += \
     protocol.h \
     threadpool.h \
     configure.h \
-    test.h \
     serverconnection.h
 
 FORMS +=

@@ -6,6 +6,7 @@
 #include "threadpool.h"
 #include "configure.h"
 #include "msgcenter.h"
+#include "protocol.h"
 
 extern ThreadPool g_threadPool;
 extern QString g_strExeRoot;
@@ -16,4 +17,5 @@ extern MsgCenter msgCenter;
 //非阻塞的sleep[只阻塞当前线程] 最小单位是10ms
 void QyhSleep(int msec);
 
+QString getErrorString(int error_code);
 #endif // GLOBAL_H

@@ -135,7 +135,8 @@ void LoginDialog::onWaitTimeOut()
 
 void LoginDialog::onErr(int code,QString info)
 {
-    onTip(QStringLiteral("错误:")+code+" info:"+info);
+    Q_UNUSED(info);
+    onTip(getErrorString(code));
 }
 
 void LoginDialog::onLoginSuccess(int role)

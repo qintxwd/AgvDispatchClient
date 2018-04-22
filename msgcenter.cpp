@@ -276,6 +276,7 @@ void MsgCenter::login(QString username,QString password)
     MSG_Request request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_LOGIN;
+    request.head.body_length = MSG_STRING_LEN*2;
     memcpy_s(request.body,MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
     memcpy_s(request.body+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
 
