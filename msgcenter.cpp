@@ -95,7 +95,7 @@ void MsgCenter::parseOneMsg(const MSG_Response msg)
     if(msg.head.queuenumber == queueNumber)getResponse = true;
 
     //错误判断和显示
-    if(msg.return_head.result == RETURN_MSG_RESULT_FAIL || msg.return_head.error_code == RETURN_MSG_ERROR_NO_ERROR)
+    if(msg.return_head.result == RETURN_MSG_RESULT_FAIL || msg.return_head.error_code != RETURN_MSG_ERROR_NO_ERROR)
     {
         //报告错误！
         emit err(msg.return_head.error_code,QString(msg.return_head.error_info));

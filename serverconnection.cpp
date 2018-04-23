@@ -1,4 +1,4 @@
-#include "serverconnection.h"
+﻿#include "serverconnection.h"
 #include "global.h"
 
 
@@ -145,13 +145,9 @@ void ServerConnection::init(QString ip, int _port)
             }
             write_one_msg = m_queue.front();
             m_queue.pop_front();
-
-            if(sizeof(MSG_Head)== ::send(socketFd,(char *)&(write_one_msg.head),sizeof(MSG_Head),0))
-            {
-                if(write_one_msg.head.body_length>0)
-                    ::send(socketFd,(char *)&(write_one_msg.body), write_one_msg.head.body_length,0);
-            }
             sendQueueMtx.unlock();
+
+            ::send(socketFd,(char *)&write_one_msg,sizeof(MSG_Head)+write_one_msg.head.body_length,0);
         }
     });
 }

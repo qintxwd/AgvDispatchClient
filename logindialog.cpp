@@ -143,7 +143,7 @@ void LoginDialog::onLoginSuccess(int role)
 {
     //根据role的不同，显示不同的界面
     //TODO
-
+    onTip(QStringLiteral("登录成功"));
 }
 
 void LoginDialog::on_nameInput_textChanged()
