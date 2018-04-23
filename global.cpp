@@ -2,10 +2,10 @@
 #include <QTime>
 #include <QCoreApplication>
 
-ThreadPool g_threadPool(10);
 QString g_strExeRoot;
 Configure configure;
 MsgCenter msgCenter;
+USER_INFO current_user_info;
 
 void QyhSleep(int msec)
 {

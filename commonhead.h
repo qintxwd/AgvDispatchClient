@@ -19,5 +19,19 @@
 #include <QActionGroup>
 #include <QGroupBox>
 #include <QDir>
+#include <QAction>
+#include <QMenu>
+#include <QSessionManager>
+#include <QMessageBox>
+#include <QToolBar>
+#include <QMouseEvent>
+#include <QTreeView>
+#include <QStandardItemModel>
+#include <QTreeWidget>
+#include <QHeaderView>
+#include <QTableWidget>
+#include <QDebug>
+#include <QRadioButton>
+
 
 #endif // COMMONHEAD_H

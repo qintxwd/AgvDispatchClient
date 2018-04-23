@@ -10,6 +10,8 @@ MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
 MsgCenter::~MsgCenter()
 {
     quit =true;
+    condition.wakeAll();
+    thread_msg_process.join();
 }
 void MsgCenter::init()
 {
@@ -20,21 +22,21 @@ void MsgCenter::init()
     tcpClient.init(configure.getValue("server/ip").toString(),configure.getValue("server/port").toInt());
 
     //响应消息处理的线程
-    g_threadPool.enqueue([&](){
+    thread_msg_process = std::thread([&](){
         while(!quit){
             responsesMtx.lock();
             if(responses.size()<=0){
+                condition.wait(&responsesMtx);
+            }
+            if(quit){
                 responsesMtx.unlock();
-                std::chrono::milliseconds dura(10);
-                std::this_thread::sleep_for(dura);
-                continue;
+                break;
             }
             MSG_Response msg = responses.front();
             responses.pop_front();
             responsesMtx.unlock();
             parseOneMsg(msg);
         }
-
     });
 }
 
@@ -59,6 +61,7 @@ void MsgCenter::push(MSG_Response msg)
 {
     responsesMtx.lock();
     responses.push_back(msg);
+    condition.wakeAll();
     responsesMtx.unlock();
 }
 
@@ -180,7 +183,8 @@ void MsgCenter::response_user_list(const MSG_Response msg)
         memcpy(&u,msg.body+i*sizeof(USER_INFO),sizeof(USER_INFO));
         userinfos.append(u);
     }
-    emit listUserSuccess();
+    if(msg.head.flag==0)
+        emit listUserSuccess();
 }
 
 void MsgCenter::response_user_remove(const MSG_Response msg)
@@ -280,5 +284,75 @@ void MsgCenter::login(QString username,QString password)
     memcpy_s(request.body,MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
     memcpy_s(request.body+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
 
+    requestWaitResponse(request);
+}
+
+//注销调用
+void MsgCenter::logout()
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_LOGOUT;
+    request.head.body_length = 0;
+    requestWaitResponse(request);
+}
+
+//修改密码
+void MsgCenter::changePassword(QString old_password,QString new_password)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_CHANGED_PASSWORD;
+    request.head.body_length = MSG_STRING_LEN;
+    memcpy_s(request.body,MSG_STRING_LEN,new_password.toStdString().c_str(),new_password.toStdString().length());
+    requestWaitResponse(request);
+}
+
+//用户列表调用(发送获取userList的请求)
+void MsgCenter::userList()
+{
+    userinfos.clear();
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_LIST;
+    requestWaitResponse(request);
+}
+
+//删除用户
+void MsgCenter::deleteUser(int32_t id)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_DELTE;
+    request.head.body_length = sizeof(int32_t);
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&id,sizeof(int32_t));
+    requestWaitResponse(request);
+}
+
+//添加用户
+void MsgCenter::adduser(QString username, QString password, int32_t role)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_ADD;
+    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t);
+    memcpy_s(request.body+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
+    memcpy_s(request.body,MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
+    memcpy_s(request.body+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
+    memcpy_s(request.body+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
+    requestWaitResponse(request);
+}
+
+//修改用户
+void MsgCenter::modifyuser(int32_t id, QString username, QString password, int32_t role)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_USER_ADD;
+    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t)*2;
+    memcpy_s(request.body,sizeof(int32_t),&id,sizeof(int32_t));
+    memcpy_s(request.body+sizeof(int32_t),MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
+    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
+    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
     requestWaitResponse(request);
 }

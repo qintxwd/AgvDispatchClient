@@ -31,6 +31,11 @@ SOURCES += \
     msgcenter.cpp \
     configure.cpp \
     serverconnection.cpp \
+    UI/mainwindow.cpp \
+    UI/User/widgetusermanage.cpp \
+    UI/User/dialogadduser.cpp \
+    UI/User/dialogmodifyuser.cpp \
+    UI/SideBar/sidebar.cpp
 
 HEADERS += \
     global.h \
@@ -41,7 +46,12 @@ HEADERS += \
     protocol.h \
     threadpool.h \
     configure.h \
-    serverconnection.h
+    serverconnection.h \
+    UI/mainwindow.h \
+    UI/User/widgetusermanage.h \
+    UI/User/dialogadduser.h \
+    UI/User/dialogmodifyuser.h \
+    UI/SideBar/sidebar.h
 
 FORMS +=
 

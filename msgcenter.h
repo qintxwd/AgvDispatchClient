@@ -32,11 +32,11 @@ public:
     void userList();
     QList<USER_INFO> getUserListModel(){return userinfos;}
     //删除用户
-    void deleteUser(int id);
+    void deleteUser(int32_t id);
     //添加用户
-    void adduser(QString username, QString password, int role);
+    void adduser(QString username, QString password, int32_t role);
     //修改用户
-    void modifyuser(int id, QString username, QString password, int role);
+    void modifyuser(int32_t id, QString username, QString password, int32_t role);
 
     ////////////////////////////////agv管理
     //用户列表调用(发送获取userList的请求)
@@ -198,14 +198,15 @@ private:
 
     //AgvTaskBriefInfo detailTaskinfo;
 
-    USER_INFO current_user_info;
-
     ServerConnection tcpClient;
 
     QQueue<MSG_Response> responses;
+    QWaitCondition condition;
     QMutex responsesMtx;
 
     volatile bool quit;
+
+    std::thread thread_msg_process;
 };
 
 #endif // MSGCENTER_H

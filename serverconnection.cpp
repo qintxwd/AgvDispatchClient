@@ -33,16 +33,24 @@ ServerConnection::ServerConnection(QObject *parent) : QObject(parent),
 
 }
 
+ServerConnection::~ServerConnection()
+{
+    quit = true;
+    condition.wakeAll();
+    thread_read.join();
+    thread_send.join();
+}
+
 void ServerConnection::init(QString ip, int _port)
 {
     serverip = (ip.toStdString());
     port = (_port);
 
-    g_threadPool.enqueue([&](){
+    thread_read = std::thread([&](){
         while(!quit)
         {
             if(!need_reconnect){
-                std::chrono::milliseconds dura(1000);
+                std::chrono::milliseconds dura(50);
                 std::this_thread::sleep_for(dura);
                 continue;
             }
@@ -50,8 +58,8 @@ void ServerConnection::init(QString ip, int _port)
             emit onConnecting();
 
             if(!initConnect()){
-                //如果创建失败，过会重新创建(5s)
-                std::chrono::milliseconds dura(5000);
+                //如果创建失败，过会重新创建(50ms)
+                std::chrono::milliseconds dura(50);
                 std::this_thread::sleep_for(dura);
                 continue;
             }
@@ -129,24 +137,25 @@ void ServerConnection::init(QString ip, int _port)
         }
     });
 
-    g_threadPool.enqueue([&](){
+    thread_send = std::thread([&](){
         while(!quit){
             if(socketFd<0){
                 std::chrono::milliseconds dura(50);
                 std::this_thread::sleep_for(dura);
                 continue;
             }
+
             sendQueueMtx.lock();
             if(m_queue.size()<=0){
-                std::chrono::milliseconds dura(10);
-                std::this_thread::sleep_for(dura);
+                condition.wait(&sendQueueMtx);
+            }
+            if(quit){
                 sendQueueMtx.unlock();
-                continue;
+                break;
             }
             write_one_msg = m_queue.front();
             m_queue.pop_front();
             sendQueueMtx.unlock();
-
             ::send(socketFd,(char *)&write_one_msg,sizeof(MSG_Head)+write_one_msg.head.body_length,0);
         }
     });
@@ -164,8 +173,10 @@ void ServerConnection::reset(QString ip,int _port)
 
 bool ServerConnection::send(const MSG_Request &msg){
     if(socketFd<=0)return false;
+
     sendQueueMtx.lock();
     m_queue.push_back(msg);
+    condition.wakeAll();
     sendQueueMtx.unlock();
     return true;
 }

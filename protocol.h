@@ -90,7 +90,7 @@ typedef enum Msg_Todo
     MSG_TODO_USER_LIST,//列表//none
     MSG_TODO_USER_DELTE,//删除用户//userid[32]
     MSG_TODO_USER_ADD,//添加用户//username[MSG_STRING_LEN] password[MSG_STRING_LEN] role[1]
-    MSG_TODO_USER_MODIFY,//添加用户//username[MSG_STRING_LEN] password[MSG_STRING_LEN] role[1]
+    MSG_TODO_USER_MODIFY,//修改用户//id[4] username[MSG_STRING_LEN] password[MSG_STRING_LEN] role[1]
     MSG_TODO_MAP_CREATE_START,//创建地图开始
     MSG_TODO_MAP_CREATE_ADD_STATION,//添加站点 station[id[4]+x[4]+y[4]+name[MSG_STRING_LEN]+rfid[4]+r[2]+g[2]+b[2]]{个} //如果超出1024长度，可以分成多条
     MSG_TODO_MAP_CREATE_ADD_LINE, //添加直线 line[id[4] + startstation[4] + endstation[MSG_STRING_LEN] + length[4] + draw[1] + r[2] + g[2] + b[2]]{个 }//如果超出1024长度，可以分成多条

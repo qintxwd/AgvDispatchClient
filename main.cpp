@@ -1,6 +1,9 @@
 ﻿#include "logindialog.h"
 #include "global.h"
+#include "UI/mainwindow.h"
 #include <QApplication>
+
+#define HRG_DISPATCH_VERSION_STR "1.0.1"
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +12,10 @@ int main(int argc, char *argv[])
     qRegisterMetaType<MSG_Request>("MSG_Request");
     qRegisterMetaType<MSG_Response>("MSG_Response");
     //设置应用的窗口名称
-    app.setApplicationDisplayName("HRG Dispatch");
+    app.setApplicationDisplayName("HRG Dispatch client");
+    QCoreApplication::setOrganizationName("HRG(Hit Robot Group)");
+    QCoreApplication::setApplicationName("HRG Dispatch client");
+    QCoreApplication::setApplicationVersion(HRG_DISPATCH_VERSION_STR);
 
     //设置全局字体
     app.setFont(QFont("Microsoft Yahei", 10));
@@ -24,6 +30,17 @@ int main(int argc, char *argv[])
     //初始化到服务器的链接
     msgCenter.init();
 
-    LoginDialog dialog;
-    return dialog.exec();
+//    MainWindow *mainWindow = new MainWindow;
+//    mainWindow->showMaximized();
+
+    LoginDialog *dialog = new LoginDialog;
+
+    if ( dialog->exec() == QDialog::Accepted ) {
+        MainWindow *mainWindow = new MainWindow;
+        mainWindow->showMaximized();
+    }else{
+        return 0;
+    }
+
+    return app.exec();
 }

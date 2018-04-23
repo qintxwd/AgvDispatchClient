@@ -1,15 +1,18 @@
-#ifndef SERVERCONNNECTION_H
+﻿#ifndef SERVERCONNNECTION_H
 #define SERVERCONNNECTION_H
-
+#include <thread>
 #include <QObject>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QQueue>
+#include <QWaitCondition>
 #include "protocol.h"
 class ServerConnection : public QObject
 {
     Q_OBJECT
 public:
     explicit ServerConnection(QObject *parent = nullptr);
+    ~ServerConnection();
     void init(QString ip, int _port);
     void reset(QString ip, int _port);
     bool send(const MSG_Request &msg);
@@ -44,9 +47,13 @@ private:
 
     //////发送请求
     MSG_Request write_one_msg;
+
     QQueue<MSG_Request> m_queue;//发送队列
+    QWaitCondition condition;
     QMutex sendQueueMtx;
 
+    std::thread thread_read;
+    std::thread thread_send;
 };
 
 #endif // SERVERCONNNECTION_H
