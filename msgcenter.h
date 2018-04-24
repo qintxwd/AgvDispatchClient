@@ -39,16 +39,15 @@ public:
     void modifyuser(int32_t id, QString username, QString password, int32_t role);
 
     ////////////////////////////////agv管理
-    //用户列表调用(发送获取userList的请求)
     void agvList();
-    //
+
     QList<AGV_BASE_INFO> getAgvListModel(){return agvbaseinfos;}
-    //删除用户
+
     void deleteAgv(int id);
-    //添加用户
-    void addagv(QString name,QString ip);
-    //修改用户
-    void modifyagv(int id,QString name,QString ip);
+
+    void addagv(QString name,QString ip,int port);
+
+    void modifyagv(int id,QString name,QString ip,int port);
 
     //查询历史日志
     void queryLog(QString from,QString to,bool trace = true,bool debug = true,bool info = true,bool warn = true,bool error = true,bool fatal = true);
@@ -98,6 +97,8 @@ signals:
     void tip(QString tipstr);//全局的提示信息
     //全局的 返回错误显示
     void err(int errcode,QString info);
+    //发送了新的请求，清空上次请求的错误信息等
+    void sendNewRequest();
 
     ////////////////////////用户管理
     void loginSuccess(int role);
@@ -144,8 +145,6 @@ signals:
     void taskDetailSuccess();
 public slots:
     void push(const MSG_Response msg);
-
-
 private:
     //用户部分
     void response_user_login(const MSG_Response msg);

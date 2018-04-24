@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include "commonhead.h"
 
-#include "User/widgetusermanage.h"
+#include "User/dockusermanage.h"
+#include "Agv/dockagvmanage.h"
 
 class MainWindow : public QMainWindow
 {
@@ -15,14 +16,9 @@ public:
 signals:
 
 public slots:
-    void showUserManager(bool checked);
+
     void about();
     void aboutHrg();
-
-    //状态栏改变
-    void statusbar_server_msg(QString msg);
-    void statusbar_uiChanged(QString uiname);
-    void statusbar_msg(QString msg);
 
     void onServerConnect();
     void onServerDisconnect();
@@ -32,15 +28,20 @@ public slots:
     void onWaitResponseTimeOut();
     void onTip(QString s);
     void onErr(int errcode,QString info);
+    void onNewRequest();
 private:
+
     void createActions();
     void createStatusBar();
+    //状态栏改变
+    void statusbar_info(QString msg);
+    void statusbar_err(QString msg);
 
-    WidgetUserManage *usermanage;
+    DockUserManage *user_manage;
+    DockAgvManage *agv_manage;
 
-    QLabel *serverlabel;
-    QLabel *uilabel;
-    QLabel *msglabel;
+    QLabel *info_label;
+    QLabel *error_label;
 };
 
 #endif // MAINWINDOW_H

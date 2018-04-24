@@ -32,10 +32,13 @@ SOURCES += \
     configure.cpp \
     serverconnection.cpp \
     UI/mainwindow.cpp \
-    UI/User/widgetusermanage.cpp \
     UI/User/dialogadduser.cpp \
     UI/User/dialogmodifyuser.cpp \
-    UI/SideBar/sidebar.cpp
+    UI/User/dockusermanage.cpp \
+    UI/widgetwaiting.cpp \
+    UI/Agv/dockagvmanage.cpp \
+    UI/Agv/dialogaddagv.cpp \
+    UI/Agv/dialogmodifyagv.cpp
 
 HEADERS += \
     global.h \
@@ -44,14 +47,16 @@ HEADERS += \
     msgcenter.h \
     commonhead.h \
     protocol.h \
-    threadpool.h \
     configure.h \
     serverconnection.h \
     UI/mainwindow.h \
-    UI/User/widgetusermanage.h \
     UI/User/dialogadduser.h \
     UI/User/dialogmodifyuser.h \
-    UI/SideBar/sidebar.h
+    UI/User/dockusermanage.h \
+    UI/widgetwaiting.h \
+    UI/Agv/dockagvmanage.h \
+    UI/Agv/dialogaddagv.h \
+    UI/Agv/dialogmodifyagv.h
 
 FORMS +=
 

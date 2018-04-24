@@ -1,45 +1,30 @@
-﻿#include "widgetusermanage.h"
-
+﻿#include "dockusermanage.h"
 #include "global.h"
 #include "dialogadduser.h"
 #include "dialogmodifyuser.h"
 
-WidgetUserManage::WidgetUserManage(QWidget *parent) : QWidget(parent)
+DockUserManage::DockUserManage(QWidget *parent) : QDockWidget(tr("UserManage"),parent)
 {
-    QPushButton *returnBtn = new QPushButton;
-    returnBtn->setIcon(QIcon(QPixmap(":/icons/dark/appbar.undo.point.png")));
-    returnBtn->setText(QStringLiteral("返回"));
-    returnBtn->setToolTip(QStringLiteral("返回上级"));
-    returnBtn->setObjectName("returnbtn");
+    setAllowedAreas(Qt::AllDockWidgetAreas);
+    stack = new QStackedWidget;
+    waiting = new WidgetWaiting;
+    content = new QWidget;
 
-    labelTitle = new QLabel(QStringLiteral("用户管理"));
-    labelTitle->setFixedHeight(50);
-    labelTitle->setObjectName("titlelabel");
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(labelTitle);
-    hlayout->addStretch(1);
-    hlayout->addWidget(returnBtn);
-
-    btnAddUser = new QPushButton(QStringLiteral("添加用户"));
-    btnDeleteUser = new QPushButton(QStringLiteral("删除用户"));
-    btnModifyUser = new QPushButton(QStringLiteral("编辑用户"));
+    QPushButton *btnAddUser = new QPushButton(tr("add user"));
+    QPushButton *btnDeleteUser = new QPushButton(tr("delete user"));
+    QPushButton *btnModifyUser = new QPushButton(tr("edit user"));
     QHBoxLayout *btnsLayout = new QHBoxLayout;
     btnsLayout->addWidget(btnAddUser);
     btnsLayout->addWidget(btnDeleteUser);
     btnsLayout->addWidget(btnModifyUser);
-    btnsLayout->addStretch(1);
-    btnsLayout->setMargin(10);
-    btnsLayout->setContentsMargins(5,2,5,2);
 
     tableWidget = new QTableWidget(0, 5);
-
     QStringList labels;
     labels << QStringLiteral("ID")
-           << QStringLiteral("用户名")
-           << QStringLiteral("密码")
-           << QStringLiteral("登录状态")
-           << QStringLiteral("角色");
+           << QStringLiteral("username")
+           << QStringLiteral("password")
+           << QStringLiteral("status")
+           << QStringLiteral("role");
     tableWidget->setHorizontalHeaderLabels(labels);
     tableWidget->verticalHeader()->hide();
     tableWidget->setShowGrid(false);
@@ -50,31 +35,35 @@ WidgetUserManage::WidgetUserManage(QWidget *parent) : QWidget(parent)
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addItem(hlayout);
     layout->addItem(btnsLayout);
     layout->addWidget(tableWidget);
 
-    layout->addWidget(btnAddUser,0,Qt::AlignLeft|Qt::AlignVCenter);
+    content->setLayout(layout);
 
+    stack->addWidget(waiting);
+    stack->addWidget(content);
+    stack->setCurrentIndex(0);
+    setWidget(stack);
 
     connect(btnDeleteUser,SIGNAL(clicked(bool)),this,SLOT(deleteUser()));
-    connect(&msgCenter,SIGNAL(deleteUserSuccess()),this,SLOT(deleteSuccess()));
-    connect(&msgCenter,SIGNAL(modifyAgvSuccess()),this,SLOT(modifySuccess()));
-    connect(&msgCenter,SIGNAL(listUserSuccess()),this,SLOT(updateTable()));
     connect(btnAddUser,SIGNAL(clicked(bool)),this,SLOT(addUser()));
     connect(btnModifyUser,SIGNAL(clicked(bool)),this,SLOT(modifyUser()));
 
-    connect(returnBtn,SIGNAL(clicked(bool)),this,SIGNAL(returnChoose()));
-    this->setLayout(layout);
+    connect(&msgCenter,SIGNAL(deleteUserSuccess()),this,SLOT(deleteSuccess()));
+    connect(&msgCenter,SIGNAL(modifyAgvSuccess()),this,SLOT(modifySuccess()));
+    connect(&msgCenter,SIGNAL(listUserSuccess()),this,SLOT(updateTable()));
 
-    reshow();
-}
-void WidgetUserManage::reshow()
-{
-    msgCenter.userList();
+    connect(this,SIGNAL(visibilityChanged(bool)),this,SLOT(onVisibilityChanged(bool)));
 }
 
-void WidgetUserManage::deleteUser()
+//void DockUserManage::reshow()
+//{
+//    stack->setCurrentIndex(0);
+//    show();
+//    msgCenter.userList();
+//}
+
+void DockUserManage::deleteUser()
 {
     if(tableWidget->currentRow()<0 || tableWidget->currentRow()>=userinfos.length()){
         QMessageBox::warning(this,QStringLiteral("未选择"),QStringLiteral("请先选择你要删除的行"));
@@ -89,7 +78,7 @@ void WidgetUserManage::deleteUser()
 
 }
 
-void WidgetUserManage::modifyUser()
+void DockUserManage::modifyUser()
 {
     if(tableWidget->currentRow()<0 || tableWidget->currentRow()>=userinfos.length()){
         QMessageBox::warning(this,QStringLiteral("未选择"),QStringLiteral("请先选择你要编辑的行"));
@@ -98,32 +87,38 @@ void WidgetUserManage::modifyUser()
     USER_INFO u = userinfos.at(tableWidget->currentRow());
     DialogModifyUser *modifyUserDlg = new DialogModifyUser(u.id,u.username,u.password,u.role,this);
     if(modifyUserDlg->exec() == QDialog::Accepted){
-        //添加成功，刷新列表
         msgCenter.userList();
     }
-
 }
 
-void WidgetUserManage::modifySuccess()
+void DockUserManage::modifySuccess()
 {
-    msgCenter.userList();
+    show();
 }
 
-void WidgetUserManage::deleteSuccess()
+void DockUserManage::deleteSuccess()
 {
-    msgCenter.userList();
+    show();
 }
 
-void WidgetUserManage::addUser()
+void DockUserManage::addUser()
 {
     DialogAddUser *dialogAddUser = new DialogAddUser(this);
     if(dialogAddUser->exec() == QDialog::Accepted){
         //添加成功，刷新列表
+        show();
+    }
+}
+
+void DockUserManage::onVisibilityChanged(bool v)
+{
+    if(v){
+        stack->setCurrentIndex(0);
         msgCenter.userList();
     }
 }
 
-void WidgetUserManage::updateTable()
+void DockUserManage::updateTable()
 {
     tableWidget->clearContents();
     while(    tableWidget->rowCount()>0){
@@ -144,16 +139,22 @@ void WidgetUserManage::updateTable()
         itemPassword->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 2, itemPassword);
 
-        QString roleName = QStringLiteral("游客");
-        if(u.role==USER_ROLE_VISITOR)roleName = QStringLiteral("游客");
-        if(u.role==USER_ROLE_OPERATOR)roleName = QStringLiteral("操作员");
-        if(u.role==USER_ROLE_ADMIN)roleName = QStringLiteral("管理员");
-        if(u.role==USER_ROLE_SUPER_ADMIN)roleName = QStringLiteral("超级管理员");
-        if(u.role==USER_ROLE_DEVELOP)roleName = QStringLiteral("开发人员员");
-        QTableWidgetItem *itemRole = new QTableWidgetItem(tr("%1").arg(roleName));
+        QString online = tr("offline");
+        if(u.status!=0)online = tr("online");
+        QTableWidgetItem *itemStatus = new QTableWidgetItem(online);
+        itemStatus->setTextAlignment(Qt::AlignCenter);
+        tableWidget->setItem(i, 3, itemStatus);
+
+        QString roleName = tr("visitor");
+        if(u.role==USER_ROLE_VISITOR)roleName = tr("visitor");
+        if(u.role==USER_ROLE_OPERATOR)roleName = tr("operator");
+        if(u.role==USER_ROLE_ADMIN)roleName = tr("admin");
+        if(u.role==USER_ROLE_SUPER_ADMIN)roleName = tr("super admin");
+        if(u.role==USER_ROLE_DEVELOP)roleName = tr("developer");
+        QTableWidgetItem *itemRole = new QTableWidgetItem(roleName);
         itemRole->setTextAlignment(Qt::AlignCenter);
-        tableWidget->setItem(i, 3, itemRole);
+        tableWidget->setItem(i, 4, itemRole);
     }
-    //tableWidget->repaint();
     tableWidget->update();
+    stack->setCurrentIndex(1);
 }

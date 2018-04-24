@@ -67,6 +67,7 @@ void MsgCenter::push(MSG_Response msg)
 
 void MsgCenter::requestWaitResponse(const MSG_Request & msg)
 {
+    emit sendNewRequest();
     if(!tcpClient.send(msg)){
         emit sendRequestFail();
         return ;
@@ -256,7 +257,8 @@ void MsgCenter::response_agv_list(const MSG_Response msg)
         memcpy(&temp,msg.body+i*sizeof(AGV_BASE_INFO),sizeof(AGV_BASE_INFO));
         agvbaseinfos.push_back(temp);
     }
-    emit listAgvSuccess();
+    if(msg.head.flag==0)
+        emit listAgvSuccess();
 }
 
 void MsgCenter::response_agv_add(const MSG_Response msg)
@@ -336,7 +338,6 @@ void MsgCenter::adduser(QString username, QString password, int32_t role)
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_ADD;
     request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t);
-    memcpy_s(request.body+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
     memcpy_s(request.body,MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
     memcpy_s(request.body+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
     memcpy_s(request.body+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
@@ -354,5 +355,55 @@ void MsgCenter::modifyuser(int32_t id, QString username, QString password, int32
     memcpy_s(request.body+sizeof(int32_t),MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
     memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
     memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
+    requestWaitResponse(request);
+}
+
+void MsgCenter::agvList()
+{
+    agvbaseinfos.clear();
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_AGV_MANAGE_LIST;
+    requestWaitResponse(request);
+}
+
+
+void MsgCenter::deleteAgv(int id)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_AGV_MANAGE_DELETE;
+    request.head.body_length = sizeof(int32_t);
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&id,sizeof(int32_t));
+    requestWaitResponse(request);
+}
+
+
+void MsgCenter::addagv(QString name,QString ip,int port)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    AGV_BASE_INFO baseinfo;
+    baseinfo.id = 0;
+    sprintf_s(baseinfo.name,MSG_STRING_LEN,"%s",name.toStdString().c_str());
+    sprintf_s(baseinfo.ip,MSG_STRING_LEN,"%s",ip.toStdString().c_str());
+    baseinfo.port = port;
+    request.head.todo = MSG_TODO_AGV_MANAGE_ADD;
+    request.head.body_length = sizeof(baseinfo);
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&baseinfo,sizeof(baseinfo));
+    requestWaitResponse(request);
+}
+
+
+void MsgCenter::modifyagv(int id,QString name,QString ip,int port)
+{
+    MSG_Request request;
+    iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_AGV_MANAGE_MODIFY;
+    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t)*2;
+    memcpy_s(request.body,sizeof(int32_t),&id,sizeof(int32_t));
+    memcpy_s(request.body+sizeof(int32_t),MSG_STRING_LEN,name.toStdString().c_str(),name.toStdString().length());
+    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN,MSG_STRING_LEN,ip.toStdString().c_str(),ip.toStdString().length());
+    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN*2,sizeof(int32_t),&port,sizeof(int32_t));
     requestWaitResponse(request);
 }

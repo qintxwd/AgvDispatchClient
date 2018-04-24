@@ -3,7 +3,6 @@
 
 //全局变量
 #include "commonhead.h"
-#include "threadpool.h"
 #include "configure.h"
 #include "msgcenter.h"
 #include "protocol.h"

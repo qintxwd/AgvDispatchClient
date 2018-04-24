@@ -12,8 +12,8 @@
 #define	MSG_REQUEST_BODY_MAX_SIZE           (1000)  //一条消息的内容部分最大长度
 #define MSG_RESPONSE_BODY_MAX_SIZE          (768)   //一条响应消息的最大长度
 #define MSG_LOG_MAX_LENGTH              (MSG_RESPONSE_BODY_MAX_SIZE - 24)
-#define MSG_MSG_Head_HEAD		0x88
-#define MSG_MSG_Head_TAIL		0xAA
+#define MSG_MSG_Head_HEAD		(0x88)
+#define MSG_MSG_Head_TAIL		(0xAA)
 
 #define MSG_TIME_STRING_LEN            (24)
 #define MSG_SHORT_STRING_LEN           (32)
@@ -63,6 +63,7 @@ enum {
     RETURN_MSG_ERROR_CODE_TASKING,//有任务正在执行
     RETURN_MSG_ERROR_CODE_NOT_CTREATING,//不是正在创建地图的时候添加 站点啊、直线、曲线
     RETURN_MSG_ERROR_CODE_CTREATING,//正在创建地图的时候获取地图
+	RETURN_MSG_ERROR_CODE_UNFINDED,//未找到
 };
 //返回消息的结构的额外头
 typedef struct _MSG_RESPONSE_HEAD
@@ -97,14 +98,14 @@ typedef enum Msg_Todo
     MSG_TODO_MAP_CREATE_FINISH,//创建地图完成
     MSG_TODO_MAP_LIST_STATION,//请求所有站点//none
     MSG_TODO_MAP_LIST_LINE,//请求所有直线//none
-    MSG_TODO_HAND_REQUEST,//请求控制权//none
-    MSG_TODO_HAND_RELEASE,//释放控制权//none
-    MSG_TODO_HAND_FORWARD,//前进//none
-    MSG_TODO_HAND_BACKWARD,//后退//none
-    MSG_TODO_HAND_TURN_LEFT,//左转//none
-    MSG_TODO_HAND_TURN_RIGHT,//右转//none
+    //MSG_TODO_HAND_REQUEST,//请求控制权//none
+    //MSG_TODO_HAND_RELEASE,//释放控制权//none
+    //MSG_TODO_HAND_FORWARD,//前进//none
+    //MSG_TODO_HAND_BACKWARD,//后退//none
+    //MSG_TODO_HAND_TURN_LEFT,//左转//none
+    //MSG_TODO_HAND_TURN_RIGHT,//右转//none
     MSG_TODO_AGV_MANAGE_LIST,//车辆列表//none
-    MSG_TODO_AGV_MANAGE_ADD,//增加//name[MSG_STRING_LEN]+ip[MSG_STRING_LEN]
+    MSG_TODO_AGV_MANAGE_ADD,//增加//name[MSG_STRING_LEN]+ip[MSG_STRING_LEN]+port[4]
     MSG_TODO_AGV_MANAGE_DELETE,//删除//id[4]
     MSG_TODO_AGV_MANAGE_MODIFY,//修改//id[4]+name[MSG_STRING_LEN]+ip[MSG_STRING_LEN]
     MSG_TODO_TASK_CREATE,//添加任务
@@ -123,6 +124,10 @@ typedef enum Msg_Todo
     MSG_TODO_CANCEL_SUB_LOG,//取消日志订阅
     MSG_TODO_SUB_TASK,//任务订阅
     MSG_TODO_CANCEL_SUB_TASK,//取消任务订阅
+	MSG_TODO_TRAFFIC_CONTROL_STATION,//交通管制,一个站点//stationId[int32]
+	MSG_TODO_TRAFFIC_CONTROL_LINE,//交通管制，一条线路//lineId[int32]
+	MSG_TODO_TRAFFIC_RELEASE_STATION,//交通管制 释放,一个站点//stationId[int32]
+	MSG_TODO_TRAFFIC_RELEASE_LINE,//交通管制 释放，一条线路//lineId[int32]
 
     //publish request and response
     MSG_TODO_PUB_AGV_POSITION,//发布的agv位置信息，该信息的queuebumber = 0

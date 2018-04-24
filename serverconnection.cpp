@@ -66,14 +66,17 @@ void ServerConnection::init(QString ip, int _port)
 
             emit onConnect();
 
+            memset(&responsMsg,0,sizeof(responsMsg));
+
             while(!quit && socketFd>0){
                 int recvLen = 0;
                 recvLen = ::recv(socketFd, (char *)&(responsMsg.head), sizeof(MSG_Head), 0);
 
                 if (recvLen <= 0)
                 {
-                    if (errno == EINTR || errno == EAGAIN)
+                    if (errno == 0 || errno == EINTR || errno == EAGAIN)
                     {
+                        continue;
                     }
                     else
                     {
@@ -132,6 +135,7 @@ void ServerConnection::init(QString ip, int _port)
 
                     //TODO:入队一个消息
                     emit onRead(responsMsg);
+                    memset(&responsMsg,0,sizeof(responsMsg));
                 }
             }
         }
@@ -240,6 +244,14 @@ bool ServerConnection::initConnect()
     {
         printf("Create TCP socket Err. [Line: %d] [errno: %d]\n", __LINE__, errno);
         return false;
+    }
+
+    //设置接收超时为1000ms
+    int nTimeout=1000;
+    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,
+                                    (char *)&nTimeout, sizeof( int ) ) )
+    {
+        printf("Set SO_RCVTIMEO error !\n" );
     }
 
     struct sockaddr_in stServer;
