@@ -385,8 +385,8 @@ void MsgCenter::addagv(QString name,QString ip,int port)
     iniRequsttMsg(request);
     AGV_BASE_INFO baseinfo;
     baseinfo.id = 0;
-    sprintf_s(baseinfo.name,MSG_STRING_LEN,"%s",name.toStdString().c_str());
-    sprintf_s(baseinfo.ip,MSG_STRING_LEN,"%s",ip.toStdString().c_str());
+    snprintf(baseinfo.name,MSG_STRING_LEN,"%s",name.toStdString().c_str());
+    snprintf(baseinfo.ip,MSG_STRING_LEN,"%s",ip.toStdString().c_str());
     baseinfo.port = port;
     request.head.todo = MSG_TODO_AGV_MANAGE_ADD;
     request.head.body_length = sizeof(baseinfo);

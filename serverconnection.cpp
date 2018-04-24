@@ -248,11 +248,15 @@ bool ServerConnection::initConnect()
 
     //设置接收超时为1000ms
     int nTimeout=1000;
-    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,
-                                    (char *)&nTimeout, sizeof( int ) ) )
+#ifdef WIN32
+    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+#else
+    if( 0 == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+#endif
     {
         printf("Set SO_RCVTIMEO error !\n" );
     }
+
 
     struct sockaddr_in stServer;
     stServer.sin_family = AF_INET;
@@ -261,7 +265,7 @@ bool ServerConnection::initConnect()
 #ifdef WIN32
     ret = ::connect(socketFd, (LPSOCKADDR)&stServer, sizeof(stServer));
 #else
-    ret = connect(socketFd, (struct sockaddr *)&stServer, sizeof(stServer));
+    ret = ::connect(socketFd, (struct sockaddr *)&stServer, sizeof(stServer));
 #endif
 
 #ifdef WIN32
