@@ -33,6 +33,7 @@ std::string getTimeStrTomorrow();
 std::string toHexString(char *data, int len);
 std::string intToString(int i);
 
+
 #ifndef WIN32
 
 void memcpy_s(void *__restrict __dest, size_t __m,const void *__restrict __src, size_t __n);

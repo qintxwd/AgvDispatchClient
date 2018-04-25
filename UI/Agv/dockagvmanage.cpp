@@ -95,11 +95,13 @@ void DockAgvManage::modifyAgv()
 
 void DockAgvManage::modifySuccess()
 {
+    stack->setCurrentIndex(0);
     msgCenter.agvList();
 }
 
 void DockAgvManage::deleteSuccess()
 {
+    stack->setCurrentIndex(0);
     msgCenter.agvList();
 }
 

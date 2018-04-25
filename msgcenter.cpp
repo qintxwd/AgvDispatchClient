@@ -2,6 +2,57 @@
 #include <assert.h>
 #include "global.h"
 
+const char *Msg_Todo_Str[] =
+{
+    "MSG_TODO_USER_LOGIN",
+    "MSG_TODO_USER_LOGOUT",
+    "MSG_TODO_USER_CHANGED_PASSWORD",
+    "MSG_TODO_USER_LIST",
+    "MSG_TODO_USER_DELTE",
+    "MSG_TODO_USER_ADD",
+    "MSG_TODO_USER_MODIFY",
+    "MSG_TODO_MAP_CREATE_START",
+    "MSG_TODO_MAP_CREATE_ADD_STATION",
+    "MSG_TODO_MAP_CREATE_ADD_LINE",
+    "MSG_TODO_MAP_CREATE_FINISH",
+    "MSG_TODO_MAP_LIST_STATION",
+    "MSG_TODO_MAP_LIST_LINE",
+    "MSG_TODO_AGV_MANAGE_LIST",
+    "MSG_TODO_AGV_MANAGE_ADD",
+    "MSG_TODO_AGV_MANAGE_DELETE",
+    "MSG_TODO_AGV_MANAGE_MODIFY",
+    "MSG_TODO_TASK_CREATE",
+    "MSG_TODO_TASK_QUERY_STATUS",
+    "MSG_TODO_TASK_CANCEL",
+    "MSG_TODO_TASK_LIST_UNDO",
+    "MSG_TODO_TASK_LIST_DOING",
+    "MSG_TODO_TASK_LIST_DONE_TODAY",
+    "MSG_TODO_TASK_LIST_DURING",
+    "MSG_TODO_LOG_LIST_DURING",
+    "MSG_TODO_SUB_AGV_POSITION",
+    "MSG_TODO_CANCEL_SUB_AGV_POSITION",
+    "MSG_TODO_SUB_AGV_STATSU",
+    "MSG_TODO_CANCEL_SUB_AGV_STATSU",
+    "MSG_TODO_SUB_LOG",
+    "MSG_TODO_CANCEL_SUB_LOG",
+    "MSG_TODO_SUB_TASK",
+    "MSG_TODO_CANCEL_SUB_TASK",
+    "MSG_TODO_TRAFFIC_CONTROL_STATION",
+    "MSG_TODO_TRAFFIC_CONTROL_LINE",
+    "MSG_TODO_TRAFFIC_RELEASE_STATION",
+    "MSG_TODO_TRAFFIC_RELEASE_LINE",
+    "MSG_TODO_PUB_AGV_POSITION",
+    "MSG_TODO_PUB_AGV_STATUS",
+    "MSG_TODO_PUB_LOG",
+    "MSG_TODO_PUB_TASK",
+    "MSG_TODO_NOTIFY_ALL_MAP_UPDATE",
+    "MSG_TODO_NOTIFY_ALL_ERROR",
+};
+
+const char* getToDoStr(uint8_t todo){
+    return Msg_Todo_Str[todo];
+}
+
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false)
 {
@@ -68,6 +119,7 @@ void MsgCenter::push(MSG_Response msg)
 void MsgCenter::requestWaitResponse(const MSG_Request & msg)
 {
     emit sendNewRequest();
+    qDebug()<<"send request:"<<" req->"<<getToDoStr(msg.head.todo)<<" queue->"<<msg.head.queuenumber;
     if(!tcpClient.send(msg)){
         emit sendRequestFail();
         return ;
@@ -97,7 +149,7 @@ void MsgCenter::parseOneMsg(const MSG_Response msg)
 
     //是否和发送请求的queuenumber序号相同，相同标记 得到响应
     if(msg.head.queuenumber == queueNumber)getResponse = true;
-
+    qDebug()<<"send response:"<<" req->"<<getToDoStr(msg.head.todo)<<" queue->"<<msg.head.queuenumber<<" result->"<<msg.return_head.result;
     //错误判断和显示
     if(msg.return_head.result == RETURN_MSG_RESULT_FAIL || msg.return_head.error_code != RETURN_MSG_ERROR_NO_ERROR)
     {
@@ -337,10 +389,14 @@ void MsgCenter::adduser(QString username, QString password, int32_t role)
     MSG_Request request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_ADD;
-    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t);
-    memcpy_s(request.body,MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
-    memcpy_s(request.body+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
-    memcpy_s(request.body+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
+    USER_INFO u;
+    request.head.body_length = sizeof(USER_INFO);
+    snprintf(u.username,MSG_STRING_LEN,"%s",username.toStdString().c_str());
+    snprintf(u.password,MSG_STRING_LEN,"%s",password.toStdString().c_str());
+    u.role = role;
+    u.status = 0;
+    u.id = 0;
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&u,sizeof(USER_INFO));
     requestWaitResponse(request);
 }
 
@@ -349,12 +405,15 @@ void MsgCenter::modifyuser(int32_t id, QString username, QString password, int32
 {
     MSG_Request request;
     iniRequsttMsg(request);
-    request.head.todo = MSG_TODO_USER_ADD;
-    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t)*2;
-    memcpy_s(request.body,sizeof(int32_t),&id,sizeof(int32_t));
-    memcpy_s(request.body+sizeof(int32_t),MSG_STRING_LEN,username.toStdString().c_str(),username.toStdString().length());
-    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN,MSG_STRING_LEN,password.toStdString().c_str(),password.toStdString().length());
-    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN*2,sizeof(int32_t),&role,sizeof(int32_t));
+    request.head.todo = MSG_TODO_USER_MODIFY;
+    USER_INFO u;
+    request.head.body_length = sizeof(USER_INFO);
+    snprintf(u.username,MSG_STRING_LEN,"%s",username.toStdString().c_str());
+    snprintf(u.password,MSG_STRING_LEN,"%s",password.toStdString().c_str());
+    u.role = role;
+    u.status = 0;
+    u.id = id;
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&u,sizeof(USER_INFO));
     requestWaitResponse(request);
 }
 
@@ -383,12 +442,12 @@ void MsgCenter::addagv(QString name,QString ip,int port)
 {
     MSG_Request request;
     iniRequsttMsg(request);
+    request.head.todo = MSG_TODO_AGV_MANAGE_ADD;
     AGV_BASE_INFO baseinfo;
     baseinfo.id = 0;
     snprintf(baseinfo.name,MSG_STRING_LEN,"%s",name.toStdString().c_str());
     snprintf(baseinfo.ip,MSG_STRING_LEN,"%s",ip.toStdString().c_str());
     baseinfo.port = port;
-    request.head.todo = MSG_TODO_AGV_MANAGE_ADD;
     request.head.body_length = sizeof(baseinfo);
     memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&baseinfo,sizeof(baseinfo));
     requestWaitResponse(request);
@@ -400,10 +459,12 @@ void MsgCenter::modifyagv(int id,QString name,QString ip,int port)
     MSG_Request request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_AGV_MANAGE_MODIFY;
-    request.head.body_length = MSG_STRING_LEN*2+sizeof(int32_t)*2;
-    memcpy_s(request.body,sizeof(int32_t),&id,sizeof(int32_t));
-    memcpy_s(request.body+sizeof(int32_t),MSG_STRING_LEN,name.toStdString().c_str(),name.toStdString().length());
-    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN,MSG_STRING_LEN,ip.toStdString().c_str(),ip.toStdString().length());
-    memcpy_s(request.body+sizeof(int32_t)+MSG_STRING_LEN*2,sizeof(int32_t),&port,sizeof(int32_t));
+    AGV_BASE_INFO baseinfo;
+    baseinfo.id = id;
+    snprintf(baseinfo.name,MSG_STRING_LEN,"%s",name.toStdString().c_str());
+    snprintf(baseinfo.ip,MSG_STRING_LEN,"%s",ip.toStdString().c_str());
+    baseinfo.port = port;
+    request.head.body_length = sizeof(baseinfo);
+    memcpy_s(request.body,MSG_REQUEST_BODY_MAX_SIZE,&baseinfo,sizeof(baseinfo));
     requestWaitResponse(request);
 }
