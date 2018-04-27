@@ -3,6 +3,8 @@
 #include "UI/mainwindow.h"
 #include <QApplication>
 
+#include "UI/MapEdit/mapeditwindow.h"
+
 #define HRG_DISPATCH_VERSION_STR "1.0.1"
 
 int main(int argc, char *argv[])
@@ -33,14 +35,19 @@ int main(int argc, char *argv[])
 //    MainWindow *mainWindow = new MainWindow;
 //    mainWindow->showMaximized();
 
-    LoginDialog *dialog = new LoginDialog;
+//    LoginDialog *dialog = new LoginDialog;
 
-    if ( dialog->exec() == QDialog::Accepted ) {
-        MainWindow *mainWindow = new MainWindow;
-        mainWindow->showMaximized();
-    }else{
-        return 0;
-    }
+//    if ( dialog->exec() == QDialog::Accepted ) {
+//        MainWindow *mainWindow = new MainWindow;
+//        mainWindow->showMaximized();
+//    }else{
+//        return 0;
+//    }
+
+    OneMap onemap;
+
+    MapEditWindow *mapEditWindow = new MapEditWindow(onemap);
+    mapEditWindow->showMaximized();
 
     return app.exec();
 }

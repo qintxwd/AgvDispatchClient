@@ -1,0 +1,49 @@
+﻿#ifndef MAPEDITWINDOW_H
+#define MAPEDITWINDOW_H
+
+#include <QtWidgets>
+#include <QMainWindow>
+#include "dockmaptree.h"
+#include "dockproperty.h"
+
+class MapEditWindow : public QMainWindow
+{
+    Q_OBJECT
+public:
+    explicit MapEditWindow(OneMap _oneMap,QWidget *parent = nullptr);
+    void init();
+signals:
+
+public slots:
+
+    void about();
+    void aboutHrg();
+
+    void onServerConnect();
+    void onServerDisconnect();
+    void onServerConnectting();
+
+    void onSendFail();
+    void onWaitResponseTimeOut();
+    void onTip(QString s);
+    void onErr(int errcode,QString info);
+    void onNewRequest();
+private:
+
+    void createActions();
+    void createStatusBar();
+    //状态栏改变
+    void statusbar_info(QString msg);
+    void statusbar_err(QString msg);
+
+    QLabel *info_label;
+    QLabel *error_label;
+
+    OneMap oneMap;//地图编辑器的一个map
+
+    DockMapTree *dockMapTree;
+    DockProperty *dockProperty;
+
+};
+
+#endif // MAPEDITWINDOW_H

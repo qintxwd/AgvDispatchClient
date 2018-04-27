@@ -38,7 +38,17 @@ SOURCES += \
     UI/widgetwaiting.cpp \
     UI/Agv/dockagvmanage.cpp \
     UI/Agv/dialogaddagv.cpp \
-    UI/Agv/dialogmodifyagv.cpp
+    UI/Agv/dialogmodifyagv.cpp \
+    UI/MapEdit/mapeditwindow.cpp \
+    UI/MapEdit/maptreeitem.cpp \
+    UI/MapEdit/maptreemodel.cpp \
+    UI/MapEdit/dockmaptree.cpp \
+    data/mapspirit.cpp \
+    data/mappoint.cpp \
+    data/mapfloor.cpp \
+    data/mappath.cpp \
+    data/onemap.cpp \
+    UI/MapEdit/dockproperty.cpp
 
 HEADERS += \
     global.h \
@@ -56,9 +66,22 @@ HEADERS += \
     UI/widgetwaiting.h \
     UI/Agv/dockagvmanage.h \
     UI/Agv/dialogaddagv.h \
-    UI/Agv/dialogmodifyagv.h
+    UI/Agv/dialogmodifyagv.h \
+    UI/MapEdit/mapeditwindow.h \
+    UI/MapEdit/maptreeitem.h \
+    UI/MapEdit/maptreemodel.h \
+    UI/MapEdit/dockmaptree.h \
+    data/mapspirit.h \
+    data/mappoint.h \
+    data/mapfloor.h \
+    data/mappath.h \
+    data/onemap.h \
+    UI/MapEdit/dockproperty.h
 
 FORMS +=
 
 DISTFILES += \
     config.conf
+
+RESOURCES += \
+    images.qrc

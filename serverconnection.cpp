@@ -4,7 +4,8 @@
 
 #ifdef WIN32
 #define _WIN32_WINNT _WIN32_WINNT_WIN8
-#include <winsock2.h>
+#include <WinSock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <mstcpip.h>
 #include <Ws2tcpip.h>
