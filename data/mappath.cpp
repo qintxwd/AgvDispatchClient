@@ -7,8 +7,8 @@ MapPath::MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _ty
     path_type(_type),
     p1x(_p1x),
     p1y(_p1y),
-    p2x(p2x),
-    p2y(p2y)
+    p2x(_p2x),
+    p2y(_p2y)
 {
     setId(_id);
     setName(_name);

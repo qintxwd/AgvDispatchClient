@@ -5,10 +5,11 @@
 
 //! [0]
 MapTreeModel::MapTreeModel(OneMap *_onemap, QObject *parent)
-    : QAbstractItemModel(parent)
+    : QAbstractItemModel(parent),
+      onemap(_onemap)
 {
     rootItem = new MapTreeItem(nullptr);
-    setupModelData(_onemap, rootItem);
+    setupModelData(rootItem);
 }
 //! [0]
 
@@ -129,7 +130,7 @@ int MapTreeModel::rowCount(const QModelIndex &parent) const
 }
 //! [8]
 
-void MapTreeModel::setupModelData(OneMap *onemap, MapTreeItem *root)
+void MapTreeModel::setupModelData(MapTreeItem *root)
 {
     QList<MapSpirit *> floors = onemap->getSpiritByType(MapSpirit::Map_Sprite_Type_Floor);
 
@@ -181,4 +182,11 @@ void MapTreeModel::setupModelData(OneMap *onemap, MapTreeItem *root)
         MapTreeItem *item_pp = new MapTreeItem(__path,root);
         root->appendChild(item_pp);
     }
+}
+
+void MapTreeModel::fresh()
+{
+    removeRows(0,this->rowCount());
+    rootItem = new MapTreeItem(nullptr);
+    setupModelData(rootItem);
 }

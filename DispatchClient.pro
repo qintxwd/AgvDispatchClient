@@ -48,7 +48,8 @@ SOURCES += \
     data/mapfloor.cpp \
     data/mappath.cpp \
     data/onemap.cpp \
-    UI/MapEdit/dockproperty.cpp
+    UI/MapEdit/dockproperty.cpp \
+    UI/MapEdit/dockview.cpp
 
 HEADERS += \
     global.h \
@@ -76,7 +77,8 @@ HEADERS += \
     data/mapfloor.h \
     data/mappath.h \
     data/onemap.h \
-    UI/MapEdit/dockproperty.h
+    UI/MapEdit/dockproperty.h \
+    UI/MapEdit/dockview.h
 
 FORMS +=
 

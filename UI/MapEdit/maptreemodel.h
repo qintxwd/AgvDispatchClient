@@ -27,10 +27,12 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-
+public slots:
+    //增加、删除、修改名字时用
+    void fresh();
 private:
-    void setupModelData(OneMap *onemap, MapTreeItem *root);
-
+    void setupModelData(MapTreeItem *root);
+    OneMap *onemap;
     MapTreeItem *rootItem;
 };
 

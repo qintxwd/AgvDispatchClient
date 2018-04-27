@@ -27,12 +27,6 @@ void MapEditWindow::init()
     connect(&msgCenter,SIGNAL(tip(QString)),this,SLOT(onTip(QString)));
     connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
-
-    dockMapTree = new DockMapTree(&oneMap);
-    dockProperty = new DockProperty();
-    addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
-    splitDockWidget(dockMapTree,dockProperty,Qt::Vertical);
-    //splitDockWidget(dockMapTree,,Qt::Horizontal);
 }
 
 void MapEditWindow::onServerConnect()
@@ -118,14 +112,22 @@ void MapEditWindow::createActions()
     QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
     QToolBar *viewsToolBar = addToolBar(tr("Views"));
 
-    //    user_manage = new DockUserManage();
-    //    addDockWidget(Qt::RightDockWidgetArea, user_manage);
-    //    viewsMenu->addAction(user_manage->toggleViewAction());
-    //    viewsToolBar->addAction(user_manage->toggleViewAction());
-    //    agv_manage = new DockAgvManage();
-    //    addDockWidget(Qt::RightDockWidgetArea, agv_manage);
-    //    viewsMenu->addAction(agv_manage->toggleViewAction());
-    //    viewsToolBar->addAction(agv_manage->toggleViewAction());
+    dockMapTree = new DockMapTree(&oneMap);
+    dockProperty = new DockProperty(&oneMap);
+    dockView = new DockView(&oneMap);
+
+    addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
+    splitDockWidget(dockMapTree,dockProperty,Qt::Vertical);
+    splitDockWidget(dockMapTree,dockView,Qt::Horizontal);
+
+    viewsMenu->addAction(dockMapTree->toggleViewAction());
+    viewsToolBar->addAction(dockMapTree->toggleViewAction());
+
+    viewsMenu->addAction(dockProperty->toggleViewAction());
+    viewsToolBar->addAction(dockProperty->toggleViewAction());
+
+    viewsMenu->addAction(dockView->toggleViewAction());
+    viewsToolBar->addAction(dockView->toggleViewAction());
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MapEditWindow::about);

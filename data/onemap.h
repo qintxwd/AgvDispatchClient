@@ -8,11 +8,16 @@ class OneMap
 {
 public:
     OneMap();
-
+    ~OneMap();
     //注册一个新的元素
     int getNextId();
 
     void addSpirit(MapSpirit *spirit);
+
+    void setBackgroudImage(QString fileName,QByteArray data){
+        background = data;
+        imgFileName = fileName;
+    }
 
     //删除一个元素
     void removeSpirit(int id);
@@ -29,6 +34,8 @@ public:
 private:
     QList<MapSpirit *> spirits;//地图上的所有元素
     int max_id;
+    QByteArray background;
+    QString imgFileName;
 };
 
 #endif // ONEMAP_H

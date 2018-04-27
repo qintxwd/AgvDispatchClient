@@ -6,6 +6,11 @@ OneMap::OneMap():
 
 }
 
+OneMap::~OneMap()
+{
+    qDeleteAll(spirits);
+}
+
 int OneMap::getNextId()
 {
     return ++max_id;
@@ -60,9 +65,6 @@ OneMap OneMap::clone()
 {
     OneMap onemap;
     foreach (auto spirit, spirits) {
-        if(spirit->getId()>=onemap.max_id){
-            onemap.max_id = spirit->getId()+1;
-        }
         MapSpirit *p = nullptr;
         if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
             MapPoint *pl = new MapPoint(*( static_cast<MapPoint *>(spirit) ));
@@ -79,6 +81,9 @@ OneMap OneMap::clone()
         }
         onemap.addSpirit(p);
     }
+    onemap.max_id = max_id;
+    onemap.background = background;
+    onemap.imgFileName = imgFileName;
 
     return onemap;
 }

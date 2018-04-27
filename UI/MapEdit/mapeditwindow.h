@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include <QMainWindow>
+#include "dockview.h"
 #include "dockmaptree.h"
 #include "dockproperty.h"
 
@@ -43,6 +44,7 @@ private:
 
     DockMapTree *dockMapTree;
     DockProperty *dockProperty;
+    DockView *dockView;
 
 };
 

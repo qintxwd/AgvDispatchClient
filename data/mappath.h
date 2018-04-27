@@ -25,6 +25,14 @@ public:
     void setP1y(int _p1y){p1y = _p1y;}
     void setP2x(int _p2x){p2x = _p2x;}
     void setP2y(int _p2y){p2y = _p2y;}
+    void setLength(int _length){length=_length;}
+
+    int getP1x(){return p1x;}
+    int getP1y(){return p1y;}
+    int getP2x(){return p2x;}
+    int getP2y(){return p2y;}
+    int getLength(){return length;}
+
 private:
     Map_Path_Type path_type;
     int start;

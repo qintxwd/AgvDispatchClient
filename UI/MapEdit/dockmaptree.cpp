@@ -38,6 +38,7 @@ void DockMapTree::initUi()
     setWidget(view);
 
     setMaximumWidth(300);
+    setWindowTitle(QStringLiteral("地图结点"));
 }
 
 void DockMapTree::ShowContextMenu(const QPoint& pos)
