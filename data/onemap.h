@@ -2,7 +2,7 @@
 #define ONEMAP_H
 
 #include "mapfloor.h"
-
+#include "mapbackground.h"
 //一个地图[有若干个元素组成]
 class OneMap
 {
@@ -14,9 +14,8 @@ public:
 
     void addSpirit(MapSpirit *spirit);
 
-    void setBackgroudImage(QString fileName,QByteArray data){
-        background = data;
-        imgFileName = fileName;
+    void setBackgroudImage(QImage img,QString name){
+        QList<MapSpirit *> backgrounds = getSpiritByType()
     }
 
     //删除一个元素
@@ -34,8 +33,6 @@ public:
 private:
     QList<MapSpirit *> spirits;//地图上的所有元素
     int max_id;
-    QByteArray background;
-    QString imgFileName;
 };
 
 #endif // ONEMAP_H

@@ -49,7 +49,16 @@ SOURCES += \
     data/mappath.cpp \
     data/onemap.cpp \
     UI/MapEdit/dockproperty.cpp \
-    UI/MapEdit/dockview.cpp
+    UI/MapEdit/dockview.cpp \
+    UI/MapEdit/itemarc.cpp \
+    UI/MapEdit/itembackground.cpp \
+    UI/MapEdit/itemline.cpp \
+    UI/MapEdit/itemstation.cpp \
+    UI/MapEdit/scene.cpp \
+    UI/MapEdit/scenepositionlabel.cpp \
+    UI/MapEdit/stationinputdialog.cpp \
+    UI/MapEdit/viewer.cpp \
+    data/mapbackground.cpp
 
 HEADERS += \
     global.h \
@@ -78,7 +87,16 @@ HEADERS += \
     data/mappath.h \
     data/onemap.h \
     UI/MapEdit/dockproperty.h \
-    UI/MapEdit/dockview.h
+    UI/MapEdit/dockview.h \
+    UI/MapEdit/itemarc.h \
+    UI/MapEdit/itembackground.h \
+    UI/MapEdit/itemline.h \
+    UI/MapEdit/itemstation.h \
+    UI/MapEdit/scene.h \
+    UI/MapEdit/scenepositionlabel.h \
+    UI/MapEdit/stationinputdialog.h \
+    UI/MapEdit/viewer.h \
+    data/mapbackground.h
 
 FORMS +=
 

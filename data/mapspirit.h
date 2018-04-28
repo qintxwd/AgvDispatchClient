@@ -11,6 +11,7 @@ public:
         Map_Sprite_Type_Point = 0,
         Map_Sprite_Type_Path,
         Map_Sprite_Type_Floor,
+        Map_Sprite_Type_Background,
     };
 
     MapSpirit();
