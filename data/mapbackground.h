@@ -13,10 +13,10 @@ public:
     void setWidth(int _width){width=_width;}
     void setHeight(int _height){height=_height;}
 
-    void getX(){return x;}
-    void getY(){return y;}
-    void getWidth(){return width;}
-    void getHeight(){return height;}
+    int getX(){return x;}
+    int getY(){return y;}
+    int getWidth(){return width;}
+    int getHeight(){return height;}
 
 private:
     QByteArray background;

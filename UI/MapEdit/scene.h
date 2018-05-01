@@ -3,10 +3,6 @@
 
 #include <QGraphicsScene>
 #include "scenepositionlabel.h"
-#include "itembackground.h"
-#include "itemarc.h"
-#include "itemline.h"
-#include "itemstation.h"
 
 class Scene : public QGraphicsScene
 {
@@ -65,33 +61,33 @@ private:
 
     ScenePositionLabel *positoinlabel;
 
-    ItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
+//    ItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
 
-    ItemStation *getStation(int id);
+//    ItemStation *getStation(int id);
 
-    int getMaxStationId();
+//    int getMaxStationId();
 
-    ItemLine *getLine(int id);
+//    ItemLine *getLine(int id);
 
-    int getMaxLineId();
+//    int getMaxLineId();
 
-    ItemArc *getArc(int id);
+//    ItemArc *getArc(int id);
 
-    int getMaxArcId();
+//    int getMaxArcId();
 
     void removeAllStations();
     void removeAllLines();
     void removeAllArcs();
 public:
-    ItemBackground *itemBackground;
+//    ItemBackground *itemBackground;
 
-    QList<ItemStation *> iStations;//记录所有的站点
+//    QList<ItemStation *> iStations;//记录所有的站点
 
-    QList<ItemLine *> iLines;//记录所有的直线
+//    QList<ItemLine *> iLines;//记录所有的直线
 
-    QList<ItemArc *> iArcs;//记录所有的弧线
+//    QList<ItemArc *> iArcs;//记录所有的弧线
 
-    QString backgroundImagePath;//记录背景图片的路径
+//    QString backgroundImagePath;//记录背景图片的路径
 };
 
 #endif // SCENE_H

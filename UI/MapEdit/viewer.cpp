@@ -12,20 +12,17 @@
 #include <QColorDialog>
 #include "stationinputdialog.h"
 #include "scene.h"
-#include "widgets/dialogwaiting.h"
 #include "global.h"
 
 Viewer::Viewer(QWidget *parent) :  QGraphicsView(parent)
 {
-    setBackgroundBrush(QPixmap(":/images/grid.png"));
+    setBackgroundBrush(QPixmap(":/images/point/grid.png"));
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     setMouseTracking(true);	// mouse track on
     setViewportUpdateMode(FullViewportUpdate);
-
-    setFixedSize(1580,820);
 
     saveBtn = new QPushButton(QStringLiteral("保存"),this);
     saveBtn->setObjectName("saveBtn");

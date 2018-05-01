@@ -82,8 +82,6 @@ OneMap OneMap::clone()
         onemap.addSpirit(p);
     }
     onemap.max_id = max_id;
-    onemap.background = background;
-    onemap.imgFileName = imgFileName;
 
     return onemap;
 }

@@ -50,15 +50,16 @@ SOURCES += \
     data/onemap.cpp \
     UI/MapEdit/dockproperty.cpp \
     UI/MapEdit/dockview.cpp \
-    UI/MapEdit/itemarc.cpp \
-    UI/MapEdit/itembackground.cpp \
-    UI/MapEdit/itemline.cpp \
-    UI/MapEdit/itemstation.cpp \
     UI/MapEdit/scene.cpp \
     UI/MapEdit/scenepositionlabel.cpp \
     UI/MapEdit/stationinputdialog.cpp \
     UI/MapEdit/viewer.cpp \
-    data/mapbackground.cpp
+    data/mapbackground.cpp \
+    UI/MapEdit/mapitemstation.cpp \
+    UI/MapEdit/mapitemline.cpp \
+    UI/MapEdit/mapitemstationname.cpp \
+    UI/MapEdit/mapitemquadraticbezier.cpp \
+    UI/MapEdit/mapitemcubicbezier.cpp
 
 HEADERS += \
     global.h \
@@ -88,15 +89,16 @@ HEADERS += \
     data/onemap.h \
     UI/MapEdit/dockproperty.h \
     UI/MapEdit/dockview.h \
-    UI/MapEdit/itemarc.h \
-    UI/MapEdit/itembackground.h \
-    UI/MapEdit/itemline.h \
-    UI/MapEdit/itemstation.h \
     UI/MapEdit/scene.h \
     UI/MapEdit/scenepositionlabel.h \
     UI/MapEdit/stationinputdialog.h \
     UI/MapEdit/viewer.h \
-    data/mapbackground.h
+    data/mapbackground.h \
+    UI/MapEdit/mapitemstation.h \
+    UI/MapEdit/mapitemline.h \
+    UI/MapEdit/mapitemstationname.h \
+    UI/MapEdit/mapitemquadraticbezier.h \
+    UI/MapEdit/mapitemcubicbezier.h
 
 FORMS +=
 

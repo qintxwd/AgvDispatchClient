@@ -3,6 +3,7 @@
 
 #include "mapfloor.h"
 #include "mapbackground.h"
+#include <QImage>
 //一个地图[有若干个元素组成]
 class OneMap
 {
@@ -15,7 +16,13 @@ public:
     void addSpirit(MapSpirit *spirit);
 
     void setBackgroudImage(QImage img,QString name){
-        QList<MapSpirit *> backgrounds = getSpiritByType()
+        QList<MapSpirit *> backgrounds = getSpiritByType(MapSpirit::Map_Sprite_Type_Background);
+        foreach (auto s, backgrounds) {
+            removeSpirit(s);
+        }
+        MapBackground *bs = new MapBackground(getNextId(),name,-1*img.width()/2,-1*img.height()/2,img.width(),img.height());
+
+        addSpirit(bs);
     }
 
     //删除一个元素

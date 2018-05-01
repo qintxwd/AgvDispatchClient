@@ -1,6 +1,6 @@
 ﻿#include "stationinputdialog.h"
 
-#include "global.h"
+#include <QtWidgets>
 
 StationInputDialog::StationInputDialog(QString _name, int _rfid, QWidget *parent) : QDialog(parent),name(_name),rfid(_rfid)
 {
