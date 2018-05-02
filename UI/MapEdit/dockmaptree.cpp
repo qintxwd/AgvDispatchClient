@@ -31,6 +31,7 @@ void DockMapTree::initUi()
     connect(view,SIGNAL(clicked(QModelIndex)),this,SLOT(slot_selectChanged(QModelIndex)));
     view->header()->hide();
     setWidget(view);
+    view->expandAll();
 
     setMaximumWidth(300);
     setWindowTitle(QStringLiteral("地图结点"));
@@ -77,5 +78,12 @@ void DockMapTree::slot_addRootPath()
 void DockMapTree::refresh()
 {
     model->fresh();
+    view->expandAll();
+}
+
+void DockMapTree::slot_chooseChanged(MapFloor *floor, MapSpirit *spirit)
+{
+    //TODO： set select !
+    view->expandAll();
 }
 

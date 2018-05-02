@@ -1,11 +1,7 @@
 ﻿#include "mapeditwindow.h"
 #include "global.h"
+#include "scene.h"
 
-#define MAP_ITEM_DATA_ROLE_TYPE Qt::UserRole + 1
-
-#define MAP_ITEM_DATA_ROLL_TYPE_POINT   1
-#define MAP_ITEM_DATA_ROLL_TYPE_POINT   1
-#define MAP_ITEM_DATA_ROLL_TYPE_POINT   1
 
 MapEditWindow::MapEditWindow(OneMap _oneMap, QWidget *parent) : QMainWindow(parent),
     oneMap(_oneMap)
@@ -34,6 +30,17 @@ void MapEditWindow::init()
     connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
 
     connect(dockView,SIGNAL(sig_currentMousePos(QPointF)),this,SLOT(slot_currentMousePos(QPointF)));
+    connect(dockView,SIGNAL(sig_cancelTool()),this,SLOT(slot_cancelTool()));
+    connect(this,SIGNAL(sig_setTool(int)),dockView,SIGNAL(sig_setTool(int)));
+
+    connect(dockView,SIGNAL(sig_addStation(MapFloor*,MapPoint*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_removeStation(MapFloor*,MapPoint*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_addPath(MapFloor*,MapPath*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_removePath(MapFloor*,MapPath*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_removeBkg(MapFloor*,MapBackground*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_chooseChanged(MapFloor*,MapSpirit*)),dockMapTree,SLOT(slot_chooseChanged(MapFloor*,MapSpirit*)));
+
+    QMetaObject::connectSlotsByName(this);
 }
 
 void MapEditWindow::onServerConnect()
@@ -106,12 +113,14 @@ void MapEditWindow::createStatusBar()
     usernamelabel->setMinimumWidth(200);
     userrolelabel->setMinimumWidth(200);
     info_label->setMinimumWidth(200);
+    error_label->setMinimumWidth(400);
     pos_label->setMinimumWidth(100);
 
     statusbar->addWidget(usernamelabel);
     statusbar->addWidget(userrolelabel);
     statusbar->addWidget(info_label);
     statusbar->addWidget(error_label);
+
     statusbar->addWidget(pos_label);
 
     setStatusBar(statusbar);
@@ -162,6 +171,105 @@ void MapEditWindow::createActions()
     toolsToolBar->addAction(toolErase);
     toolsMenu->addAction(toolErase);
 
+    toolStationDraw = new QAction(this);
+    toolStationDraw->setText("Station Draw");
+    toolStationDraw->setObjectName("toolStationDraw");
+    QIcon iconStationDraw;
+    iconStationDraw.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationDraw->setIcon(iconStationDraw);
+    toolStationDraw->setCheckable(true);
+    toolsToolBar->addAction(toolStationDraw);
+    toolsMenu->addAction(toolStationDraw);
+
+    toolStationReport = new QAction(this);
+    toolStationReport->setText("Station Report");
+    toolStationReport->setObjectName("toolStationReport");
+    QIcon iconStationReport;
+    iconStationReport.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationReport->setIcon(iconStationReport);
+    toolStationReport->setCheckable(true);
+    toolsToolBar->addAction(toolStationReport);
+    toolsMenu->addAction(toolStationReport);
+
+    toolStationHalt = new QAction(this);
+    toolStationHalt->setText("Station Halt");
+    toolStationHalt->setObjectName("toolStationHalt");
+    QIcon iconStationHalt;
+    iconStationHalt.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationHalt->setIcon(iconStationHalt);
+    toolStationHalt->setCheckable(true);
+    toolsToolBar->addAction(toolStationHalt);
+    toolsMenu->addAction(toolStationHalt);
+
+    toolStationCharge = new QAction(this);
+    toolStationCharge->setText("Station Charge");
+    toolStationCharge->setObjectName("toolStationCharge");
+    QIcon iconStationCharge;
+    iconStationCharge.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationCharge->setIcon(iconStationCharge);
+    toolStationCharge->setCheckable(true);
+    toolsToolBar->addAction(toolStationCharge);
+    toolsMenu->addAction(toolStationCharge);
+
+    toolStationLoad = new QAction(this);
+    toolStationLoad->setText("Station Load");
+    toolStationLoad->setObjectName("toolStationLoad");
+    QIcon iconStationLoad;
+    iconStationLoad.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationLoad->setIcon(iconStationLoad);
+    toolStationLoad->setCheckable(true);
+    toolsToolBar->addAction(toolStationLoad);
+    toolsMenu->addAction(toolStationLoad);
+
+    toolStationUnload = new QAction(this);
+    toolStationUnload->setText("Station Unload");
+    toolStationUnload->setObjectName("toolStationUnload");
+    QIcon iconStationUnload;
+    iconStationUnload.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationUnload->setIcon(iconStationUnload);
+    toolStationUnload->setCheckable(true);
+    toolsToolBar->addAction(toolStationUnload);
+    toolsMenu->addAction(toolStationUnload);
+
+    toolStationLoadUnload = new QAction(this);
+    toolStationLoadUnload->setText("Station Load Unload");
+    toolStationLoadUnload->setObjectName("toolStationLoadUnload");
+    QIcon iconStationLoadUnload;
+    iconStationLoadUnload.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationLoadUnload->setIcon(iconStationLoadUnload);
+    toolStationLoadUnload->setCheckable(true);
+    toolsToolBar->addAction(toolStationLoadUnload);
+    toolsMenu->addAction(toolStationLoadUnload);
+
+    toolLine = new QAction(this);
+    toolLine->setText("Line");
+    toolLine->setObjectName("toolLine");
+    QIcon iconLine;
+    iconLine.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolLine->setIcon(iconLine);
+    toolLine->setCheckable(true);
+    toolsToolBar->addAction(toolLine);
+    toolsMenu->addAction(toolLine);
+
+    toolQb = new QAction(this);
+    toolQb->setText("Station Load Unload");
+    toolQb->setObjectName("toolQb");
+    QIcon iconQb;
+    iconQb.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolQb->setIcon(iconQb);
+    toolQb->setCheckable(true);
+    toolsToolBar->addAction(toolQb);
+    toolsMenu->addAction(toolQb);
+
+    toolCb = new QAction(this);
+    toolCb->setText("Station Load Unload");
+    toolCb->setObjectName("toolCb");
+    QIcon iconCb;
+    iconCb.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolCb->setIcon(iconCb);
+    toolCb->setCheckable(true);
+    toolsToolBar->addAction(toolCb);
+    toolsMenu->addAction(toolCb);
 
 }
 
@@ -195,12 +303,252 @@ void MapEditWindow::statusbar_err(QString msg)
     error_label->setText(QStringLiteral("错误:")+msg);
 }
 
-    void MapEditWindow::statusbar_pos(QString msg)
-    {
-        pos_label->setText(QStringLiteral("坐标:")+msg);
-    }
+void MapEditWindow::statusbar_pos(QString msg)
+{
+    pos_label->setText(QStringLiteral("坐标:")+msg);
+}
 
 void MapEditWindow::slot_currentMousePos(QPointF pos)
 {
     statusbar_pos(QString("(%1,%2)").arg(pos.x()).arg(pos.y()));
+}
+
+void MapEditWindow::slot_cancelTool()
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+}
+
+void MapEditWindow::on_toolErase_triggered(bool b)
+{
+    //toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_ERASER);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
+void MapEditWindow::on_toolStationDraw_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    //toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_DRAW);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
+void MapEditWindow::on_toolStationReport_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    //toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_REPORT);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
+void MapEditWindow::on_toolStationHalt_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    //toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_HALT);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolStationCharge_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    //toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_CHARGE);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolStationLoad_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    //toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_LOAD);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolStationUnload_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    //toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_UNLOAD);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
+void MapEditWindow::on_toolStationLoadUnload_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    //toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_LOAD_UNLOAD);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolLine_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    //toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_LINE);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolQb_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    //toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_QB);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolCb_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    //toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_CB);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
 }

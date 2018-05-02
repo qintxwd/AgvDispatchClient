@@ -32,6 +32,7 @@ Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScen
     setBackgroundBrush(pixmap);
 
     setItemIndexMethod(BspTreeIndex);
+
     build();
 }
 
@@ -110,12 +111,13 @@ void Scene::build()
     connect(this,SIGNAL(selectionChanged()),this,SLOT(onSelectItemChanged()));
 }
 
-
-void Scene::setCurTool(Tool t)
+void Scene::slot_setCurTool(int t)
 {
-    if(cur_tool == t)return ;
-    cur_tool = t;
-    oldSelectStation = nullptr;
+    if(t>=T_NONE && t<=T_CB){
+        if(cur_tool == t)return ;
+        cur_tool = static_cast<Tool>(t);
+        oldSelectStation = nullptr;
+    }
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -178,8 +180,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
     else if(event->button() == Qt::RightButton){
-        setCurTool(T_NONE);
-        emit cancelTool();
+        slot_setCurTool(T_NONE);
+        emit sig_cancelTool();
     }
 
     QGraphicsScene::mousePressEvent(event);
@@ -187,8 +189,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-//    qDebug()<<"event->scenePos()="<<event->scenePos();
-    //emit sig_currentMousePos(event->scenePos());
+    emit sig_currentMousePos(event->scenePos());
     QGraphicsScene::mouseMoveEvent(event);
 }
 
@@ -501,6 +502,8 @@ void Scene::onSelectItemChanged()
 
                     //发射信号
                     emit sig_addPath(line->getPath());
+                    oldSelectStation = nullptr;
+                    slot_setCurTool(T_NONE);
                 }
             }else if(cur_tool == T_QB){
                 if(oldSelectStation==nullptr){
@@ -523,11 +526,13 @@ void Scene::onSelectItemChanged()
 
                     //发射信号
                     emit sig_addPath(qb->getPath());
+                    slot_setCurTool(T_NONE);
                 }
             }else if(cur_tool == T_CB){
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
+
                     QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
                     int cx1 = oldSelectStation->getPoint()->getX()+(newStation->getPoint()->getX() - oldSelectStation->getPoint()->getX())/3;
                     int cy1 = oldSelectStation->getPoint()->getY()+(newStation->getPoint()->getY() - oldSelectStation->getPoint()->getY())/3;
@@ -549,6 +554,7 @@ void Scene::onSelectItemChanged()
 
                     //发射信号
                     emit sig_addPath(cb->getPath());
+                    slot_setCurTool(T_NONE);
                 }
             }else if(cur_tool == T_ERASER ){
                 //清除一个站点//TODO

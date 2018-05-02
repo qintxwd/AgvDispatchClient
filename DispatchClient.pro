@@ -59,7 +59,8 @@ SOURCES += \
     UI/MapEdit/mapitemstationname.cpp \
     UI/MapEdit/mapitemquadraticbezier.cpp \
     UI/MapEdit/mapitemcubicbezier.cpp \
-    UI/MapEdit/mapitembkg.cpp
+    UI/MapEdit/mapitembkg.cpp \
+    UI/MapEdit/viewer.cpp
 
 HEADERS += \
     global.h \
@@ -98,7 +99,8 @@ HEADERS += \
     UI/MapEdit/mapitemstationname.h \
     UI/MapEdit/mapitemquadraticbezier.h \
     UI/MapEdit/mapitemcubicbezier.h \
-    UI/MapEdit/mapitembkg.h
+    UI/MapEdit/mapitembkg.h \
+    UI/MapEdit/viewer.h
 
 FORMS +=
 

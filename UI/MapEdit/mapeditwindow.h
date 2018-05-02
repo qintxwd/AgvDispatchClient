@@ -14,7 +14,7 @@ public:
     explicit MapEditWindow(OneMap _oneMap,QWidget *parent = nullptr);
     void init();
 signals:
-
+    void sig_setTool(int);
 public slots:
 
     void about();
@@ -31,6 +31,21 @@ public slots:
     void onNewRequest();
 
     void slot_currentMousePos(QPointF pos);
+
+    void slot_cancelTool();
+
+    //几个action
+    void on_toolErase_triggered(bool b);
+    void on_toolStationDraw_triggered(bool b);
+    void on_toolStationReport_triggered(bool b);
+    void on_toolStationHalt_triggered(bool b);
+    void on_toolStationCharge_triggered(bool b);
+    void on_toolStationLoad_triggered(bool b);
+    void on_toolStationUnload_triggered(bool b);
+    void on_toolStationLoadUnload_triggered(bool b);
+    void on_toolLine_triggered(bool b);
+    void on_toolQb_triggered(bool b);
+    void on_toolCb_triggered(bool b);
 private:
 
     void createActions();

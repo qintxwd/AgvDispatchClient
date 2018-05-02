@@ -12,6 +12,8 @@ MapItemStation::MapItemStation(MapPoint *_point, QGraphicsItem *parent) : QGraph
     setAcceptHoverEvents(true);
     setPos(point->getX(),point->getY());
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+    //
+    loadImg();
 }
 
 //外接区域
@@ -38,7 +40,7 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     int width = 1;
 
     if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::lightGray;
+    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
     if (option->state & QStyle::State_Selected)width = 1;
 
     QPen oldPen = painter->pen();
@@ -52,11 +54,15 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     if(point->getPointType() == MapPoint::Map_Point_Type_Draw||point->getPointType() == MapPoint::Map_Point_Type_REPORT||point->getPointType() == MapPoint::Map_Point_Type_HALT){
         painter->drawEllipse(-5,-5,10,10);
     }else if(point->getPointType() == MapPoint::Map_Point_Type_CHARGE){
-        painter->drawImage(boundingRect(),QImage("qrc:/images/point/ChargingStation.20x20.png"));
-    }else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD||
-             point->getPointType() == MapPoint::Map_Point_Type_UNLOAD||
-             point->getPointType() == MapPoint::Map_Point_Type_LOAD_UNLOAD){
-        painter->drawImage(boundingRect(),QImage("qrc:/images/point/TransferStation.20x20.png"));
+        painter->drawImage(boundingRect(),*imgCharge);
+    }else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD){
+        painter->drawImage(boundingRect(),*imgLoad);
+    }
+    else if(point->getPointType() == MapPoint::Map_Point_Type_UNLOAD){
+        painter->drawImage(boundingRect(),*imgUnload);
+    }
+    else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD_UNLOAD){
+        painter->drawImage(boundingRect(),*imgLoadUnload);
     }
     painter->setBrush(oldBrush);
     painter->setPen(oldPen);
@@ -66,6 +72,18 @@ void MapItemStation::my_update()
 {
     prepareGeometryChange();
     update();
+}
+
+void MapItemStation::loadImg()
+{
+    imgCharge = new QImage;
+    imgLoad = new QImage;
+    imgUnload = new QImage;
+    imgLoadUnload = new QImage;
+    imgCharge->load(":/images/point/ChargingStation.20x20.png");
+    imgLoad->load(":/images/point/TransferStation.20x20.png");
+    imgUnload->load(":/images/point/TransferStation.20x20.png");
+    imgLoadUnload->load(":/images/point/TransferStation.20x20.png");
 }
 
 QVariant MapItemStation::itemChange(GraphicsItemChange change, const QVariant &value)

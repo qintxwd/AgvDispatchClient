@@ -42,6 +42,7 @@ public:
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 private:
+    void loadImg();
     //周围的线路们
     QList<MapItemQuadraticBezier *> qbs;
     QList<MapItemCubicBezier *> cbs;
@@ -49,6 +50,11 @@ private:
 
     //当前的站点
     MapPoint *point;
+
+    QImage *imgCharge;
+    QImage *imgLoad;
+    QImage *imgUnload;
+    QImage *imgLoadUnload;
 };
 
 #endif // MAPITEMSTATION_H

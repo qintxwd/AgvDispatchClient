@@ -35,7 +35,7 @@ void MapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
     QColor _color = Qt::gray;
     if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::lightGray;
+    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
 
     QPen share_pen(_color);
     share_pen.setWidth(1);
@@ -45,10 +45,10 @@ void MapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem
     myPath.cubicTo(P1,P2, endStation->pos());//QPoint(endStation->pos().x()-startStation->pos().x(), endStation->pos().y()-startStation->pos().y()));
     painter->drawPath(myPath);
     if(option->state & QStyle::State_Selected||option->state & QStyle::State_MouseOver){
-        painter->drawLine(P1.x()-2,P1.y()-2,P1.x()+2,P1.y()+2);
-        painter->drawLine(P1.x()+2,P1.y()-2,P1.x()-2,P1.y()+2);
-        painter->drawLine(P2.x()-2,P2.y()-2,P2.x()+2,P2.y()+2);
-        painter->drawLine(P2.x()+2,P2.y()-2,P2.x()-2,P2.y()+2);
+        painter->drawLine(P1.x()-5,P1.y()-5,P1.x()+5,P1.y()+5);
+        painter->drawLine(P1.x()+5,P1.y()-5,P1.x()-5,P1.y()+5);
+        painter->drawLine(P2.x()-5,P2.y()-5,P2.x()+5,P2.y()+5);
+        painter->drawLine(P2.x()+5,P2.y()-5,P2.x()-5,P2.y()+5);
     }
     painter->setPen(oldPen);
 }
@@ -59,7 +59,8 @@ QPainterPath MapItemCubicBezier::shape() const
     path.moveTo(startStation->pos());
     path.cubicTo(P1,P2, endStation->pos());
 
-    path.addRect(QRect(P1.x()-2,P1.y()-2,4,4));
+    path.addRect(QRect(P1.x()-5,P1.y()-5,10,10));
+    path.addRect(QRect(P2.x()-5,P2.y()-5,10,10));
 
     return path;
 }
@@ -75,9 +76,9 @@ void MapItemCubicBezier::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() & Qt::LeftButton){
         //判断坐标位置
-        if(sqrt(pow(event->pos().x()-P1.x(),2)+pow(event->pos().y()-P1.y(),2))<5){
+        if(sqrt(pow(event->pos().x()-P1.x(),2)+pow(event->pos().y()-P1.y(),2))<10){
             isDragingP1 = true;
-        }else if(sqrt(pow(event->pos().x()-P2.x(),2)+pow(event->pos().y()-P2.y(),2))<5){
+        }else if(sqrt(pow(event->pos().x()-P2.x(),2)+pow(event->pos().y()-P2.y(),2))<10){
             isDragingP2 = true;
         }
     }

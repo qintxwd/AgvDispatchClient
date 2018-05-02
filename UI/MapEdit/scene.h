@@ -36,15 +36,13 @@ public:
 
     void build();
 
-    void setCurTool(Tool);
-
     MapFloor *getFloor(){return floor;}
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent  *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 signals:
-    void cancelTool();
+    void sig_cancelTool();
 
     //添加站点
     void sig_addStation(MapPoint *spirit);
@@ -65,10 +63,10 @@ signals:
     void sig_stationPropertyChanged(MapPoint *spirit);
 
     //路径属性修改
-    void sig_pathPropertyChanged(MapPoint *spirit);
+    void sig_pathPropertyChanged(MapPath *spirit);
 
     //背景图片属性修改
-    void sig_bgkPropertyChanged(MapPoint *spirit);
+    void sig_bgkPropertyChanged(MapBackground *spirit);
 
     //选择修改
     void sig_chooseChanged(MapSpirit *spirit);
@@ -95,6 +93,8 @@ public slots:
 
     //选择条目 被动变换了
     void slot_selectItem(MapSpirit *_spirit);
+
+    void slot_setCurTool(int t);
 private:
 
     Tool cur_tool;

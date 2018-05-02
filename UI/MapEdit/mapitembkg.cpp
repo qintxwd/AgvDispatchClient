@@ -31,7 +31,7 @@ void MapItemBkg::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QColor _color = Qt::gray;
 
     if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::lightGray;
+    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
 
     QPen oldPen = painter->pen();
     QPen pen(_color);
