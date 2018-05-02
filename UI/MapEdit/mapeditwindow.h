@@ -33,6 +33,7 @@ private:
 
     void createActions();
     void createStatusBar();
+
     //状态栏改变
     void statusbar_info(QString msg);
     void statusbar_err(QString msg);
@@ -46,6 +47,18 @@ private:
     DockProperty *dockProperty;
     DockView *dockView;
 
+    QActionGroup *toolGroup;
+    QAction *toolErase;
+    QAction *toolStationDraw;
+    QAction *toolStationReport;
+    QAction *toolStationHalt;
+    QAction *toolStationCharge;
+    QAction *toolStationLoad;
+    QAction *toolStationUnload;
+    QAction *toolStationLoadUnload;
+    QAction *toolLine;
+    QAction *toolQb;
+    QAction *toolCb;
 };
 
 #endif // MAPEDITWINDOW_H

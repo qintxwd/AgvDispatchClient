@@ -1,11 +1,12 @@
-#include "mapitemline.h"
+﻿#include "mapitemline.h"
 #include "mapitemstation.h"
+#include <QtWidgets>
 
-MapItemLine::MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QObject *parent):
+MapItemLine::MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QGraphicsItem *parent):
+    QGraphicsLineItem(parent),
     startStation(_startStation),
     endStation(_endStation),
-    path(_path),
-    QGraphicsLineItem(parent)
+    path(_path)
 {
     setZValue(2);
     setFlags(ItemIsSelectable);
@@ -15,6 +16,17 @@ MapItemLine::MapItemLine(MapItemStation *_startStation, MapItemStation *_endStat
             endStation->getPoint()->getX(),
             endStation->getPoint()->getY());
     setPen(QPen(Qt::gray));
+}
+
+
+void MapItemLine::my_update()
+{
+    prepareGeometryChange();
+    setLine(startStation->getPoint()->getX(),
+            startStation->getPoint()->getY(),
+            endStation->getPoint()->getX(),
+            endStation->getPoint()->getY());
+    update();
 }
 
 void MapItemLine::hoverEnterEvent(QGraphicsSceneHoverEvent * event) {
@@ -29,12 +41,4 @@ void MapItemLine::hoverLeaveEvent(QGraphicsSceneHoverEvent * event) {
     QGraphicsLineItem::hoverLeaveEvent(event);
 }
 
-void MapItemLine::updatePosition()
-{
-    setLine(startStation->getPoint()->getX(),
-            startStation->getPoint()->getY(),
-            endStation->getPoint()->getX(),
-            endStation->getPoint()->getY());
-    update();
-}
 

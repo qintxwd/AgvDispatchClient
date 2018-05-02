@@ -14,9 +14,20 @@ public:
     explicit DockMapTree(OneMap *_onemap,QWidget *parent = nullptr);
 
 signals:
+    void sig_addFloor(MapFloor *floor);
+    void sig_addRootPath();
 
+    void sig_chooseSpirit(MapSpirit *spirit);
 public slots:
     void ShowContextMenu(const QPoint&pos);
+
+    void slot_selectChanged(QModelIndex index);
+
+    void slot_addFloor();
+    void slot_addRootPath();
+
+    void refresh();
+
 private:
     void initUi();
     OneMap *onemap;
@@ -25,12 +36,8 @@ private:
 
     QAction *addFloor;
     QAction *addPathToRoot;
-    QAction *addPath;
-    QAction *addPoint;
 
     QMenu* rootRighMenu;
-    QMenu* pointFolderRightMenu;
-    QMenu* pathFolderRightMenu;
 };
 
 #endif // DOCKMAPTREE_H

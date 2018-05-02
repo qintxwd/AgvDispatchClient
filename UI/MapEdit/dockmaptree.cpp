@@ -18,27 +18,32 @@ void DockMapTree::initUi()
 
     addFloor = new QAction(QStringLiteral("添加楼层"),this);;
     addPathToRoot = new QAction(QStringLiteral("添加线路"),this);;
-    addPath = new QAction(QStringLiteral("添加线路"),this);;
-    addPoint = new QAction(QStringLiteral("添加站点"),this);;
+
+    connect(addFloor,SIGNAL(triggered(bool)),this,SLOT(slot_addFloor()));
+    connect(addPathToRoot,SIGNAL(triggered(bool)),this,SLOT(slot_addRootPath()));
 
     //右键菜单
     rootRighMenu = new QMenu(this);
     rootRighMenu->addAction(addFloor);
     rootRighMenu->addAction(addPathToRoot);
 
-    pointFolderRightMenu = new QMenu(this);
-    pointFolderRightMenu->addAction(addPoint);
-
-    pathFolderRightMenu = new QMenu(this);
-    pathFolderRightMenu->addAction(addPath);
-
     connect(view, SIGNAL(customContextMenuRequested(const QPoint& )), this, SLOT(ShowContextMenu(const QPoint&)));
-
+    connect(view,SIGNAL(clicked(QModelIndex)),this,SLOT(slot_selectChanged(QModelIndex)));
     view->header()->hide();
     setWidget(view);
 
     setMaximumWidth(300);
     setWindowTitle(QStringLiteral("地图结点"));
+}
+
+void DockMapTree::slot_selectChanged(QModelIndex index)
+{
+    MapTreeItem *item = model->getItem(index);
+    if(item != nullptr && item->getSpirit() != nullptr){
+        emit sig_chooseSpirit(item->getSpirit());
+    }else{
+        emit sig_chooseSpirit(nullptr);
+    }
 }
 
 void DockMapTree::ShowContextMenu(const QPoint& pos)
@@ -49,10 +54,28 @@ void DockMapTree::ShowContextMenu(const QPoint& pos)
         rootRighMenu->exec(QCursor::pos());
         return ;
     }
-
-    if(item->getSpirit() == nullptr && item->data(0).toString() == "POINTS"){
-        pointFolderRightMenu->exec(QCursor::pos());
-    }else if(item->getSpirit() == nullptr && item->data(0).toString() == "PATHS"){
-        pathFolderRightMenu->exec(QCursor::pos());
-    }
 }
+
+void DockMapTree::slot_addFloor()
+{
+    int id = onemap->getNextId();
+    QString name = QString("floor_%1").arg(id);
+    MapFloor *floor = new MapFloor(id,name,onemap);
+    onemap->addFloor(floor);
+    model->fresh();
+    emit sig_addFloor(floor);
+}
+
+void DockMapTree::slot_addRootPath()
+{
+
+    //弹出对话框，列出所有的mapchange 点，选择
+    //TODO
+
+}
+
+void DockMapTree::refresh()
+{
+    model->fresh();
+}
+

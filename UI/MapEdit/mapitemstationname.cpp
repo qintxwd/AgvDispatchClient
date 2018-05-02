@@ -1,7 +1,7 @@
-#include "mapitemstationname.h"
+﻿#include "mapitemstationname.h"
 
 
-MapItemStationName::MapItemStationName(MapItemStation *_station,MapPoint *_point,QObject *parent = nullptr):
+MapItemStationName::MapItemStationName(MapItemStation *_station, MapPoint *_point, QGraphicsItem *parent):
     QGraphicsTextItem(parent),
     point(_point),
     station(_station)
@@ -16,11 +16,13 @@ MapItemStationName::MapItemStationName(MapItemStation *_station,MapPoint *_point
     setDefaultTextColor(Qt::gray);
 }
 
-void MapItemStationName::update()
+void MapItemStationName::my_update()
 {
+    prepareGeometryChange();
     setPos(point->getX()+point->getLabelXoffset(),point->getY()+point->getLabelYoffset());
     setPlainText(point->getName());
     setDefaultTextColor(Qt::gray);
+    update();
 }
 
 QVariant MapItemStationName::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -29,7 +31,7 @@ QVariant MapItemStationName::itemChange(GraphicsItemChange change, const QVarian
     {
         QPointF newPos = value.toPointF();
         point->setLabelXoffset(newPos.x() - point->getX());
-        point->setLabelYoffset(newPos.() - point->getY());
+        point->setLabelYoffset(newPos.y() - point->getY());
         return newPos;
     }
     return QGraphicsItem::itemChange(change, value);

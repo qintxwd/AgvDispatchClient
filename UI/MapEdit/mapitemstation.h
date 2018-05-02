@@ -1,11 +1,10 @@
-#ifndef MAPITEMSTATION_H
+﻿#ifndef MAPITEMSTATION_H
 #define MAPITEMSTATION_H
 
 #include <QObject>
 #include <QGraphicsObject>
 #include "../../data/onemap.h"
 
-class Scene;
 class MapItemQuadraticBezier;
 class MapItemCubicBezier;
 class MapItemLine;
@@ -14,7 +13,7 @@ class MapItemStation : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit MapItemStation(MapPoint *_point,QObject *parent = nullptr);
+    explicit MapItemStation(MapPoint *_point,QGraphicsItem *parent = nullptr);
     enum { Type = UserType + 21 };
     int type() const
     {
@@ -35,7 +34,11 @@ public:
     void removeCb(MapItemCubicBezier *arc){cbs.removeAll(arc);}
 
     MapPoint *getPoint(){return point;}
+    QList<MapItemQuadraticBezier *> getQbs(){return qbs;}
+    QList<MapItemCubicBezier *> getCbs(){return cbs;}
+    QList<MapItemLine *> getLines(){return lines;}
 
+    void my_update();
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 private:

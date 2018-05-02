@@ -1,9 +1,9 @@
-#include "mapitemquadraticbezier.h"
+﻿#include "mapitemquadraticbezier.h"
 #include "mapitemstation.h"
 
 #include <QtWidgets>
 
-MapItemQuadraticBezier::MapItemQuadraticBezier(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QObject *parent) : QGraphicsObject(parent),
+MapItemQuadraticBezier::MapItemQuadraticBezier(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent) : QGraphicsObject(parent),
     startStation(_startStation),
     endStation(_endStation),
     path(_path),
@@ -31,7 +31,7 @@ void MapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionGraphics
     Q_UNUSED(widget)
     QPen oldPen  = painter->pen();
 
-    QColor _color(color);
+    QColor _color = Qt::gray;
     if(option->state & QStyle::State_Selected)_color = Qt::blue;
     if (option->state & QStyle::State_MouseOver)_color = Qt::lightGray;
 
@@ -58,6 +58,12 @@ QPainterPath MapItemQuadraticBezier::shape() const
     path.addRect(QRect(P1.x()-2,P1.y()-2,4,4));
 
     return path;
+}
+
+void MapItemQuadraticBezier::my_update()
+{
+    prepareGeometryChange();
+    update();
 }
 
 void MapItemQuadraticBezier::mousePressEvent(QGraphicsSceneMouseEvent *event)

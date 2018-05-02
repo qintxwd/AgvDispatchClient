@@ -1,4 +1,4 @@
-#ifndef MAPITEMLINE_H
+﻿#ifndef MAPITEMLINE_H
 #define MAPITEMLINE_H
 
 #include <QGraphicsLineItem>
@@ -8,9 +8,8 @@ class MapItemStation;
 
 class MapItemLine : public QGraphicsLineItem
 {
-    Q_OBJECT
 public:
-    explicit MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QObject *parent = nullptr);
+    explicit MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent = nullptr);
     enum { Type = UserType + 23 };
     int type() const
     {
@@ -18,8 +17,13 @@ public:
         return Type;
     }
 
-    //起止站点位置变了以后，调用
-    void updatePosition();
+    MapItemStation *getStartStation(){return startStation;}
+
+    MapItemStation *getEndStation(){return endStation;}
+
+    MapPath *getPath(){return path;}
+
+    void my_update();
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
 

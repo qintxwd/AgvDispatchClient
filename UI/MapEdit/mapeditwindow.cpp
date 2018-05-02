@@ -27,6 +27,13 @@ void MapEditWindow::init()
     connect(&msgCenter,SIGNAL(tip(QString)),this,SLOT(onTip(QString)));
     connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
+
+    //对树 的操作( 只有两个操作 添加楼层、选择不同的节点)
+    connect(dockMapTree,SIGNAL(sig_addFloor(MapFloor*)),dockView,SLOT(slot_addFloor(MapFloor*)));
+    connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
+    connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
+
+
 }
 
 void MapEditWindow::onServerConnect()
@@ -109,16 +116,21 @@ void MapEditWindow::createStatusBar()
 
 void MapEditWindow::createActions()
 {
-    QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
-    QToolBar *viewsToolBar = addToolBar(tr("Views"));
 
     dockMapTree = new DockMapTree(&oneMap);
     dockProperty = new DockProperty(&oneMap);
     dockView = new DockView(&oneMap);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
-    splitDockWidget(dockMapTree,dockProperty,Qt::Vertical);
-    splitDockWidget(dockMapTree,dockView,Qt::Horizontal);
+    addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
+    addDockWidget(Qt::RightDockWidgetArea,dockView);
+
+
+    QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
+    QMenu *toolsMenu = menuBar()->addMenu(tr("Tools"));
+    QToolBar *viewsToolBar = addToolBar(tr("Views"));
+    QToolBar *toolsToolBar = addToolBar(tr("Tools"));
+
 
     viewsMenu->addAction(dockMapTree->toggleViewAction());
     viewsToolBar->addAction(dockMapTree->toggleViewAction());
@@ -135,6 +147,18 @@ void MapEditWindow::createActions()
 
     QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"), this, &MapEditWindow::aboutHrg);
     aboutQtAct->setStatusTip(tr("Show the HRG's About box"));
+
+
+    toolErase = new QAction(this);
+    toolErase->setText("Eraser");
+    toolErase->setObjectName("toolErase");
+    QIcon iconErase;
+    iconErase.addFile(":/images/menu/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolErase->setIcon(iconErase);
+    toolErase->setCheckable(true);
+    toolsToolBar->addAction(toolErase);
+    toolsMenu->addAction(toolErase);
+
 
 }
 

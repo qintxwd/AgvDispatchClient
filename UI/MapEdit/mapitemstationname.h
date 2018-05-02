@@ -1,15 +1,14 @@
-#ifndef MAPITEMSTATIONNAME_H
+﻿#ifndef MAPITEMSTATIONNAME_H
 #define MAPITEMSTATIONNAME_H
 
 #include <QGraphicsTextItem>
 #include "../../data/onemap.h"
 class MapItemStation;
-class Scene;
 
 class MapItemStationName : public QGraphicsTextItem
 {
 public:
-    MapItemStationName(MapItemStation *_station,MapPoint *_point,QObject *parent = nullptr);
+    MapItemStationName(MapItemStation *_station,MapPoint *_point,QGraphicsItem *parent = nullptr);
 
     enum { Type = UserType + 22 };
     int type() const
@@ -18,7 +17,10 @@ public:
         return Type;
     }
 
-    void update();
+    MapPoint *getPoint(){return point;}
+    MapItemStation *getStation(){return station;}
+
+    void my_update();
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 private:

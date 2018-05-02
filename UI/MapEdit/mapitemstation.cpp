@@ -1,7 +1,10 @@
-#include "mapitemstation.h"
+﻿#include "mapitemstation.h"
+#include "mapitemline.h"
+#include "mapitemcubicbezier.h"
+#include "mapitemquadraticbezier.h"
 #include <QtWidgets>
 
-MapItemStation::MapItemStation(MapPoint *_point, QObject *parent) : QGraphicsObject(parent),
+MapItemStation::MapItemStation(MapPoint *_point, QGraphicsItem *parent) : QGraphicsObject(parent),
     point(_point)
 {
     setZValue(4);
@@ -59,23 +62,30 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     painter->setPen(oldPen);
 }
 
+void MapItemStation::my_update()
+{
+    prepareGeometryChange();
+    update();
+}
+
 QVariant MapItemStation::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange)
     {
         QPointF newPos = value.toPointF();
-        //更新位置的同时，更新连线的起止点
-        foreach (auto item, lines) {
-            item->update();
-        }
-        foreach (auto item, qbs) {
-            item->update();
-        }
-        foreach (auto item, cbs) {
-            item->update();
-        }
         point->setX(newPos.x());
         point->setY(newPos.y());
+        //更新位置的同时，更新连线的起止点
+        foreach (auto item, lines) {
+            item->my_update();
+        }
+        foreach (auto item, qbs) {
+            item->my_update();
+        }
+        foreach (auto item, cbs) {
+            item->my_update();
+        }
+
         //TODO:更新了station的位置
 
         return newPos;

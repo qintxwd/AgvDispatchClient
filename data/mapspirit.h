@@ -14,7 +14,18 @@ public:
         Map_Sprite_Type_Background,
     };
 
-    MapSpirit();
+    MapSpirit(int _id,QString _name,Map_Spirit_Type _spirit_type);
+
+    MapSpirit(const MapSpirit &s);
+
+    virtual MapSpirit::~MapSpirit()
+    {
+
+    }
+
+    bool operator ==(const MapSpirit &s){
+        return id == s.id;
+    }
 
     Map_Spirit_Type getSpiritType() const
     {
@@ -27,7 +38,7 @@ public:
 
     QString getName(){return name;}
     void setName(QString _name){name=_name;}
-protected:
+private:
     int id;
     QString name;
     Map_Spirit_Type spirit_type;

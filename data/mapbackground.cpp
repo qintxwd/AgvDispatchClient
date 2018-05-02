@@ -1,12 +1,23 @@
 ﻿#include "mapbackground.h"
 
-MapBackground::MapBackground(int _id, QString _name, int _x, int _y, int _width, int _height)
-    :x(_x),
-      y(_y),
-      width(_width),
-      height(_height)
+MapBackground::MapBackground(int _id, QString _name, QImage _img, QString fileName):
+    MapSpirit(_id,_name,Map_Sprite_Type_Background),
+    x(0),
+    y(0),
+    width(_img.width()),
+    height(_img.height()),
+    img(_img),
+    imgFileName(fileName)
 {
-    setId(_id);
-    setName(_name);
-    setSpiritType(Map_Sprite_Type_Background);
+}
+
+MapBackground::MapBackground(const MapBackground &b):
+    MapSpirit(b),
+    x(b.x),
+    y(b.y),
+    img(b.img),
+    imgFileName(b.imgFileName),
+    width(b.width),
+    height(b.height)
+{
 }

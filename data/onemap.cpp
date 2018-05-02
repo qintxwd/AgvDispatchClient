@@ -8,7 +8,48 @@ OneMap::OneMap():
 
 OneMap::~OneMap()
 {
-    qDeleteAll(spirits);
+    qDeleteAll(floors);
+    qDeleteAll(paths);
+}
+
+void OneMap::addPath(MapPath *path)
+{
+    paths.append(path);
+}
+
+void OneMap::addFloor(MapFloor *floor)
+{
+    floors.append(floor);
+}
+
+void OneMap::removePath(MapPath *path)
+{
+    paths.removeAll(path);
+}
+void OneMap::removeFloor(MapFloor *floor)
+{
+    floors.removeAll(floor);
+}
+
+void OneMap::removePathById(int id)
+{
+    foreach (auto p, paths) {
+        if(p->getId() == id){
+            paths.removeAll(p);
+            delete p;
+            break;
+        }
+    }
+}
+void OneMap::removeFloorById(int id)
+{
+    foreach (auto f, floors) {
+        if(f->getId() == id){
+            floors.removeAll(f);
+            delete f;
+            break;
+        }
+    }
 }
 
 int OneMap::getNextId()
@@ -16,73 +57,35 @@ int OneMap::getNextId()
     return ++max_id;
 }
 
-//注册一个新的元素
-void OneMap::addSpirit(MapSpirit *spirit)
+//复制整个地图
+OneMap *OneMap::clone()
 {
-    spirits.append(spirit);
-}
-
-//删除一个元素
-void OneMap::removeSpirit(int id)
-{
-    foreach (auto spirit, spirits) {
-        if(spirit->getId() == id){
-            spirits.removeAll(spirit);
-            break;
-        }
+    OneMap *onemap = new OneMap;
+    onemap->setMaxId(max_id);
+    foreach (auto p, paths) {
+        onemap->addPath(new MapPath(*p));
     }
-}
-
-//删除一个元素
-void OneMap::removeSpirit(MapSpirit *spirit)
-{
-    spirits.removeAll(spirit);
-}
-
-MapSpirit *OneMap::getSpiritById(int id)
-{
-    foreach (auto spirit, spirits) {
-        if(spirit->getId() == id){
-            return spirit;
-        }
+    foreach (auto f, floors) {
+        onemap->addFloor(f->clone());
     }
+    return onemap;
+}
+
+MapFloor *OneMap::getFloorById(int id)
+{
+    foreach (auto p, floors) {
+        if(p->getId() == id)return p;
+    }
+
     return nullptr;
 }
 
-QList<MapSpirit *> OneMap::getSpiritByType(MapSpirit::Map_Spirit_Type type)
+MapPath *OneMap::getPathById(int id)
 {
-    QList<MapSpirit *> l;
-    foreach (auto spirit, spirits) {
-        if(spirit->getSpiritType() == type){
-            l.push_back(spirit);
-        }
+    foreach (auto p, paths) {
+        if(p->getId() == id)return p;
     }
-    return l;
-}
 
-//复制整个地图
-OneMap OneMap::clone()
-{
-    OneMap onemap;
-    foreach (auto spirit, spirits) {
-        MapSpirit *p = nullptr;
-        if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
-            MapPoint *pl = new MapPoint(*( static_cast<MapPoint *>(spirit) ));
-            p = pl;
-        }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
-            MapPath *pl = new MapPath(*( static_cast<MapPath *>(spirit) ));
-            p = pl;
-        }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
-            MapFloor *pl = new MapFloor(*( static_cast<MapFloor *>(spirit) ));
-            p = pl;
-        }
-        if(p == nullptr){
-            continue;
-        }
-        onemap.addSpirit(p);
-    }
-    onemap.max_id = max_id;
-
-    return onemap;
+    return nullptr;
 }
 

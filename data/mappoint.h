@@ -16,7 +16,9 @@ public:
         Map_Point_Type_LOAD_UNLOAD,
     };
 
-    MapPoint(int _id, QString _name, int _x, int _y);
+    MapPoint(int _id, QString _name,Map_Point_Type _type, int _x, int _y,int _realX = 0,int _realY = 0,int _labelXoffset = 0,int _labelYoffset = -20,bool _mapChange = false);
+
+    MapPoint(const MapPoint &p);
 
     void setPointType(Map_Point_Type _point_type){point_type=_point_type;}
     Map_Point_Type getPointType(){return point_type;}

@@ -3,91 +3,120 @@
 
 #include <QGraphicsScene>
 #include "scenepositionlabel.h"
+#include "../../data/onemap.h"
+#include "mapitemline.h"
+#include "mapitemstation.h"
+#include "mapitemcubicbezier.h"
+#include "mapitemstationname.h"
+#include "mapitemquadraticbezier.h"
+#include "mapitembkg.h"
 
 class Scene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    Scene(QObject *parent = nullptr);
+    Scene(OneMap *_onemap,MapFloor *_floor,QObject *parent = nullptr);
     ~Scene();
-
-    enum{
-        GRID_SIZE = 10,
-    };
 
     enum Tool
     {
         T_NONE = -1,//无
         T_ERASER,//橡皮擦
-        T_STATION,//站点
+        T_STATION_DRAW,//站点
+        T_STATION_REPORT,//站点
+        T_STATION_HALT,//站点
+        T_STATION_CHARGE,//站点
+        T_STATION_LOAD,//站点
+        T_STATION_UNLOAD,//站点
+        T_STATION_LOAD_UNLOAD,//站点
         T_LINE,//直线
-        T_ARC,//弧线
+        T_QB,//弧线1
+        T_CB,//弧线2
     };
 
-    void build(int width = -1, int height = -1);
+    void build();
 
     void setCurTool(Tool);
 
-    int width();
-
-    int height();
-
-    QPoint calGridPos(const QPointF &);
-
-    void load();
-
-    bool outOfLimitLine(const QPointF &grid_pos);
+    MapFloor *getFloor(){return floor;}
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent  *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 signals:
     void cancelTool();
+
+    //添加站点
+    void sig_addStation(MapPoint *spirit);
+
+    //删除站点
+    void sig_removeStation(MapPoint *spirit);
+
+    //添加路径
+    void sig_addPath(MapPath *spirit);
+
+    //删除路径
+    void sig_removePath(MapPath *spirit);
+
+    //删除背景
+    void sig_removeBkg(MapBackground *spirit);
+
+    //站点属性修改
+    void sig_stationPropertyChanged(MapPoint *spirit);
+
+    //路径属性修改
+    void sig_pathPropertyChanged(MapPoint *spirit);
+
+    //背景图片属性修改
+    void sig_bgkPropertyChanged(MapPoint *spirit);
+
+    //选择修改
+    void sig_chooseChanged(MapSpirit *spirit);
+
 public slots:
+
+    //菜单触动,修改背景
     void setBackgroundImagePath(QString _path);
 
+    //TODO 修改工具
+    void toolChanged();
+
+    //tree触动，添加删除节点
+    void addSpirit(MapFloor *_floor, MapSpirit *_spirit);
+    void removeSpirit(MapFloor *_floor, MapSpirit *_spirit);
+
+    //property触动，修改属性
+    void propertyChanged(MapFloor *_floor,MapSpirit *_spirit);
+
+    ////
     void onSelectItemChanged();
-    void onLoadStationSuccess();
-    void onLoadLineSuccess();
+
+    //选择条目 被动变换了
+    void slot_selectItem(MapSpirit *_spirit);
 private:
 
     Tool cur_tool;
 
-    int _width;
+//    ScenePositionLabel *positoinlabel;
 
-    int _height;
+    MapItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
 
-    void drawLimitLine();
+private:
 
-    ScenePositionLabel *positoinlabel;
+    QList<MapItemStation *> iStations;//记录所有的站点
 
-//    ItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
+    QList<MapItemStationName *> iStationNames;//记录所有的站点的名字
 
-//    ItemStation *getStation(int id);
+    QList<MapItemLine *> iLines;//记录所有的直线
 
-//    int getMaxStationId();
+    QList<MapItemQuadraticBezier *> iQbs;
 
-//    ItemLine *getLine(int id);
+    QList<MapItemCubicBezier *> iCbs;
 
-//    int getMaxLineId();
-
-//    ItemArc *getArc(int id);
-
-//    int getMaxArcId();
-
-    void removeAllStations();
-    void removeAllLines();
-    void removeAllArcs();
-public:
-//    ItemBackground *itemBackground;
-
-//    QList<ItemStation *> iStations;//记录所有的站点
-
-//    QList<ItemLine *> iLines;//记录所有的直线
-
-//    QList<ItemArc *> iArcs;//记录所有的弧线
-
-//    QString backgroundImagePath;//记录背景图片的路径
+    MapItemBkg *bkg;
+private:
+    OneMap *onemap;
+    MapFloor *floor;
 };
 
 #endif // SCENE_H

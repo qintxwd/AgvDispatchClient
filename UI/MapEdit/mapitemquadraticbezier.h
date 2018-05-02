@@ -1,4 +1,4 @@
-#ifndef MAPITEMQUADRATICBEZIER_H
+﻿#ifndef MAPITEMQUADRATICBEZIER_H
 #define MAPITEMQUADRATICBEZIER_H
 
 #include <QGraphicsObject>
@@ -9,7 +9,7 @@ class MapItemQuadraticBezier : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit MapItemQuadraticBezier(MapItemStation *_startStation,MapItemStation *_endStation,MapPath *_path,QObject *parent = nullptr);
+    explicit MapItemQuadraticBezier(MapItemStation *_startStation,MapItemStation *_endStation,MapPath *_path,QGraphicsItem *parent = nullptr);
 
     enum { Type = UserType + 24 };
     int type() const
@@ -24,6 +24,13 @@ public:
 
     QPainterPath shape() const;
 
+    MapItemStation *getStartStation(){return startStation;}
+
+    MapItemStation *getEndStation(){return endStation;}
+
+    MapPath *getPath(){return path;}
+
+    void my_update();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

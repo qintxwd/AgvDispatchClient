@@ -1,9 +1,9 @@
-#include "mapitemcubicbezier.h"
+﻿#include "mapitemcubicbezier.h"
 #include "mapitemstation.h"
 
 #include <QtWidgets>
 
-MapItemCubicBezier::MapItemCubicBezier(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QObject *parent) : QGraphicsObject(parent),
+MapItemCubicBezier::MapItemCubicBezier(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent) : QGraphicsObject(parent),
     startStation(_startStation),
     endStation(_endStation),
     path(_path),
@@ -33,7 +33,7 @@ void MapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem
     Q_UNUSED(widget)
     QPen oldPen  = painter->pen();
 
-    QColor _color(color);
+    QColor _color = Qt::gray;
     if(option->state & QStyle::State_Selected)_color = Qt::blue;
     if (option->state & QStyle::State_MouseOver)_color = Qt::lightGray;
 
@@ -63,6 +63,13 @@ QPainterPath MapItemCubicBezier::shape() const
 
     return path;
 }
+
+void MapItemCubicBezier::my_update()
+{
+    prepareGeometryChange();
+    update();
+}
+
 
 void MapItemCubicBezier::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {

@@ -53,13 +53,13 @@ SOURCES += \
     UI/MapEdit/scene.cpp \
     UI/MapEdit/scenepositionlabel.cpp \
     UI/MapEdit/stationinputdialog.cpp \
-    UI/MapEdit/viewer.cpp \
     data/mapbackground.cpp \
     UI/MapEdit/mapitemstation.cpp \
     UI/MapEdit/mapitemline.cpp \
     UI/MapEdit/mapitemstationname.cpp \
     UI/MapEdit/mapitemquadraticbezier.cpp \
-    UI/MapEdit/mapitemcubicbezier.cpp
+    UI/MapEdit/mapitemcubicbezier.cpp \
+    UI/MapEdit/mapitembkg.cpp
 
 HEADERS += \
     global.h \
@@ -92,13 +92,13 @@ HEADERS += \
     UI/MapEdit/scene.h \
     UI/MapEdit/scenepositionlabel.h \
     UI/MapEdit/stationinputdialog.h \
-    UI/MapEdit/viewer.h \
     data/mapbackground.h \
     UI/MapEdit/mapitemstation.h \
     UI/MapEdit/mapitemline.h \
     UI/MapEdit/mapitemstationname.h \
     UI/MapEdit/mapitemquadraticbezier.h \
-    UI/MapEdit/mapitemcubicbezier.h
+    UI/MapEdit/mapitemcubicbezier.h \
+    UI/MapEdit/mapitembkg.h
 
 FORMS +=
 

@@ -1,12 +1,13 @@
 ﻿#ifndef MAPBACKGROUND_H
 #define MAPBACKGROUND_H
-
+#include <QImage>
 #include "mapspirit.h"
 
 class MapBackground : public MapSpirit
 {
 public:
-    MapBackground(int _id, QString _name, int _x, int _y,int _width,int _height);
+    MapBackground(int _id, QString _name, QImage _img, QString fileName);
+    MapBackground(const MapBackground &b);
 
     void setX(int _x){x=_x;}
     void setY(int _y){y=_y;}
@@ -18,8 +19,13 @@ public:
     int getWidth(){return width;}
     int getHeight(){return height;}
 
+    QString getFileName(){return imgFileName;}
+    QImage getImg(){return img;}
+
+    void setFileName(QString _filename){imgFileName = _filename;}
+    void setImg(QImage _img){img=_img;}
 private:
-    QByteArray background;
+    QImage img;
     QString imgFileName;
     int x;
     int y;

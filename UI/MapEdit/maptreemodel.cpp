@@ -132,32 +132,12 @@ int MapTreeModel::rowCount(const QModelIndex &parent) const
 
 void MapTreeModel::setupModelData(MapTreeItem *root)
 {
-    QList<MapSpirit *> floors = onemap->getSpiritByType(MapSpirit::Map_Sprite_Type_Floor);
+    QList<MapFloor *> floors = onemap->getFloors();
 
-    QList<MapSpirit *> paths = onemap->getSpiritByType(MapSpirit::Map_Sprite_Type_Path);
+    QList<MapPath *> independentPaths = onemap->getPaths();
 
-    QList<MapSpirit *> independentPaths;
-
-    foreach (auto __path, paths) {
-        bool independent = true;
-        foreach(auto _floor,floors){
-            MapFloor *floor = static_cast<MapFloor *>(_floor);
-            for(auto p:floor->getPaths()){
-                if(__path->getId() == p){
-                    independent = false;
-                    break;
-                }
-            }
-            if(!independent)break;
-        }
-        if(independent){
-            independentPaths.push_back(__path);
-        }
-    }
-
-    foreach (auto _floor, floors) {
-        MapFloor *floor = static_cast<MapFloor *>(_floor);
-        MapTreeItem *item_floor = new MapTreeItem(_floor,root);
+    foreach (auto floor, floors) {
+        MapTreeItem *item_floor = new MapTreeItem(floor,root);
 
         MapTreeItem *item_point_folder = new MapTreeItem(nullptr,item_floor,"POINTS");
         item_floor->appendChild(item_point_folder);
@@ -166,12 +146,12 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
         item_floor->appendChild(item_path_folder);
 
         foreach (auto __point, floor->getPoints()) {
-            MapTreeItem *item_point = new MapTreeItem(onemap->getSpiritById(__point),item_point_folder);
+            MapTreeItem *item_point = new MapTreeItem(__point,item_point_folder);
             item_point_folder->appendChild(item_point);
         }
 
         foreach (auto __path, floor->getPaths()) {
-            MapTreeItem *item_path = new MapTreeItem(onemap->getSpiritById(__path),item_path_folder);
+            MapTreeItem *item_path = new MapTreeItem(__path,item_path_folder);
             item_path_folder->appendChild(item_path);
         }
 
@@ -189,4 +169,6 @@ void MapTreeModel::fresh()
     removeRows(0,this->rowCount());
     rootItem = new MapTreeItem(nullptr);
     setupModelData(rootItem);
+    beginResetModel();
+    endResetModel();
 }

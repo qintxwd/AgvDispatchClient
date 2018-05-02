@@ -1,6 +1,7 @@
 ﻿#include "mappath.h"
 
 MapPath::MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _type, int _length, int _p1x, int _p1y, int _p2x, int _p2y):
+    MapSpirit(_id,_name,Map_Sprite_Type_Path),
     start(_start),
     end(_end),
     length(_length),
@@ -10,7 +11,17 @@ MapPath::MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _ty
     p2x(_p2x),
     p2y(_p2y)
 {
-    setId(_id);
-    setName(_name);
-    setSpiritType(Map_Sprite_Type_Path);
+}
+
+MapPath::MapPath(const MapPath &p):
+    MapSpirit(p),
+    start(p.start),
+    end(p.end),
+    path_type(p.path_type),
+    length(p.length),
+    p1x(p.p1x),
+    p1y(p.p1y),
+    p2x(p.p2x),
+    p2y(p.p2y)
+{
 }

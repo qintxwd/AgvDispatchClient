@@ -1,17 +1,18 @@
-﻿#include "scene.h"
+﻿#include <assert.h>
+
+#include "scene.h"
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsSceneMouseEvent>
 #include "stationinputdialog.h"
 #include "global.h"
-Scene::Scene(QObject *parent) : QGraphicsScene(parent),
-    cur_tool(T_NONE),_width(0), _height(0),
-    backgroundImagePath(""),
-    itemBackground(NULL),
-    oldSelectStation(NULL)
+
+Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScene(parent),
+    cur_tool(T_NONE),
+    onemap(_onemap),
+    floor(_floor),
+    oldSelectStation(nullptr)
 {
     setItemIndexMethod(BspTreeIndex);
-    connect(&msgCenter,SIGNAL(mapLinesSuccess()),this,SLOT(onLoadLineSuccess()));
-    connect(&msgCenter,SIGNAL(mapStationsSuccess()),this,SLOT(onLoadStationSuccess()));
     build();
 }
 
@@ -20,142 +21,140 @@ Scene::~Scene()
 }
 
 
-void Scene::build(int width, int height)
+void Scene::build()
 {
     clear();
-    if (width == -1 || height == -1){
-        _width = 128;
-        _height = 72;
+
+    //TODO:
+    QList<MapPoint *> points = floor->getPoints();
+    foreach (auto p, points) {
+        MapItemStation *station = new MapItemStation(p);
+        MapItemStationName *stationname = new MapItemStationName(station,p);
+        addItem(station);
+        addItem(stationname);
+        iStations.append(station);
+        iStationNames.append(stationname);
     }
-    //setSceneRect(-40, -40, _width * GRID_SIZE + 80, _height * GRID_SIZE + 80);
 
-    //drawAxis();
+    QList<MapPath *> path = floor->getPaths();
+    foreach (auto p, path) {
+        if(p->getPathType() == MapPath::Map_Path_Type_Line){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
 
-//    positoinlabel = new ScenePositionLabel;
-//    addItem(positoinlabel);
-//    positoinlabel->setPos(200,200);
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)continue ;
+
+            MapItemLine *l = new MapItemLine(start,end,p);
+            addItem(l);
+            iLines.push_back(l);
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
+
+            MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            addItem(l);
+            iQbs.push_back(l);
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
+
+            MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            addItem(l);
+            iCbs.push_back(l);
+        }
+    }
+
+    MapBackground *_bkg = floor->getBkg();
+    if(_bkg != nullptr){
+        bkg = new MapItemBkg(_bkg);
+        addItem(bkg);
+    }
+
+    update();
 
     connect(this,SIGNAL(selectionChanged()),this,SLOT(onSelectItemChanged()));
 }
 
 
-void Scene::drawLimitLine()
-{
-    QPointF ur = QPointF(-3, -3);
-    QPointF ul = QPointF(GRID_SIZE * _width+3, -3);
-    QPointF dr = QPointF(-3, GRID_SIZE * _height+3);
-    QPointF dl = QPointF(GRID_SIZE * _width+3, GRID_SIZE * _height+3);
-
-    QPen pen;
-    pen.setStyle(Qt::SolidLine);
-    pen.setBrush(Qt::black);
-    pen.setWidth(2);
-    pen.setJoinStyle(Qt::RoundJoin);
-
-    QLineF uline = QLineF(ul, ur);
-    QLineF rline = QLineF(ur, dr);
-    QLineF dline = QLineF(dr, dl);
-    QLineF lline = QLineF(dl, ul);
-    this->addLine(uline, pen);
-    this->addLine(rline, pen);
-    this->addLine(dline, pen);
-    this->addLine(lline, pen);
-
-    QGraphicsSimpleTextItem *text =  this->addSimpleText("Limit Line");
-    text->setPos(_width * GRID_SIZE / 2.0, -20);
-}
-
 void Scene::setCurTool(Tool t)
 {
+    if(cur_tool == t)return ;
     cur_tool = t;
-    oldSelectStation = NULL;
-}
-
-int Scene::width()
-{
-    return _width;
-}
-
-int Scene::height()
-{
-    return _height;
-}
-
-QPoint Scene::calGridPos(const QPointF &pos)
-{
-    int x = (int) pos.x();
-    int y = (int) pos.y();
-
-
-    x /= GRID_SIZE;
-    y /= GRID_SIZE;
-
-    return QPoint(x, y);
-}
-
-void Scene::removeAllStations()
-{
-    while(true){
-        if(iStations.length()<=0)break;
-        removeItem(iStations.at(0));
-        iStations.removeAt(0);
-    }
-}
-void Scene::removeAllLines()
-{
-    while(true){
-        if(iLines.length()<=0)break;
-        removeItem(iLines.at(0));
-        iLines.removeAt(0);
-    }
-}
-void Scene::removeAllArcs()
-{
-    while(true){
-        if(iArcs.length()<=0)break;
-        removeItem(iArcs.at(0));
-        iArcs.removeAt(0);
-    }
-}
-
-void Scene::load()
-{
-    //清空原来的
-    removeAllStations();
-    removeAllLines();
-    removeAllArcs();
-    iStations.clear();
-    iLines.clear();
-    iArcs.clear();
-    update();
-    msgCenter.loadMap();
+    oldSelectStation = nullptr;
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if(cur_tool == T_STATION)
+        if(cur_tool == T_STATION_DRAW
+                || cur_tool ==T_STATION_REPORT
+                || cur_tool ==T_STATION_HALT
+                || cur_tool ==T_STATION_CHARGE
+                || cur_tool ==T_STATION_LOAD
+                || cur_tool ==T_STATION_UNLOAD
+                || cur_tool ==T_STATION_LOAD_UNLOAD)
         {
-            //添加站点~
-            //是否要判断站点离得太近呢 附近没有其他站点？？？
-            //输入站点名称和RFID
-            StationInputDialog *inputDialog = new StationInputDialog;
-            int result = inputDialog->exec();
-            if(result==1)
-            {
-                AgvStation station;
-                station.name = inputDialog->getName();
-                station.rfid = inputDialog->getRfid();
-                station.x = event->scenePos().x();
-                station.y = event->scenePos().y();
-                station.id = getMaxStationId()+1;
-                ItemStation *iStation = new ItemStation(station);
-                addItem(iStation);
-                iStation->initialize();
-                iStations.push_back(iStation);
-                update();
+            MapPoint::Map_Point_Type type;
+            switch (cur_tool) {
+            case T_STATION_DRAW:
+                type = MapPoint::Map_Point_Type_Draw;
+                break;
+            case T_STATION_REPORT:
+                type = MapPoint::Map_Point_Type_REPORT;
+                break;
+            case T_STATION_HALT:
+                type = MapPoint::Map_Point_Type_HALT;
+                break;
+            case T_STATION_CHARGE:
+                type = MapPoint::Map_Point_Type_CHARGE;
+                break;
+            case T_STATION_LOAD:
+                type = MapPoint::Map_Point_Type_LOAD;
+                break;
+            case T_STATION_UNLOAD:
+                type = MapPoint::Map_Point_Type_UNLOAD;
+                break;
+            case T_STATION_LOAD_UNLOAD:
+                type = MapPoint::Map_Point_Type_LOAD_UNLOAD;
+                break;
+            default:
+                type = MapPoint::Map_Point_Type_HALT;
+                break;
             }
+            //添加站点~
+            int id = onemap->getNextId();
+            QString name = QString("station %1").arg(id);
+            MapPoint *p = new MapPoint(id,name,type,event->scenePos().x(),event->scenePos().y());
+            floor->addPoint(p);
+
+            //添加item
+            MapItemStation *station= new MapItemStation(p);
+            MapItemStationName *stationname = new MapItemStationName(station,p);
+            addItem(station);
+            addItem(stationname);
+            iStations.push_back(station);
+            iStationNames.push_back(stationname);
+            update();
+
+            //发射信号
+            emit sig_addStation(p);
         }
     }
 
@@ -174,241 +173,499 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseMoveEvent(event);
 }
 
-bool Scene::outOfLimitLine(const QPointF &grid_pos)
-{
-    if (grid_pos.x() < 0
-            || grid_pos.x() > _width - 1
-            || grid_pos.y() < 0
-            || grid_pos.y() > _height - 1)
-        return true;
-    else
-        return false;
-}
-
 void Scene::setBackgroundImagePath(QString _path)
 {
-    backgroundImagePath = _path;
-    QImage img(backgroundImagePath);
+    QImage img(_path);
     if(img.isNull())
     {
-        backgroundImagePath = "";
+        QMessageBox::warning(nullptr,QStringLiteral("错误"),QStringLiteral("非图像文件或不存在"));
         return ;
     }
-    if(itemBackground==NULL)
+
+    QString fileNameWithType = "image.jpg";
+    if(_path.contains("\\"))
+        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("\\"));
+    else if(_path.contains("/"))
+        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("/")-1);
+    QString fileName = fileNameWithType.left(fileNameWithType.indexOf("."));
+
+    MapBackground *bk = new MapBackground(onemap->getNextId(),fileName,img,fileName);
+
+    if(bkg!=nullptr && bkg->getBkg()!=nullptr){
+        //删除原来的元素
+        MapBackground *bk = bkg->getBkg();
+        emit sig_removeBkg(bk);
+    }
+
+    if(bkg==nullptr){
+        bkg = new MapItemBkg(bk);
+        addItem(bkg);
+    }else{
+        bkg->setBkg(bk);
+        bkg->update(bkg->boundingRect());
+    }
+    update();
+}
+
+void Scene::toolChanged()
+{
+    //setCurTool(tool);
+}
+
+void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
+{
+    if(_floor != floor){
+        return ;
+    }
+    if(MapSpirit::Map_Sprite_Type_Point == _spirit->getSpiritType())
     {
-        itemBackground = new ItemBackground;
-        addItem(itemBackground);
-    }
-    itemBackground->setImg(backgroundImagePath);
-    update();
-}
+        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+        MapItemStation *sstation = new MapItemStation(p);
+        MapItemStationName *sstationName = new MapItemStationName(sstation,p);
+        addItem(sstation);
+        addItem(sstationName);
+        iStations.push_back(sstation);
+        iStationNames.append(sstationName);
+        update();
+    }else if(MapSpirit::Map_Sprite_Type_Path == _spirit->getSpiritType())
+    {
+        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+        if(p->getPathType() == MapPath::Map_Path_Type_Line){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
 
-void Scene::onLoadStationSuccess()
-{
-    QList<AgvStation> mapStations = msgCenter.getMapStationListModel();
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
 
-    removeAllStations();
+            MapItemLine *l = new MapItemLine(start,end,p);
+            addItem(l);
+            iLines.push_back(l);
+            update();
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
 
-    for(int i=0;i<mapStations.length();++i){
-        AgvStation s = mapStations.at(i);
-        ItemStation *station = new ItemStation(s);
-        addItem(station);
-        station->initialize();
-        iStations.push_back(station);
-    }
-    update();
-}
+            MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            addItem(l);
+            iQbs.push_back(l);
+            update();
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
 
-ItemStation *Scene::getStation(int id)
-{
-    for(QList<ItemStation *>::iterator itr = iStations.begin();itr!=iStations.end();++itr)
-        if((*itr)->station.id == id)
-            return *itr;
-    return NULL;
-}
-
-int Scene::getMaxStationId()
-{
-    int maxId = 0;
-    for(QList<ItemStation *>::iterator itr = iStations.begin();itr!=iStations.end();++itr)
-        if((*itr)->station.id > maxId)
-            maxId = (*itr)->station.id;
-    return maxId;
-}
-
-ItemLine *Scene::getLine(int id)
-{
-    for(QList<ItemLine *>::iterator itr = iLines.begin();itr!=iLines.end();++itr)
-        if((*itr)->id == id)
-            return *itr;
-    return NULL;
-}
-
-int Scene::getMaxLineId()
-{
-    int maxId = 0;
-    for(QList<ItemLine *>::iterator itr = iLines.begin();itr!=iLines.end();++itr)
-        if((*itr)->id > maxId)
-            maxId = (*itr)->id;
-    return maxId;
-}
-
-ItemArc *Scene::getArc(int id)
-{
-    for(QList<ItemArc *>::iterator itr = iArcs.begin();itr!=iArcs.end();++itr)
-        if((*itr)->id == id)
-            return *itr;
-    return NULL;
-}
-
-int Scene::getMaxArcId()
-{
-    int maxId = 0;
-    for(QList<ItemArc *>::iterator itr = iArcs.begin();itr!=iArcs.end();++itr)
-        if((*itr)->id > maxId)
-            maxId = (*itr)->id;
-    return maxId;
-}
-
-void Scene::onLoadLineSuccess()
-{
-    QList<AgvLine> mapLines = msgCenter.getMapLineListModel();
-
-    //清空原来的
-    removeAllArcs();
-    removeAllLines();
-
-    for(int i=0;i<mapLines.length();++i){
-        AgvLine l = mapLines.at(i);
-        if(!l.draw)continue;
-        ItemStation * start = getStation(l.startStation);
-        ItemStation * end = getStation(l.endStation);
-        if(start == NULL || end == NULL)continue;
-
-        if(l.line){
-            ItemLine *line = new ItemLine(start,end,l.id,QColor(l.color_r,l.color_g,l.color_b));
-            addItem(line);
-            start->addLine(line);
-            end->addLine(line);
-            iLines.push_back(line);
-
-        }else{
-            ItemArc *arc = new ItemArc(start,end,l.id,QColor(l.color_r,l.color_g,l.color_b));
-            arc->P2 = QPointF(l.p1x,l.p1y);
-            arc->P3 = QPointF(l.p2x,l.p2y);
-            addItem(arc);
-            start->addArc(arc);
-            end->addArc(arc);
-            iArcs.push_back(arc);
+            MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            addItem(l);
+            iCbs.push_back(l);
+            update();
         }
     }
-    update();
+}
+
+void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
+{
+    if(_floor != floor){
+        return ;
+    }
+
+    if(MapSpirit::Map_Sprite_Type_Point == _spirit->getSpiritType())
+    {
+        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+
+        MapItemStation *newStation = nullptr;
+        foreach (auto station, iStations) {
+            if(station->getPoint() == p){
+                newStation = station;
+                break;
+            }
+        }
+        if(newStation == nullptr)return ;
+
+        //清除一个站点//TODO
+        //要先清除，所有的相关线路
+        QList<MapItemLine *> lines = newStation->getLines();
+        foreach (auto line, lines) {
+            removeItem(line);
+            iLines.removeAll(line);
+            update();
+            emit sig_removePath(line->getPath());
+        }
+
+        QList<MapItemCubicBezier *> cbs = newStation->getCbs();
+        foreach (auto cb, cbs) {
+            removeItem(cb);
+            iCbs.removeAll(cb);
+            update();
+            emit sig_removePath(cb->getPath());
+        }
+
+        QList<MapItemQuadraticBezier *> qbs = newStation->getQbs();
+        foreach (auto qb, qbs) {
+            removeItem(qb);
+            iQbs.removeAll(qb);
+            update();
+            emit sig_removePath(qb->getPath());
+        }
+
+        //然后清除站点
+        MapItemStationName *stationname = nullptr;
+        foreach (auto sn, iStationNames) {
+            if(sn->getStation() == newStation){
+                stationname = sn;
+                break;
+            }
+        }
+        assert(stationname != nullptr);
+        removeItem(stationname);
+        removeItem(newStation);
+        iStations.removeAll(newStation);
+        iStationNames.removeAll(stationname);
+        update();
+        emit sig_removeStation(newStation->getPoint());
+
+    }else if(MapSpirit::Map_Sprite_Type_Path == _spirit->getSpiritType())
+    {
+        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+        if(p->getPathType() == MapPath::Map_Path_Type_Line){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
+
+            MapItemLine *l = new MapItemLine(start,end,p);
+            addItem(l);
+            iLines.push_back(l);
+            update();
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
+
+            MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            addItem(l);
+            iQbs.push_back(l);
+            update();
+        }
+        else if(p->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
+            MapItemStation *start = nullptr;
+            MapItemStation *end = nullptr;
+            foreach (auto s, iStations) {
+                if(s->getPoint()->getId() == p->getStart()){start = s;}
+                if(s->getPoint()->getId() == p->getEnd()){end = s;}
+            }
+            if(start == nullptr || end == nullptr)return ;
+
+            MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            addItem(l);
+            iCbs.push_back(l);
+            update();
+        }
+    }
+}
+
+void Scene::propertyChanged(MapFloor *_floor, MapSpirit *_spirit)
+{
+    if(_floor != floor)return ;
+    if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+        foreach (auto station, iStations) {
+            if(station->getPoint() == p){
+                station->my_update();
+                break;
+            }
+        }
+        foreach (auto name , iStationNames) {
+            if(name->getPoint() == p){
+                name->my_update();
+                break;
+            }
+        }
+    }
+    else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
+        MapPath *path = dynamic_cast<MapPath *>(_spirit);
+        if(path->getPathType() == MapPath::Map_Path_Type_Line){
+            foreach (auto l, iLines) {
+                if(l->getPath() == path){
+                    l->my_update();
+                    break;
+                }
+            }
+        }
+        else  if(path->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
+            foreach (auto l, iQbs) {
+                if(l->getPath() == path){
+                    l->my_update();
+                    break;
+                }
+            }
+        }
+        else  if(path->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
+            foreach (auto l, iCbs) {
+                if(l->getPath() == path){
+                    l->my_update();
+                    break;
+                }
+            }
+        }
+    }
+    else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
+        MapBackground * b = dynamic_cast<MapBackground *>(_spirit);
+        if(bkg!=nullptr && bkg->getBkg() == b){
+            bkg->my_update();
+        }
+    }
 }
 
 void Scene::onSelectItemChanged()
 {
     QList<QGraphicsItem *> sis= this->selectedItems();
-    if(sis.length()>0){
+
+    if(sis.length() != 1){
+        emit sig_chooseChanged(nullptr);
+    }
+
+    if(sis.length() == 1)
+    {
         QGraphicsItem *lastSelectItem = sis.last();
-        if(lastSelectItem->type() == ItemStation::Type)
+
+        //选择了一个站点
+        if(lastSelectItem->type() == MapItemStation::Type || lastSelectItem->type() == MapItemStationName::Type)
         {
-            ItemStation *newStation = qgraphicsitem_cast<ItemStation*>(lastSelectItem);
+            MapItemStation *newStation = nullptr;
+            if(lastSelectItem->type() == MapItemStation::Type){
+                newStation = qgraphicsitem_cast<MapItemStation*>(lastSelectItem);
+            }else{
+                MapItemStationName *stationName = qgraphicsitem_cast<MapItemStationName *>(lastSelectItem);
+                newStation = stationName->getStation();
+            }
+
             if(cur_tool == T_LINE){
-                if(oldSelectStation==NULL){
+                if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
-                    //判断是否超出了4条线路
-                    if(oldSelectStation->lines.length()+oldSelectStation->arcs.length()<4
-                            && newStation->lines.length()+newStation->arcs.length()<4){
-                        int maxArcId = getMaxArcId();
-                        int maxLineId = getMaxLineId();
-                        int id = maxArcId +1;
-                        if(maxLineId>maxArcId)id = maxLineId + 1;
-                        ItemLine *line = new ItemLine(oldSelectStation,newStation,id);
-                        addItem(line);
-                        oldSelectStation->addLine(line);
-                        newStation->addLine(line);
-                        oldSelectStation = NULL;
-                        iLines.push_back(line);
-                        update();
-                    }
-                }
-            }
+                    QString lineName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
 
-            else if(cur_tool == T_ARC){
-                if(oldSelectStation==NULL){
+                    //对onemap添加线路数据
+                    MapPath *p = new MapPath(onemap->getNextId(),lineName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Line,1);
+                    floor->addPath(p);
+
+                    //添加item
+                    MapItemLine *line= new MapItemLine(oldSelectStation,newStation,p);
+                    oldSelectStation->addLine(line);
+                    newStation->addLine(line);
+                    addItem(line);
+                    iLines.push_back(line);
+                    update();
+
+                    //发射信号
+                    emit sig_addPath(line->getPath());
+                }
+            }else if(cur_tool == T_QB){
+                if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
-                }else{
-                    if(oldSelectStation->lines.length()+oldSelectStation->arcs.length()<4
-                            && newStation->lines.length()+newStation->arcs.length()<4){
+                }else if(oldSelectStation!=newStation){
+                    QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
+                    int cx = (oldSelectStation->getPoint()->getX()+newStation->getPoint()->getX())/2;
+                    int cy = (oldSelectStation->getPoint()->getY()+newStation->getPoint()->getY())/2;
+                    //对onemap添加线路数据
+                    MapPath *p = new MapPath(onemap->getNextId(),qbName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Quadratic_Bezier,1,cx,cy);
+                    floor->addPath(p);
 
-                        int maxArcId = getMaxArcId();
-                        int maxLineId = getMaxLineId();
-                        int id = maxArcId +1;
-                        if(maxLineId>maxArcId)id = maxLineId + 1;
+                    //添加item
+                    MapItemQuadraticBezier *qb= new MapItemQuadraticBezier(oldSelectStation,newStation,p);
+                    oldSelectStation->addQb(qb);
+                    newStation->addQb(qb);
+                    addItem(qb);
+                    iQbs.push_back(qb);
+                    update();
 
-                        ItemArc *arc = new ItemArc(oldSelectStation,newStation,id);
-                        addItem(arc);
-                        oldSelectStation->addArc(arc);
-                        newStation->addArc(arc);
-                        oldSelectStation = NULL;
-                        iArcs.push_back(arc);
-                        update();
+                    //发射信号
+                    emit sig_addPath(qb->getPath());
+                }
+            }else if(cur_tool == T_CB){
+                if(oldSelectStation==nullptr){
+                    oldSelectStation = newStation;
+                }else if(oldSelectStation!=newStation){
+                    QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
+                    int cx1 = oldSelectStation->getPoint()->getX()+(newStation->getPoint()->getX() - oldSelectStation->getPoint()->getX())/3;
+                    int cy1 = oldSelectStation->getPoint()->getY()+(newStation->getPoint()->getY() - oldSelectStation->getPoint()->getY())/3;
+
+                    int cx2 = oldSelectStation->getPoint()->getX()+(newStation->getPoint()->getX() - oldSelectStation->getPoint()->getX())*2/3;
+                    int cy2 = oldSelectStation->getPoint()->getY()+(newStation->getPoint()->getY() - oldSelectStation->getPoint()->getY())*2/3;
+
+                    //对onemap添加线路数据
+                    MapPath *p = new MapPath(onemap->getNextId(),qbName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Cubic_Bezier,1,cx1,cy1,cx2,cy2);
+                    floor->addPath(p);
+
+                    //添加item
+                    MapItemCubicBezier *cb= new MapItemCubicBezier(oldSelectStation,newStation,p);
+                    oldSelectStation->addCb(cb);
+                    newStation->addCb(cb);
+                    addItem(cb);
+                    iCbs.push_back(cb);
+                    update();
+
+                    //发射信号
+                    emit sig_addPath(cb->getPath());
+                }
+            }else if(cur_tool == T_ERASER ){
+                //清除一个站点//TODO
+                //要先清除，所有的相关线路
+                QList<MapItemLine *> lines = newStation->getLines();
+                foreach (auto line, lines) {
+                    removeItem(line);
+                    iLines.removeAll(line);
+                    update();
+                    emit sig_removePath(line->getPath());
+                }
+
+                QList<MapItemCubicBezier *> cbs = newStation->getCbs();
+                foreach (auto cb, cbs) {
+                    removeItem(cb);
+                    iCbs.removeAll(cb);
+                    update();
+                    emit sig_removePath(cb->getPath());
+                }
+
+                QList<MapItemQuadraticBezier *> qbs = newStation->getQbs();
+                foreach (auto qb, qbs) {
+                    removeItem(qb);
+                    iQbs.removeAll(qb);
+                    update();
+                    emit sig_removePath(qb->getPath());
+                }
+
+                //然后清除站点
+                MapItemStationName *stationname = nullptr;
+                foreach (auto sn, iStationNames) {
+                    if(sn->getStation() == newStation){
+                        stationname = sn;
+                        break;
                     }
                 }
-            }
-
-
-            /////删除一个站点，那么同时也要删除和这个站点的所有连线
-            else if(cur_tool == T_ERASER){
-                //擦除这个站点
-                //首先擦除这个站点的所有连线
-                for(QList<ItemLine *>::iterator itr = newStation->lines.begin();itr!=newStation->lines.end();++itr){
-                    ItemLine *l = *itr;
-                    removeItem(l);
-                    iLines.removeAll(l);
-                }
-                newStation->lines.clear();
-                for(QList<ItemArc *>::iterator itr = newStation->arcs.begin();itr!=newStation->arcs.end();++itr){
-                    ItemArc *a = *itr;
-                    removeItem(a);
-                    iArcs.removeAll(a);
-                }
-                newStation->arcs.clear();
-                //然后擦除这个站点
+                assert(stationname != nullptr);
+                removeItem(stationname);
                 removeItem(newStation);
                 iStations.removeAll(newStation);
+                iStationNames.removeAll(stationname);
                 update();
+                emit sig_removeStation(newStation->getPoint());
             }
         }
 
-        //单独删除一个直线
-        else if(lastSelectItem->type() == ItemLine::Type){
-            ItemLine *newLine = qgraphicsitem_cast<ItemLine*>(lastSelectItem);
+        //选择了一个线路
+        else if(lastSelectItem->type() == MapItemLine::Type)
+        {
+            MapItemLine *selectLine = qgraphicsitem_cast<MapItemLine*>(lastSelectItem);
             if(cur_tool == T_ERASER ){
                 //从它两头的站点中，将它移出
-                newLine->startStation->lines.removeAll(newLine);
-                newLine->endStation->lines.removeAll(newLine);
-                //然后将它移出
-                removeItem(newLine);
-                iLines.removeAll(newLine);
+                selectLine->getStartStation()->removeLine(selectLine);
+                selectLine->getEndStation()->removeLine(selectLine);
+                removeItem(selectLine);
+                iLines.removeAll(selectLine);
                 update();
+                //TODO:
+                emit sig_removePath(selectLine->getPath());
+            }
+        }
+        else if(lastSelectItem->type() == MapItemQuadraticBezier::Type)
+        {
+            MapItemQuadraticBezier *selectLine = qgraphicsitem_cast<MapItemQuadraticBezier*>(lastSelectItem);
+            if(cur_tool == T_ERASER ){
+                //从它两头的站点中，将它移出
+                selectLine->getStartStation()->removeQb(selectLine);
+                selectLine->getEndStation()->removeQb(selectLine);
+                removeItem(selectLine);
+                iQbs.removeAll(selectLine);
+                update();
+                //TODO:
+                emit sig_removePath(selectLine->getPath());
+            }
+        }
+        else if(lastSelectItem->type() == MapItemCubicBezier::Type)
+        {
+            MapItemCubicBezier *selectLine = qgraphicsitem_cast<MapItemCubicBezier*>(lastSelectItem);
+            if(cur_tool == T_ERASER ){
+                //从它两头的站点中，将它移出
+                selectLine->getStartStation()->removeCb(selectLine);
+                selectLine->getEndStation()->removeCb(selectLine);
+                removeItem(selectLine);
+                iCbs.removeAll(selectLine);
+                update();
+                //TODO:
+                emit sig_removePath(selectLine->getPath());
+            }
+        }
+    }
+}
+
+
+void Scene::slot_selectItem(MapSpirit *_spirit)
+{
+    clearSelection();
+    if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point)
+    {
+        foreach (auto staion, iStations) {
+            if(staion->getPoint() == _spirit){
+                staion->setSelected(true);;
+                break;
+            }
+        }
+    }
+    else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path)
+    {
+        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+
+        if(p->getPathType() == MapPath::Map_Path_Type_Line){
+            foreach (auto p, iLines) {
+                if(p->getPath() == _spirit){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+        }else if(p->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
+            foreach (auto p, iQbs) {
+                if(p->getPath() == _spirit){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+        }else if(p->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
+            foreach (auto p, iCbs) {
+                if(p->getPath() == _spirit){
+                    p->setSelected(true);
+                    break;
+                }
             }
         }
 
-        //单独删除一个弧线
-        else if(lastSelectItem->type() == ItemArc::Type){
-            //选择了一个弧线
-            ItemArc *newArc = qgraphicsitem_cast<ItemArc*>(lastSelectItem);
-            if(cur_tool == T_ERASER ){
-                //从它两头的站点中，将它移出
-                newArc->startStation->arcs.removeAll(newArc);
-                newArc->endStation->arcs.removeAll(newArc);
-                //然后将它移出
-                removeItem(newArc);
-                iArcs.removeAll(newArc);
-                update();
-            }
+    }
+    else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
+        if(bkg->getBkg() == _spirit){
+            bkg->setSelected(true);
         }
     }
 }

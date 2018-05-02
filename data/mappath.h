@@ -14,6 +14,7 @@ public:
     };
 
     MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _type,int _length, int _p1x = 0, int _p1y = 0, int _p2x=0, int _p2y = 0);
+    MapPath(const MapPath &p);
     void setPathType(Map_Path_Type _path_type){path_type=_path_type;}
     Map_Path_Type getPathType(){return path_type;}
 
