@@ -47,7 +47,6 @@ private:
     DockProperty *dockProperty;
     DockView *dockView;
 
-    QActionGroup *toolGroup;
     QAction *toolErase;
     QAction *toolStationDraw;
     QAction *toolStationReport;
