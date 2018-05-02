@@ -16,7 +16,7 @@ public:
 
     void init();
 signals:
-
+    void sig_currentMousePos(QPointF pos);
 public slots:
     void slot_addFloor(MapFloor *spirit);
     void slot_selectChanged(MapSpirit *spirit);

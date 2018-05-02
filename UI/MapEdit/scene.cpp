@@ -1,10 +1,9 @@
 ﻿#include <assert.h>
 
 #include "scene.h"
-#include <QGraphicsSimpleTextItem>
-#include <QGraphicsSceneMouseEvent>
 #include "stationinputdialog.h"
 #include "global.h"
+#include <QtWidgets>
 
 Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScene(parent),
     cur_tool(T_NONE),
@@ -12,6 +11,26 @@ Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScen
     floor(_floor),
     oldSelectStation(nullptr)
 {
+    //设置网格线
+    QPolygonF myPolygon1;
+    myPolygon1 << QPointF(0,10) << QPointF(20,10);
+    QPolygonF myPolygon2;
+    myPolygon2 << QPointF(10,0) << QPointF(10,20);
+    QPixmap pixmap(20, 20);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    QVector<qreal> dashes;//line style--虚线
+    qreal space = 2;
+    dashes << 2 << space << 2 <<space;
+    QPen pen(Qt::lightGray,1);
+    pen.setDashPattern(dashes);
+    pen.setWidth(1);
+    painter.setPen(pen);
+    painter.translate(0, 0);
+    painter.drawPolyline(myPolygon1);
+    painter.drawPolyline(myPolygon2);
+    setBackgroundBrush(pixmap);
+
     setItemIndexMethod(BspTreeIndex);
     build();
 }
@@ -168,8 +187,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-//    positoinlabel->setPos(event->scenePos().x()+10,event->scenePos().y()-10);
-//    positoinlabel->positionChanged(event->scenePos());
+//    qDebug()<<"event->scenePos()="<<event->scenePos();
+    //emit sig_currentMousePos(event->scenePos());
     QGraphicsScene::mouseMoveEvent(event);
 }
 

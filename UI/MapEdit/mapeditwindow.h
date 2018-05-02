@@ -29,6 +29,8 @@ public slots:
     void onTip(QString s);
     void onErr(int errcode,QString info);
     void onNewRequest();
+
+    void slot_currentMousePos(QPointF pos);
 private:
 
     void createActions();
@@ -37,9 +39,12 @@ private:
     //状态栏改变
     void statusbar_info(QString msg);
     void statusbar_err(QString msg);
+    void statusbar_pos(QString msg);
 
     QLabel *info_label;
     QLabel *error_label;
+
+    QLabel *pos_label;
 
     OneMap oneMap;//地图编辑器的一个map
 

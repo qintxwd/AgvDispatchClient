@@ -33,7 +33,7 @@ void MapEditWindow::init()
     connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
     connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
 
-
+    connect(dockView,SIGNAL(sig_currentMousePos(QPointF)),this,SLOT(slot_currentMousePos(QPointF)));
 }
 
 void MapEditWindow::onServerConnect()
@@ -102,14 +102,17 @@ void MapEditWindow::createStatusBar()
     QLabel *userrolelabel = new QLabel(QStringLiteral("当前角色:")+role_name);
     info_label = new QLabel(QStringLiteral("信息:"));
     error_label = new QLabel(QStringLiteral("错误:"));
+    pos_label = new  QLabel(QStringLiteral("坐标:"));
     usernamelabel->setMinimumWidth(200);
     userrolelabel->setMinimumWidth(200);
     info_label->setMinimumWidth(200);
+    pos_label->setMinimumWidth(100);
 
     statusbar->addWidget(usernamelabel);
     statusbar->addWidget(userrolelabel);
     statusbar->addWidget(info_label);
     statusbar->addWidget(error_label);
+    statusbar->addWidget(pos_label);
 
     setStatusBar(statusbar);
 }
@@ -190,4 +193,14 @@ void MapEditWindow::statusbar_info(QString msg)
 void MapEditWindow::statusbar_err(QString msg)
 {
     error_label->setText(QStringLiteral("错误:")+msg);
+}
+
+    void MapEditWindow::statusbar_pos(QString msg)
+    {
+        pos_label->setText(QStringLiteral("坐标:")+msg);
+    }
+
+void MapEditWindow::slot_currentMousePos(QPointF pos)
+{
+    statusbar_pos(QString("(%1,%2)").arg(pos.x()).arg(pos.y()));
 }

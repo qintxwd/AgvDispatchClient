@@ -73,6 +73,8 @@ signals:
     //选择修改
     void sig_chooseChanged(MapSpirit *spirit);
 
+    void sig_currentMousePos(QPointF pos);
+
 public slots:
 
     //菜单触动,修改背景

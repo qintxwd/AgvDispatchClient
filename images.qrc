@@ -137,6 +137,5 @@
         <file>images/tree/staticRoute.18x18.png</file>
         <file>images/tree/vehicle.18x18.png</file>
         <file>images/tree/vehicleType.18x18.png</file>
-        <file>images/point/grid.png</file>
     </qresource>
 </RCC>

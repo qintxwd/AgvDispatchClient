@@ -20,9 +20,7 @@ void DockView::init()
         Scene *scene = new Scene(oneMap,floor);
         QGraphicsView *view = new QGraphicsView(scene);
 
-        view->setBackgroundBrush(QPixmap("qrc:/images/point/ChargingStation.20x20.png"));
-        view->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-        view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+        connect(scene,SIGNAL(sig_currentMousePos(QPointF)),this,SIGNAL(sig_currentMousePos(QPointF)));
 
         tabWidget->addTab(view,floor->getName());
         scenes.append(scene);
@@ -35,6 +33,9 @@ void DockView::slot_addFloor(MapFloor *spirit)
 {
     Scene *scene = new Scene(oneMap,spirit);
     QGraphicsView *view = new QGraphicsView(scene);
+
+    connect(scene,SIGNAL(sig_currentMousePos(QPointF)),this,SIGNAL(sig_currentMousePos(QPointF)));
+
     tabWidget->addTab(view,spirit->getName());
     scenes.append(scene);
 }
