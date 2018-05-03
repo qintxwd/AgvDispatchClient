@@ -18,6 +18,8 @@ signals:
 
     void sig_setSelectSelect();
     void sig_setSelectHand();
+
+    void sig_addBkg(MapBackground *_bkg);
 public slots:
 
     void about();
@@ -49,6 +51,7 @@ public slots:
     void on_toolLine_triggered(bool b);
     void on_toolQb_triggered(bool b);
     void on_toolCb_triggered(bool b);
+    void on_addBkgd_triggered(bool b);
 
     void on_selectSelect_triggered(bool b);
     void on_selectHand_triggered(bool b);
@@ -87,6 +90,8 @@ private:
     QAction *toolLine;
     QAction *toolQb;
     QAction *toolCb;
+
+    QAction *addBkgd;
 };
 
 #endif // MAPEDITWINDOW_H

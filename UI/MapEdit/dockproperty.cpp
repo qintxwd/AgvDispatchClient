@@ -102,6 +102,8 @@ void DockProperty::init()
     path_comboxType->addItem(QStringLiteral("直线"));
     path_comboxType->addItem(QStringLiteral("二次贝赛尔曲线"));
     path_comboxType->addItem(QStringLiteral("三次贝赛尔曲线"));
+    path_comboxType->setEditable(false);
+    path_comboxType->setEnabled(false);
     connect(path_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
     path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
     path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);

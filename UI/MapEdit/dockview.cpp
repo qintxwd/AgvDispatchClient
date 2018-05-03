@@ -60,6 +60,15 @@ void DockView::slot_addFloor(MapFloor *floor)
     scenes.append(scene);
 }
 
+void DockView::slot_addBkg(MapBackground *_bkg){
+    int kk = tabWidget->currentIndex();
+    QList<MapFloor *> floors = oneMap->getFloors();
+    if(kk<floors.length()){
+        floors[kk]->setBkg(_bkg);
+        emit sig_propertyChangedFromProperty(floors[kk]);
+    }
+}
+
 void DockView::slot_selectChanged(MapSpirit *spirit)
 {
     if(spirit == nullptr) return ;

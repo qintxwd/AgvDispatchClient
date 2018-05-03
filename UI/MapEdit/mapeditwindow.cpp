@@ -45,6 +45,8 @@ void MapEditWindow::init()
 
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
+    connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockView,SLOT(slot_addBkg(MapBackground*)));
+    connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockMapTree,SLOT(refresh()));
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -297,6 +299,16 @@ void MapEditWindow::createActions()
     toolCb->setCheckable(true);
     toolsToolBar->addAction(toolCb);
     toolsMenu->addAction(toolCb);
+
+    addBkgd = new QAction(this);
+    addBkgd->setText("set background img");
+    addBkgd->setObjectName("addBkgd");
+    //            QIcon iconAddBkg;
+    //            iconAddBkg.addFile(":/images/toolbar/path-bezier.22.png",QSize(),QIcon::Normal,QIcon::Off);
+    //            addBkgd->setIcon(iconCb);
+    addBkgd->setCheckable(true);
+    toolsToolBar->addAction(addBkgd);
+    toolsMenu->addAction(addBkgd);
 
 }
 
@@ -619,4 +631,36 @@ void MapEditWindow::on_selectHand_triggered(bool b)
         emit sig_setSelectHand();
     else
         emit sig_setSelectSelect();
+}
+
+void MapEditWindow::on_addBkgd_triggered(bool b)
+{
+    if(b){
+        toolErase->setChecked(false);
+        toolStationDraw->setChecked(false);
+        toolStationReport->setChecked(false);
+        toolStationHalt->setChecked(false);
+        toolStationCharge->setChecked(false);
+        toolStationLoad->setChecked(false);
+        toolStationUnload->setChecked(false);
+        toolStationLoadUnload->setChecked(false);
+        toolLine->setChecked(false);
+        toolQb->setChecked(false);
+        toolCb->setChecked(false);
+        selectSelect->setChecked(false);
+        selectHand->setChecked(false);
+        emit sig_setTool(Scene::T_NONE);
+
+        if(oneMap.getFloors().length()>0){
+            QString filePath = QFileDialog::getOpenFileName(this,tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp)"));
+            if(filePath.length()>0){
+                QString fileName = filePath.right(filePath.length() - filePath.lastIndexOf("/")-1);
+                QImage *img = new QImage;
+                img->load(filePath);
+                MapBackground *_bkg = new MapBackground(oneMap.getNextId(),fileName,*img,fileName);
+                emit sig_addBkg(_bkg);
+            }
+        }
+        addBkgd->setChecked(false);
+    }
 }

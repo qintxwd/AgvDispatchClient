@@ -42,6 +42,8 @@ public slots:
     void slot_selectChanged(MapSpirit *spirit);
 
     void slot_propertyChangedFromProperty(MapSpirit *_spirit);
+
+    void slot_addBkg(MapBackground *_bkg);
 private:
     OneMap *oneMap;
 
