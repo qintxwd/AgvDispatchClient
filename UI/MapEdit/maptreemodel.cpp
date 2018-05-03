@@ -2,8 +2,8 @@
 
 #include <QStringList>
 #include <QIcon>
+#include <QFileIconProvider>
 
-//! [0]
 MapTreeModel::MapTreeModel(OneMap *_onemap, QObject *parent)
     : QAbstractItemModel(parent),
       onemap(_onemap)
@@ -11,16 +11,17 @@ MapTreeModel::MapTreeModel(OneMap *_onemap, QObject *parent)
     rootItem = new MapTreeItem(nullptr);
     setupModelData(rootItem);
 }
-//! [0]
 
-//! [1]
 MapTreeModel::~MapTreeModel()
 {
     delete rootItem;
 }
-//! [1]
 
-//! [2]
+QModelIndexList MapTreeModel::getModelIndexs()
+{
+    return persistentIndexList();
+}
+
 int MapTreeModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -28,7 +29,7 @@ int MapTreeModel::columnCount(const QModelIndex &parent) const
     else
         return rootItem->columnCount();
 }
-//! [2]
+
 MapTreeItem *MapTreeModel::getItem(const QModelIndex &index)
 {
     if (!index.isValid())
@@ -36,15 +37,37 @@ MapTreeItem *MapTreeModel::getItem(const QModelIndex &index)
     MapTreeItem *item = static_cast<MapTreeItem*>(index.internalPointer());
     return item;
 }
-//! [3]
+
 QVariant MapTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
     // 添加图标
-    if(role==Qt::DecorationRole)
-        return QIcon(":/images/panel/battery-100-2.png");
+    if(role==Qt::DecorationRole && index.isValid()){
+        MapTreeItem *item = static_cast<MapTreeItem*>(index.internalPointer());
+        MapSpirit *spirit = item->getSpirit();
+        if(spirit == nullptr){
+            QFileIconProvider iconProvider;
+            return QIcon(iconProvider.icon(QFileIconProvider::Folder));
+        }else{
+            if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+                return QIcon(":/images/tree/point.18x18.png");
+            }
+
+            else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
+                return QIcon(":/images/tree/path.18x18.png");
+            }
+
+            else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
+                return QIcon(":/images/menu/view-grid.png");
+            }
+
+            else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
+                return QIcon(":/images/tree/location.18x18.png");
+            }
+        }
+    }
 
     if(role==Qt::DisplayRole){
         MapTreeItem *item = static_cast<MapTreeItem*>(index.internalPointer());
@@ -53,9 +76,7 @@ QVariant MapTreeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 
 }
-//! [3]
 
-//! [4]
 Qt::ItemFlags MapTreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -63,9 +84,7 @@ Qt::ItemFlags MapTreeModel::flags(const QModelIndex &index) const
 
     return QAbstractItemModel::flags(index);
 }
-//! [4]
 
-//! [5]
 QVariant MapTreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
@@ -74,9 +93,7 @@ QVariant MapTreeModel::headerData(int section, Qt::Orientation orientation,
 
     return QVariant();
 }
-//! [5]
 
-//! [6]
 QModelIndex MapTreeModel::index(int row, int column, const QModelIndex &parent)
 const
 {
@@ -96,9 +113,7 @@ const
     else
         return QModelIndex();
 }
-//! [6]
 
-//! [7]
 QModelIndex MapTreeModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -112,9 +127,7 @@ QModelIndex MapTreeModel::parent(const QModelIndex &index) const
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
-//! [7]
 
-//! [8]
 int MapTreeModel::rowCount(const QModelIndex &parent) const
 {
     MapTreeItem *parentItem;
@@ -128,7 +141,6 @@ int MapTreeModel::rowCount(const QModelIndex &parent) const
 
     return parentItem->childCount();
 }
-//! [8]
 
 void MapTreeModel::setupModelData(MapTreeItem *root)
 {
@@ -144,13 +156,13 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
 
         MapTreeItem *item_path_folder = new MapTreeItem(nullptr,item_floor,"PATHS");
         item_floor->appendChild(item_path_folder);
-
-        foreach (auto __point, floor->getPoints()) {
+        auto points = floor->getPoints();
+        foreach (auto __point, points) {
             MapTreeItem *item_point = new MapTreeItem(__point,item_point_folder);
             item_point_folder->appendChild(item_point);
         }
-
-        foreach (auto __path, floor->getPaths()) {
+        auto paths = floor->getPaths();
+        foreach (auto __path, paths) {
             MapTreeItem *item_path = new MapTreeItem(__path,item_path_folder);
             item_path_folder->appendChild(item_path);
         }
@@ -166,9 +178,9 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
 
 void MapTreeModel::fresh()
 {
+    beginResetModel();
     removeRows(0,this->rowCount());
     rootItem = new MapTreeItem(nullptr);
     setupModelData(rootItem);
-    beginResetModel();
     endResetModel();
 }

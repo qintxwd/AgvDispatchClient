@@ -52,7 +52,7 @@ QVariant MapItemBkg::itemChange(GraphicsItemChange change, const QVariant &value
         bkg->setX(newPos.x());
         bkg->setY(newPos.y());
         //TODO:
-        emit sig_bkgPositionChange(bkg);
+        emit sig_positionChange(bkg);
         return newPos;
     }
     return QGraphicsItem::itemChange(change, value);

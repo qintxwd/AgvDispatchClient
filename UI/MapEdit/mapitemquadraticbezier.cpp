@@ -84,6 +84,7 @@ void MapItemQuadraticBezier::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         path->setP1x(P1.x());
         path->setP1y(P1.y());
         update();
+        emit sig_propertyChanged(path);
     }
     QGraphicsObject::mouseMoveEvent(event);
 }

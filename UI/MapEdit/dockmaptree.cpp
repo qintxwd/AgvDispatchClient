@@ -81,9 +81,18 @@ void DockMapTree::refresh()
     view->expandAll();
 }
 
-void DockMapTree::slot_chooseChanged(MapFloor *floor, MapSpirit *spirit)
+void DockMapTree::slot_chooseChanged(MapSpirit *spirit)
 {
     //TODO： set select !
     view->expandAll();
+    QModelIndexList pp = model->getModelIndexs();
+    foreach (auto p, pp) {
+        if (!p.isValid())continue;
+        MapTreeItem *item = static_cast<MapTreeItem*>(p.internalPointer());
+        if(item->getSpirit() == spirit){
+            view->setCurrentIndex(p);
+            break;
+        }
+    }
 }
 

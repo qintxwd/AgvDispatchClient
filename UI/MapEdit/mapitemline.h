@@ -1,15 +1,17 @@
 ﻿#ifndef MAPITEMLINE_H
 #define MAPITEMLINE_H
 
+#include <QObject>
 #include <QGraphicsLineItem>
 #include "../../data/onemap.h"
 
 class MapItemStation;
 
-class MapItemLine : public QGraphicsLineItem
+class MapItemLine : public QObject, public QGraphicsLineItem
 {
+    Q_OBJECT
 public:
-    explicit MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent = nullptr);
+    explicit MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent = nullptr,QObject *_parent = nullptr);
     enum { Type = UserType + 23 };
     int type() const
     {
@@ -24,6 +26,8 @@ public:
     MapPath *getPath(){return path;}
 
     void my_update();
+signals:
+    void sig_propertyChanged(MapSpirit *spirit);
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
 

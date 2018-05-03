@@ -39,6 +39,8 @@ public:
     QList<MapItemLine *> getLines(){return lines;}
 
     void my_update();
+signals:
+    void sig_propertyChanged(MapSpirit *spirit);
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 private:
@@ -51,6 +53,9 @@ private:
     //当前的站点
     MapPoint *point;
 
+    QImage *imgDraw;
+    QImage *imgReport;
+    QImage *imgHalt;
     QImage *imgCharge;
     QImage *imgLoad;
     QImage *imgUnload;

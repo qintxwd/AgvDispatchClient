@@ -28,7 +28,7 @@ public slots:
 
     void refresh();
 
-    void slot_chooseChanged(MapFloor *floor,MapSpirit *spirit);
+    void slot_chooseChanged(MapSpirit *spirit);
 private:
     void initUi();
     OneMap *onemap;

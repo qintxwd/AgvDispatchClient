@@ -2,6 +2,8 @@
 #define DOCKPROPERTY_H
 
 #include <QDockWidget>
+#include <QComboBox>
+#include <QLabel>
 #include <QTableWidget>
 #include "../../data/onemap.h"
 
@@ -11,6 +13,7 @@ class DockProperty : public QDockWidget
 public:
     explicit DockProperty(OneMap* _oneMap, QWidget *parent = nullptr);
 
+    void init();
 signals:
     void sig_PointNameChanged(MapSpirit *spirit,QString name);
     void sig_PointTypeChanged(MapSpirit *spirit,int _type);
@@ -33,6 +36,7 @@ signals:
     void sig_FloorNameChanged(MapSpirit *spirit,QString name);
 public slots:
     void slot_showSpirit(MapSpirit *spirit);
+    void slot_propertyChanged(MapSpirit *_spirit);
 private slots:
     void slot_PointNameChanged(QString name);
     void slot_PointTypeChanged(int _type);
@@ -60,6 +64,70 @@ private:
     MapSpirit *spirit;
     QTableWidget *tableWidget;
     OneMap* oneMap;
+
+private:
+
+    //point
+    QTableWidgetItem *point_itemKeyId;
+    QTableWidgetItem *point_itemValueId;
+    QTableWidgetItem *point_itemKeyName;
+    QLineEdit *point_nameInput;
+    QTableWidgetItem *point_itemKeyType;
+    QComboBox *point_comboxType;
+    QTableWidgetItem *point_itemKeyX;
+    QLineEdit *point_xInput;
+    QTableWidgetItem *point_itemKeyY;
+    QLineEdit *point_yInput;
+    QTableWidgetItem *point_itemKeyRealX;
+    QLineEdit *point_xRealInput;
+    QTableWidgetItem *point_itemKeyRealY;
+    QLineEdit *point_yRealInput;
+    QTableWidgetItem *point_itemKeyLabelX;
+    QLineEdit *point_xLabelInput;
+    QTableWidgetItem *point_itemKeyLabelY;
+    QLineEdit *point_yLabelInput;
+    QTableWidgetItem *point_itemKeyMapChange;
+    QComboBox *point_comboxMapChange;
+
+    //path
+    QTableWidgetItem *path_itemKeyId;
+    QTableWidgetItem *path_itemValueId;
+    QTableWidgetItem *path_itemKeyName;
+    QLineEdit *path_nameInput;
+    QTableWidgetItem *path_itemKeyType;
+    QComboBox *path_comboxType;
+    QTableWidgetItem *path_itemKeyP1X;
+    QLineEdit *path_xP1Input;
+    QTableWidgetItem *path_itemKeyP1Y;
+    QLineEdit *path_yP1Input;
+    QTableWidgetItem *path_itemKeyP2X;
+    QLineEdit *path_xP2Input;
+    QTableWidgetItem *path_itemKeyP2Y;
+    QLineEdit *path_yP2Input;
+    QTableWidgetItem *path_itemKeyLength;
+    QLineEdit *path_lengthInput;
+
+    //floor
+    QTableWidgetItem *floor_itemKeyId;
+    QTableWidgetItem *floor_itemValueId;
+    QTableWidgetItem *floor_itemKeyName;
+    QLineEdit *floor_nameInput;
+
+    //bkg
+    QTableWidgetItem *bkg_itemKeyId;
+    QTableWidgetItem *bkg_itemValueId;
+    QTableWidgetItem *bkg_itemKeyName;
+    QLineEdit *bkg_nameInput;
+    QTableWidgetItem *bkg_itemX;
+    QLineEdit *bkg_xInput;
+    QTableWidgetItem *bkg_itemKeyY;
+    QLineEdit *bkg_yInput;
+    QTableWidgetItem *bkg_itemWidth;
+    QLineEdit *bkg_widthInput;
+    QTableWidgetItem *bkg_itemKeyHeight;
+    QLineEdit *bkg_heightInput;
+
+
 };
 
 #endif // DOCKPROPERTY_H

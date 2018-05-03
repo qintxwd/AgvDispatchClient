@@ -5,8 +5,7 @@ DockProperty::DockProperty(OneMap *_oneMap, QWidget *parent) : QDockWidget(paren
     oneMap(_oneMap)
 {
     setMaximumWidth(300);
-    tableWidget = new QTableWidget();
-    tableWidget->setColumnCount(2);
+    tableWidget = new QTableWidget(20,2);
     QStringList labels;
     labels << QStringLiteral("属性")
            << QStringLiteral("值");
@@ -16,19 +15,204 @@ DockProperty::DockProperty(OneMap *_oneMap, QWidget *parent) : QDockWidget(paren
     tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     setWidget(tableWidget);
     setWindowTitle(QStringLiteral("结点属性"));
+    init();
+}
+
+void DockProperty::init()
+{
+    /////////point
+    point_itemKeyId = new QTableWidgetItem("ID");
+    point_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyId->setFlags(point_itemKeyId->flags()&(~Qt::ItemIsEditable));
+    point_itemValueId = new QTableWidgetItem("");
+    point_itemValueId->setTextAlignment(Qt::AlignCenter);
+    point_itemValueId->setFlags(point_itemValueId->flags()&(~Qt::ItemIsEditable));
+    point_itemKeyName = new QTableWidgetItem("NAME");
+    point_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyName->setFlags(point_itemKeyName->flags()&(~Qt::ItemIsEditable));
+    point_nameInput  = new QLineEdit("");
+    connect(point_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointNameChanged(QString)));
+    point_itemKeyType = new QTableWidgetItem(QStringLiteral("类型"));
+    point_itemKeyType->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyType->setFlags(point_itemKeyType->flags()&(~Qt::ItemIsEditable));
+    point_comboxType = new QComboBox(); // 下拉选择框控件
+    point_comboxType->addItem(QStringLiteral("绘画点"));
+    point_comboxType->addItem(QStringLiteral("报告点"));
+    point_comboxType->addItem(QStringLiteral("停留点"));
+    point_comboxType->addItem(QStringLiteral("充电点"));
+    point_comboxType->addItem(QStringLiteral("装货点"));
+    point_comboxType->addItem(QStringLiteral("卸货点"));
+    point_comboxType->addItem(QStringLiteral("装卸货点"));
+    connect(point_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
+    point_itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
+    point_itemKeyX->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyX->setFlags(point_itemKeyX->flags()&(~Qt::ItemIsEditable));
+    point_xInput  = new QLineEdit(QString(""));
+    connect(point_xInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointXChanged(QString)));
+    point_itemKeyY = new QTableWidgetItem(QStringLiteral("Y"));
+    point_itemKeyY->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyY->setFlags(point_itemKeyY->flags()&(~Qt::ItemIsEditable));
+    point_yInput  = new QLineEdit(QString(""));
+    connect(point_yInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointYChanged(QString)));
+    point_itemKeyRealX = new QTableWidgetItem(QStringLiteral("RealX"));
+    point_itemKeyRealX->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyRealX->setFlags(point_itemKeyRealX->flags()&(~Qt::ItemIsEditable));
+    point_xRealInput  = new QLineEdit(QString(""));
+    connect(point_xRealInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointRealXChanged(QString)));
+    point_itemKeyRealY = new QTableWidgetItem(QStringLiteral("RealY"));
+    point_itemKeyRealY->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyRealY->setFlags(point_itemKeyRealY->flags()&(~Qt::ItemIsEditable));
+    point_yRealInput  = new QLineEdit(QString(""));
+    connect(point_yRealInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointRealYChanged(QString)));
+    point_itemKeyLabelX = new QTableWidgetItem(QStringLiteral("labelXoffset"));
+    point_itemKeyLabelX->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyLabelX->setFlags(point_itemKeyLabelX->flags()&(~Qt::ItemIsEditable));
+    point_xLabelInput  = new QLineEdit(QString(""));
+    connect(point_xLabelInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointLabelXoffsetChanged(QString)));
+    point_itemKeyLabelY = new QTableWidgetItem(QStringLiteral("labelYoffset"));
+    point_itemKeyLabelY->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyLabelY->setFlags(point_itemKeyLabelY->flags()&(~Qt::ItemIsEditable));
+    point_yLabelInput  = new QLineEdit(QString(""));
+    connect(point_yLabelInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointLabelYoffsetChanged(QString)));
+    point_itemKeyMapChange = new QTableWidgetItem(QStringLiteral("楼层切换点"));
+    point_itemKeyMapChange->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyMapChange->setFlags(point_itemKeyMapChange->flags()&(~Qt::ItemIsEditable));
+    point_comboxMapChange = new QComboBox(); // 下拉选择框控件
+    point_comboxMapChange->addItem(QStringLiteral("FALSE"));
+    point_comboxMapChange->addItem(QStringLiteral("TRUE"));
+    point_comboxMapChange->setCurrentIndex(0);
+    connect(point_comboxMapChange,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointMapChangeChanged(int)));
+
+    ////////////path
+    path_itemKeyId = new QTableWidgetItem("ID");
+    path_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyId->setFlags(path_itemKeyId->flags()&(~Qt::ItemIsEditable));
+    path_itemValueId = new QTableWidgetItem(QString(""));
+    path_itemValueId->setTextAlignment(Qt::AlignCenter);
+    path_itemValueId->setFlags(path_itemValueId->flags()&(~Qt::ItemIsEditable));
+    path_itemKeyName = new QTableWidgetItem("NAME");
+    path_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyName->setFlags(path_itemKeyName->flags()&(~Qt::ItemIsEditable));
+    path_nameInput  = new QLineEdit("");
+    connect(path_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PathNameChanged(QString)));
+    path_itemKeyType = new QTableWidgetItem(QStringLiteral("类型"));
+    path_itemKeyType->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyType->setFlags(path_itemKeyType->flags()&(~Qt::ItemIsEditable));
+    path_comboxType = new QComboBox(); // 下拉选择框控件
+    path_comboxType->addItem(QStringLiteral("直线"));
+    path_comboxType->addItem(QStringLiteral("二次贝赛尔曲线"));
+    path_comboxType->addItem(QStringLiteral("三次贝赛尔曲线"));
+    connect(path_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
+    path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
+    path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyP1X->setFlags(path_itemKeyP1X->flags()&(~Qt::ItemIsEditable));
+    path_xP1Input  = new QLineEdit(QString(""));
+    connect(path_xP1Input,SIGNAL(textEdited(QString)),this,SLOT(slot_PathP1XChanged(QString)));
+    path_itemKeyP1Y = new QTableWidgetItem(QStringLiteral("P1Y"));
+    path_itemKeyP1Y->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyP1Y->setFlags(path_itemKeyP1Y->flags()&(~Qt::ItemIsEditable));
+    path_yP1Input  = new QLineEdit(QString(""));
+    connect(path_yP1Input,SIGNAL(textEdited(QString)),this,SLOT(slot_PathP1YChanged(QString)));
+    path_itemKeyP2X = new QTableWidgetItem(QStringLiteral("P2X"));
+    path_itemKeyP2X->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyP2X->setFlags(path_itemKeyP2X->flags()&(~Qt::ItemIsEditable));
+    path_xP2Input  = new QLineEdit(QString(""));
+    connect(path_xP2Input,SIGNAL(textEdited(QString)),this,SLOT(slot_PathP2XChanged(QString)));
+    path_itemKeyP2Y = new QTableWidgetItem(QStringLiteral("P2Y"));
+    path_itemKeyP2Y->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyP2Y->setFlags(path_itemKeyP2Y->flags()&(~Qt::ItemIsEditable));
+    path_yP2Input  = new QLineEdit(QString(""));
+    connect(path_yP2Input,SIGNAL(textEdited(QString)),this,SLOT(slot_PathP2YChanged(QString)));
+    path_itemKeyLength = new QTableWidgetItem(QStringLiteral("Length"));
+    path_itemKeyLength->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyLength->setFlags(path_itemKeyLength->flags()&(~Qt::ItemIsEditable));
+    path_lengthInput  = new QLineEdit(QString(""));
+    connect(path_lengthInput,SIGNAL(textEdited(QString)),this,SLOT(slot_LengthChanged(QString)));
+
+    ///////floor
+    floor_itemKeyId = new QTableWidgetItem("ID");
+    floor_itemValueId = new QTableWidgetItem("");
+    floor_itemKeyName = new QTableWidgetItem("NAME");
+    floor_nameInput  = new QLineEdit("");
+    connect(floor_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+
+    ////////////add to table widget
+    tableWidget->setItem(0, 0, point_itemKeyId);
+    tableWidget->setItem(0, 1, point_itemValueId);
+    tableWidget->setItem(1, 0, point_itemKeyName);
+    tableWidget->setCellWidget(1,1,point_nameInput);
+    tableWidget->setItem(2, 0, point_itemKeyType);
+    tableWidget->setCellWidget(2, 1, (QWidget*)point_comboxType);
+    tableWidget->setItem(3, 0, point_itemKeyX);
+    tableWidget->setCellWidget(3,1,point_xInput);
+    tableWidget->setItem(4, 0, point_itemKeyY);
+    tableWidget->setCellWidget(4,1,point_yInput);
+    tableWidget->setItem(5, 0, point_itemKeyRealX);
+    tableWidget->setCellWidget(5,1,point_xRealInput);
+    tableWidget->setItem(6, 0, point_itemKeyRealY);
+    tableWidget->setCellWidget(6,1,point_yRealInput);
+    tableWidget->setItem(7, 0, point_itemKeyLabelX);
+    tableWidget->setCellWidget(7,1,point_xLabelInput);
+    tableWidget->setItem(8, 0, point_itemKeyLabelY);
+    tableWidget->setCellWidget(8,1,point_yLabelInput);
+    tableWidget->setItem(9, 0, point_itemKeyMapChange);
+    tableWidget->setCellWidget(9, 1, (QWidget*)point_comboxMapChange);
+
+    tableWidget->setItem(10, 0, path_itemKeyId);
+    tableWidget->setItem(10, 1, path_itemValueId);
+    tableWidget->setItem(11, 0, path_itemKeyName);
+    tableWidget->setCellWidget(11,1,path_nameInput);
+    tableWidget->setItem(12, 0, path_itemKeyType);
+    tableWidget->setCellWidget(12, 1, (QWidget*)path_comboxType);
+    tableWidget->setItem(13, 0, path_itemKeyP1X);
+    tableWidget->setCellWidget(13,1,path_xP1Input);
+    tableWidget->setItem(14, 0, path_itemKeyP1Y);
+    tableWidget->setCellWidget(14,1,path_yP1Input);
+    tableWidget->setItem(15, 0, path_itemKeyP2X);
+    tableWidget->setCellWidget(15,1,path_xP2Input);
+    tableWidget->setItem(16, 0, path_itemKeyP2Y);
+    tableWidget->setCellWidget(16,1,path_yP2Input);
+    tableWidget->setItem(17, 0, path_itemKeyLength);
+    tableWidget->setCellWidget(17,1,path_lengthInput);
+
+    tableWidget->setItem(18, 0, floor_itemKeyId);
+    tableWidget->setItem(18, 1, floor_itemValueId);
+    tableWidget->setItem(19, 0, floor_itemKeyName);
+    tableWidget->setCellWidget(19,1,floor_nameInput);
+
+    for(int i=0;i<20;++i){
+        tableWidget->setRowHidden(i,true);
+    }
+
+}
+
+//地图修改的属性，这边更新
+void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
+{
+    //TODO:
+    if(spirit != _spirit) return ;
+
+    for(int i=0;i<20;++i){
+        tableWidget->setRowHidden(i,i>9);
+    }
+
+    //只是更新数据
+    if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+        showPoint();
+    }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
+        showPath();
+    }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
+        showFloor();
+    }
 }
 
 void DockProperty::slot_showSpirit(MapSpirit *s)
 {
     if(spirit == s) return ;
     spirit = s;
-    if(spirit == nullptr){
-        while(tableWidget->rowCount()>0){
-            tableWidget->removeRow(0);
-        }
-        tableWidget->update();
-        return ;
-    }
+
+    tableWidget->update();
+    if(spirit == nullptr)return ;
     switch (spirit->getSpiritType()) {
     case MapSpirit::Map_Sprite_Type_Point:
         showPoint();
@@ -40,242 +224,64 @@ void DockProperty::slot_showSpirit(MapSpirit *s)
         showFloor();
         break;
     default:
-        while(tableWidget->rowCount()>0){
-            tableWidget->removeRow(0);
-        }
-        tableWidget->update();
         break;
     }
 }
 
 void DockProperty::showPoint()
 {
+    if(spirit==nullptr)return ;
     //清空原来的数据
-    while(tableWidget->rowCount()>0){
-        tableWidget->removeRow(0);
-    }
-    tableWidget->update();
     MapPoint *point = static_cast<MapPoint *>(spirit);
-    tableWidget->setRowCount(10);
-
-    //对象ID
-    QTableWidgetItem *itemKeyId = new QTableWidgetItem("ID");
-    itemKeyId->setTextAlignment(Qt::AlignCenter);
-    itemKeyId->setFlags(itemKeyId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 0, itemKeyId);
-    QTableWidgetItem *itemValueId = new QTableWidgetItem(QString("%1").arg(point->getId()));
-    itemValueId->setTextAlignment(Qt::AlignCenter);
-    itemValueId->setFlags(itemValueId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 1, itemValueId);
-
-    //对象NAME
-    QTableWidgetItem *itemKeyName = new QTableWidgetItem("NAME");
-    itemKeyName->setTextAlignment(Qt::AlignCenter);
-    itemKeyName->setFlags(itemKeyName->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(1, 0, itemKeyName);
-    QLineEdit *nameInput  = new QLineEdit(point->getName());
-    connect(nameInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointNameChanged(QString)));
-    tableWidget->setCellWidget(1,1,nameInput);
-
-    //对象TYPE
-    QTableWidgetItem *itemKeyType = new QTableWidgetItem(QStringLiteral("类型"));
-    itemKeyType->setTextAlignment(Qt::AlignCenter);
-    itemKeyType->setFlags(itemKeyType->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(2, 0, itemKeyType);
-    QComboBox *comboxType = new QComboBox(); // 下拉选择框控件
-    comboxType->addItem(QStringLiteral("绘画点"));
-    comboxType->addItem(QStringLiteral("报告点"));
-    comboxType->addItem(QStringLiteral("停留点"));
-    comboxType->addItem(QStringLiteral("充点点"));
-    comboxType->addItem(QStringLiteral("装货点"));
-    comboxType->addItem(QStringLiteral("卸货点"));
-    comboxType->addItem(QStringLiteral("装卸货点"));
-    comboxType->setCurrentIndex((int)(point->getPointType()));
-    connect(comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
-    tableWidget->setCellWidget(2, 1, (QWidget*)comboxType);
-
-    QTableWidgetItem *itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
-    itemKeyX->setTextAlignment(Qt::AlignCenter);
-    itemKeyX->setFlags(itemKeyX->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(3, 0, itemKeyX);
-    QLineEdit *xInput  = new QLineEdit(QString("%1").arg(point->getX()));
-    connect(xInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointXChanged(QString)));
-    tableWidget->setCellWidget(3,1,xInput);
-
-    QTableWidgetItem *itemKeyY = new QTableWidgetItem(QStringLiteral("Y"));
-    itemKeyY->setTextAlignment(Qt::AlignCenter);
-    itemKeyY->setFlags(itemKeyY->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(4, 0, itemKeyY);
-    QLineEdit *yInput  = new QLineEdit(QString("%1").arg(point->getY()));
-    connect(yInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointYChanged(QString)));
-    tableWidget->setCellWidget(4,1,yInput);
-
-    QTableWidgetItem *itemKeyRealX = new QTableWidgetItem(QStringLiteral("RealX"));
-    itemKeyRealX->setTextAlignment(Qt::AlignCenter);
-    itemKeyRealX->setFlags(itemKeyRealX->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(5, 0, itemKeyRealX);
-    QLineEdit *xRealInput  = new QLineEdit(QString("%1").arg(point->getRealX()));
-    connect(xRealInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointRealXChanged(QString)));
-    tableWidget->setCellWidget(5,1,xRealInput);
-
-    QTableWidgetItem *itemKeyRealY = new QTableWidgetItem(QStringLiteral("RealY"));
-    itemKeyRealY->setTextAlignment(Qt::AlignCenter);
-    itemKeyRealY->setFlags(itemKeyRealY->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(6, 0, itemKeyRealY);
-    QLineEdit *yRealInput  = new QLineEdit(QString("%1").arg(point->getRealY()));
-    connect(yRealInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointRealYChanged(QString)));
-    tableWidget->setCellWidget(6,1,yRealInput);
-
-    QTableWidgetItem *itemKeyLabelX = new QTableWidgetItem(QStringLiteral("labelXoffset"));
-    itemKeyLabelX->setTextAlignment(Qt::AlignCenter);
-    itemKeyLabelX->setFlags(itemKeyLabelX->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(7, 0, itemKeyLabelX);
-    QLineEdit *xLabelInput  = new QLineEdit(QString("%1").arg(point->getLabelXoffset()));
-    connect(xLabelInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointLabelXoffsetChanged(QString)));
-    tableWidget->setCellWidget(7,1,xLabelInput);
-
-    QTableWidgetItem *itemKeyLabelY = new QTableWidgetItem(QStringLiteral("labelYoffset"));
-    itemKeyLabelY->setTextAlignment(Qt::AlignCenter);
-    itemKeyLabelY->setFlags(itemKeyLabelY->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(8, 0, itemKeyLabelY);
-    QLineEdit *yLabelInput  = new QLineEdit(QString("%1").arg(point->getLabelYoffset()));
-    connect(yLabelInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PointLabelYoffsetChanged(QString)));
-    tableWidget->setCellWidget(8,1,yLabelInput);
-
-    QTableWidgetItem *itemKeyMapChange = new QTableWidgetItem(QStringLiteral("楼层切换点"));
-    itemKeyMapChange->setTextAlignment(Qt::AlignCenter);
-    itemKeyMapChange->setFlags(itemKeyMapChange->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(9, 0, itemKeyMapChange);
-    QComboBox *comboxMapChange = new QComboBox(); // 下拉选择框控件
-    comboxMapChange->addItem(QStringLiteral("FALSE"));
-    comboxMapChange->addItem(QStringLiteral("TRUE"));
-    comboxMapChange->setCurrentIndex(0);
+    point_itemValueId->setText(QString("%1").arg(point->getId()));
+    point_nameInput->setText(point->getName());
+    point_comboxType->setCurrentIndex((int)(point->getPointType()));;
+    point_xInput->setText(QString("%1").arg(point->getX()));
+    point_yInput->setText(QString("%1").arg(point->getY()));
+    point_xRealInput->setText(QString("%1").arg(point->getRealX()));
+    point_yRealInput->setText(QString("%1").arg(point->getRealY()));
+    point_xLabelInput->setText(QString("%1").arg(point->getLabelXoffset()));
+    point_yLabelInput->setText(QString("%1").arg(point->getLabelYoffset()));
+    point_comboxMapChange->setCurrentIndex(0);
     if(point->getMapChange()){
-        comboxMapChange->setCurrentIndex(1);
+        point_comboxMapChange->setCurrentIndex(1);
     }
-    connect(comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointMapChangeChanged(int)));
-    tableWidget->setCellWidget(9, 1, (QWidget*)comboxType);
+    for(int i=0;i<20;++i){
+        tableWidget->setRowHidden(i,i>9);
+    }
 
-    tableWidget->insertRow(0);
+    tableWidget->update();
 }
 
 void DockProperty::showPath()
 {
+    if(spirit==nullptr)return ;
     //清空原来的数据
-    while(tableWidget->rowCount()>0){
-        tableWidget->removeRow(0);
+    MapPath *path = static_cast<MapPath *>(spirit);
+    path_itemValueId->setText(QString("%1").arg(path->getId()));
+    path_nameInput->setText(path->getName());
+    path_comboxType->setCurrentIndex((int)(path->getPathType()));
+    path_xP1Input->setText(QString("%1").arg(path->getP1x()));
+    path_yP1Input->setText(QString("%1").arg(path->getP1y()));
+    path_xP2Input->setText(QString("%1").arg(path->getP2x()));
+    path_yP2Input->setText(QString("%1").arg(path->getP2y()));
+    path_lengthInput->setText(QString("%1").arg(path->getLength()));
+    for(int i=0;i<20;++i){
+        tableWidget->setRowHidden(i,i<=9 || i > 17);
     }
     tableWidget->update();
-    MapPath *path = static_cast<MapPath *>(spirit);
-    tableWidget->setRowCount(8);
-
-    //对象ID
-    QTableWidgetItem *itemKeyId = new QTableWidgetItem("ID");
-    itemKeyId->setTextAlignment(Qt::AlignCenter);
-    itemKeyId->setFlags(itemKeyId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 0, itemKeyId);
-    QTableWidgetItem *itemValueId = new QTableWidgetItem(QString("%1").arg(path->getId()));
-    itemValueId->setTextAlignment(Qt::AlignCenter);
-    itemValueId->setFlags(itemValueId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 1, itemValueId);
-
-    //对象NAME
-    QTableWidgetItem *itemKeyName = new QTableWidgetItem("NAME");
-    itemKeyName->setTextAlignment(Qt::AlignCenter);
-    itemKeyName->setFlags(itemKeyName->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(1, 0, itemKeyName);
-    QLineEdit *nameInput  = new QLineEdit(path->getName());
-    connect(nameInput,SIGNAL(textChanged(QString)),this,SLOT(slot_PathNameChanged(QString)));
-    tableWidget->setCellWidget(1,1,nameInput);
-
-    //对象TYPE
-    QTableWidgetItem *itemKeyType = new QTableWidgetItem(QStringLiteral("类型"));
-    itemKeyType->setTextAlignment(Qt::AlignCenter);
-    itemKeyType->setFlags(itemKeyType->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(2, 0, itemKeyType);
-    QComboBox *comboxType = new QComboBox(); // 下拉选择框控件
-    comboxType->addItem(QStringLiteral("直线"));
-    comboxType->addItem(QStringLiteral("二次贝赛尔曲线"));
-    comboxType->addItem(QStringLiteral("三次贝赛尔曲线"));
-    comboxType->setCurrentIndex((int)(path->getPathType()));
-    connect(comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
-    tableWidget->setCellWidget(2, 1, (QWidget*)comboxType);
-
-    //p1x
-    QTableWidgetItem *itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
-    itemKeyP1X->setTextAlignment(Qt::AlignCenter);
-    itemKeyP1X->setFlags(itemKeyP1X->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(3, 0, itemKeyP1X);
-    QLineEdit *xP1Input  = new QLineEdit(QString("%1").arg(path->getP1x()));
-    connect(xP1Input,SIGNAL(textChanged(QString)),this,SLOT(slot_PathP1XChanged(QString)));
-    tableWidget->setCellWidget(3,1,xP1Input);
-
-    //p1y
-    QTableWidgetItem *itemKeyP1Y = new QTableWidgetItem(QStringLiteral("P1Y"));
-    itemKeyP1Y->setTextAlignment(Qt::AlignCenter);
-    itemKeyP1Y->setFlags(itemKeyP1Y->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(4, 0, itemKeyP1Y);
-    QLineEdit *yP1Input  = new QLineEdit(QString("%1").arg(path->getP1y()));
-    connect(yP1Input,SIGNAL(textChanged(QString)),this,SLOT(slot_PathP1YChanged(QString)));
-    tableWidget->setCellWidget(4,1,yP1Input);
-
-    //p2x
-    QTableWidgetItem *itemKeyP2X = new QTableWidgetItem(QStringLiteral("P2X"));
-    itemKeyP2X->setTextAlignment(Qt::AlignCenter);
-    itemKeyP2X->setFlags(itemKeyP2X->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(5, 0, itemKeyP2X);
-    QLineEdit *xP2Input  = new QLineEdit(QString("%1").arg(path->getP2x()));
-    connect(xP2Input,SIGNAL(textChanged(QString)),this,SLOT(slot_PathP2XChanged(QString)));
-    tableWidget->setCellWidget(5,1,xP2Input);
-
-    //p2y
-    QTableWidgetItem *itemKeyP2Y = new QTableWidgetItem(QStringLiteral("P2Y"));
-    itemKeyP2Y->setTextAlignment(Qt::AlignCenter);
-    itemKeyP2Y->setFlags(itemKeyP2Y->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(6, 0, itemKeyP2Y);
-    QLineEdit *yP2Input  = new QLineEdit(QString("%1").arg(path->getP2y()));
-    connect(yP2Input,SIGNAL(textChanged(QString)),this,SLOT(slot_PathP2YChanged(QString)));
-    tableWidget->setCellWidget(6,1,yP2Input);
-
-    //length
-    QTableWidgetItem *itemKeyLength = new QTableWidgetItem(QStringLiteral("Length"));
-    itemKeyLength->setTextAlignment(Qt::AlignCenter);
-    itemKeyLength->setFlags(itemKeyLength->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(7, 0, itemKeyLength);
-    QLineEdit *lengthInput  = new QLineEdit(QString("%1").arg(path->getLength()));
-    connect(lengthInput,SIGNAL(textChanged(QString)),this,SLOT(slot_LengthChanged(QString)));
-    tableWidget->setCellWidget(7,1,lengthInput);
-
-
 }
 void DockProperty::showFloor()
 {
     //清空原来的数据
-    while(tableWidget->rowCount()>0){
-        tableWidget->removeRow(0);
+    if(spirit==nullptr)return ;
+    MapFloor *floor = static_cast<MapFloor *>(spirit);
+    floor_itemValueId->setText(QString("%1").arg(floor->getId()));
+    floor_nameInput->setText(floor->getName());
+    for(int i=0;i<20;++i){
+        tableWidget->setRowHidden(i,i <= 17);
     }
     tableWidget->update();
-    MapFloor *floor = static_cast<MapFloor *>(spirit);
-    tableWidget->setRowCount(2);
-
-    //对象ID
-    QTableWidgetItem *itemKeyId = new QTableWidgetItem("ID");
-    itemKeyId->setTextAlignment(Qt::AlignCenter);
-    itemKeyId->setFlags(itemKeyId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 0, itemKeyId);
-    QTableWidgetItem *itemValueId = new QTableWidgetItem(QString("%1").arg(floor->getId()));
-    itemValueId->setTextAlignment(Qt::AlignCenter);
-    itemValueId->setFlags(itemValueId->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(0, 1, itemValueId);
-
-    //对象NAME
-    QTableWidgetItem *itemKeyName = new QTableWidgetItem("NAME");
-    itemKeyName->setTextAlignment(Qt::AlignCenter);
-    itemKeyName->setFlags(itemKeyName->flags()&~Qt::ItemIsEditable&~Qt::ItemIsEnabled);//不可编译
-    tableWidget->setItem(1, 0, itemKeyName);
-    QLineEdit *nameInput  = new QLineEdit(floor->getName());
-    connect(nameInput,SIGNAL(textChanged(QString)),this,SLOT(slot_FloorNameChanged(QString)));
-    tableWidget->setCellWidget(1,1,nameInput);
 }
 
 void DockProperty::slot_PointNameChanged(QString name)
@@ -285,7 +291,8 @@ void DockProperty::slot_PointNameChanged(QString name)
 }
 void DockProperty::slot_PointTypeChanged(int _type)
 {
-    spirit->setSpiritType((MapSpirit::Map_Spirit_Type)_type);
+    MapPoint *p = static_cast<MapPoint *>(spirit);
+    p->setPointType((MapPoint::Map_Point_Type)_type);
     emit sig_PointTypeChanged(spirit,_type);
 }
 void DockProperty::slot_PointXChanged(QString x)

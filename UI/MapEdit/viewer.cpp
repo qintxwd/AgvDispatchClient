@@ -24,6 +24,18 @@ Viewer::Viewer(QWidget *parent) :  QGraphicsView(parent)
     setViewportUpdateMode(FullViewportUpdate);
 }
 
+void Viewer::toggleSelectMode()
+{
+    setDragMode( QGraphicsView::RubberBandDrag);
+    setInteractive(true);
+}
+
+void Viewer::toggleDragMode()
+{
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    setInteractive(false);
+}
+
 void Viewer::wheelEvent(QWheelEvent *event)
 {
     static int kk = 0;

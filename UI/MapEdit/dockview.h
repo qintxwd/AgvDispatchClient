@@ -35,17 +35,15 @@ signals:
     //删除背景
     void sig_removeBkg(MapFloor *floor,MapBackground *spirit);
 
-    //站点属性修改
-    void sig_stationPropertyChanged(MapFloor *floor,MapPoint *spirit);
-
-    //路径属性修改
-    void sig_pathPropertyChanged(MapFloor *floor,MapPath *spirit);
-
-    //背景图片属性修改
-    void sig_bgkPropertyChanged(MapFloor *floor,MapBackground *spirit);
+    //属性修改
+    void sig_propertyChanged(MapSpirit *spirit);
 
     //选择修改
-    void sig_chooseChanged(MapFloor *floor,MapSpirit *spirit);
+    void sig_chooseChanged(MapSpirit *spirit);
+
+    void sig_selectSelect();
+
+    void sig_selectHand();
 
 public slots:
 
@@ -69,17 +67,6 @@ public slots:
     //删除背景
     void slot_removeBkg(MapBackground *spirit);
 
-    //站点属性修改
-    void slot_stationPropertyChanged(MapPoint *spirit);
-
-    //路径属性修改
-    void slot_pathPropertyChanged(MapPath *spirit);
-
-    //背景图片属性修改
-    void slot_bgkPropertyChanged(MapBackground *spirit);
-
-    //选择修改
-    void slot_chooseChanged(MapSpirit *spirit);
 private:
     OneMap *oneMap;
 

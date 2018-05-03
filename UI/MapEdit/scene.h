@@ -59,14 +59,8 @@ signals:
     //删除背景
     void sig_removeBkg(MapBackground *spirit);
 
-    //站点属性修改
-    void sig_stationPropertyChanged(MapPoint *spirit);
-
-    //路径属性修改
-    void sig_pathPropertyChanged(MapPath *spirit);
-
-    //背景图片属性修改
-    void sig_bgkPropertyChanged(MapBackground *spirit);
+    //属性修改
+    void sig_propertyChanged(MapSpirit *spirit);
 
     //选择修改
     void sig_chooseChanged(MapSpirit *spirit);

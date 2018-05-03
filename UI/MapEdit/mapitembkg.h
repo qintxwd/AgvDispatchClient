@@ -22,6 +22,7 @@ public:
 
     void setBkg(MapBackground *_bkg){
         bkg = _bkg;
+        emit sig_positionChange(bkg);
     }
 
     void my_update();
@@ -29,7 +30,7 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 signals:
-    void sig_bkgPositionChange(MapBackground *);
+    void sig_positionChange(MapSpirit *);
 public slots:
 
 private:

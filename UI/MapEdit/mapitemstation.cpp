@@ -19,16 +19,7 @@ MapItemStation::MapItemStation(MapPoint *_point, QGraphicsItem *parent) : QGraph
 //外接区域
 QRectF MapItemStation::boundingRect() const
 {
-    if(point->getPointType() == MapPoint::Map_Point_Type_Draw||point->getPointType() == MapPoint::Map_Point_Type_REPORT||point->getPointType() == MapPoint::Map_Point_Type_HALT){
-        return QRectF(-5, -5, 5, 5);
-    }else if(point->getPointType() == MapPoint::Map_Point_Type_CHARGE){
-        return QRectF(-10, -10, 10, 10);
-    }else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD||
-             point->getPointType() == MapPoint::Map_Point_Type_UNLOAD||
-             point->getPointType() == MapPoint::Map_Point_Type_LOAD_UNLOAD){
-        return QRectF(-10, -10, 10, 10);
-    }
-    return QRectF(-5, -5, 5, 5);
+    return QRectF(-5, -5, 10, 10);
 }
 
 //绘制
@@ -50,9 +41,13 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     pen.setWidth(width);
     painter->setPen(pen);
     painter->setBrush(QBrush(_color));
-
-    if(point->getPointType() == MapPoint::Map_Point_Type_Draw||point->getPointType() == MapPoint::Map_Point_Type_REPORT||point->getPointType() == MapPoint::Map_Point_Type_HALT){
-        painter->drawEllipse(-5,-5,10,10);
+    painter->drawRect(boundingRect());
+    if(point->getPointType() == MapPoint::Map_Point_Type_Draw){
+        painter->drawImage(boundingRect(),*imgDraw);
+    }else if(point->getPointType() == MapPoint::Map_Point_Type_REPORT){
+        painter->drawImage(boundingRect(),*imgReport);
+    }else if(point->getPointType() == MapPoint::Map_Point_Type_HALT){
+        painter->drawImage(boundingRect(),*imgHalt);
     }else if(point->getPointType() == MapPoint::Map_Point_Type_CHARGE){
         painter->drawImage(boundingRect(),*imgCharge);
     }else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD){
@@ -76,10 +71,16 @@ void MapItemStation::my_update()
 
 void MapItemStation::loadImg()
 {
+    imgDraw = new QImage;
+    imgReport = new QImage;
+    imgHalt = new QImage;
     imgCharge = new QImage;
     imgLoad = new QImage;
     imgUnload = new QImage;
     imgLoadUnload = new QImage;
+    imgDraw->load(":/images/toolbar/point-report.22.png");
+    imgReport->load(":/images/toolbar/point-halt.22.png");
+    imgHalt->load(":/images/toolbar/point-park.22.png");
     imgCharge->load(":/images/point/ChargingStation.20x20.png");
     imgLoad->load(":/images/point/TransferStation.20x20.png");
     imgUnload->load(":/images/point/TransferStation.20x20.png");
@@ -105,7 +106,7 @@ QVariant MapItemStation::itemChange(GraphicsItemChange change, const QVariant &v
         }
 
         //TODO:更新了station的位置
-
+        emit sig_propertyChanged(point);
         return newPos;
     }
     return QGraphicsItem::itemChange(change, value);

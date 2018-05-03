@@ -15,6 +15,9 @@ public:
     void init();
 signals:
     void sig_setTool(int);
+
+    void sig_setSelectSelect();
+    void sig_setSelectHand();
 public slots:
 
     void about();
@@ -46,6 +49,9 @@ public slots:
     void on_toolLine_triggered(bool b);
     void on_toolQb_triggered(bool b);
     void on_toolCb_triggered(bool b);
+
+    void on_selectSelect_triggered(bool b);
+    void on_selectHand_triggered(bool b);
 private:
 
     void createActions();
@@ -66,6 +72,9 @@ private:
     DockMapTree *dockMapTree;
     DockProperty *dockProperty;
     DockView *dockView;
+
+    QAction *selectSelect;
+    QAction *selectHand;
 
     QAction *toolErase;
     QAction *toolStationDraw;

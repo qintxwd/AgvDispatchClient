@@ -31,6 +31,9 @@ public:
     MapPath *getPath(){return path;}
 
     void my_update();
+
+signals:
+    void sig_propertyChanged(MapSpirit *spirit);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

@@ -12,7 +12,8 @@ class Viewer : public QGraphicsView
 public:
     Viewer(QWidget *parent = nullptr);
 public slots:
-
+    void toggleSelectMode();
+    void toggleDragMode();
 protected:
     virtual void wheelEvent(QWheelEvent *event);
 signals:

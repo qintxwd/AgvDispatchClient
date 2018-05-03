@@ -27,6 +27,8 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+
+    QModelIndexList getModelIndexs();
 public slots:
     //增加、删除、修改名字时用
     void fresh();

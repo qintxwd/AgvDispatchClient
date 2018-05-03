@@ -92,11 +92,13 @@ void MapItemCubicBezier::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         path->setP1x(P1.x());
         path->setP1y(P1.y());
         update();
+        emit sig_propertyChanged(path);
     }else if(isDragingP2){
         P2 = event->pos();
         path->setP1x(P2.x());
         path->setP1y(P2.y());
         update();
+        emit sig_propertyChanged(path);
     }
     QGraphicsObject::mouseMoveEvent(event);
 }

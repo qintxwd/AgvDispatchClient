@@ -9,7 +9,8 @@ Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScen
     cur_tool(T_NONE),
     onemap(_onemap),
     floor(_floor),
-    oldSelectStation(nullptr)
+    oldSelectStation(nullptr),
+    bkg(nullptr)
 {
     //设置网格线
     QPolygonF myPolygon1;
@@ -50,6 +51,8 @@ void Scene::build()
     foreach (auto p, points) {
         MapItemStation *station = new MapItemStation(p);
         MapItemStationName *stationname = new MapItemStationName(station,p);
+        connect(station,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+        connect(stationname,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
         addItem(station);
         addItem(stationname);
         iStations.append(station);
@@ -69,6 +72,7 @@ void Scene::build()
             if(start == nullptr || end == nullptr)continue ;
 
             MapItemLine *l = new MapItemLine(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iLines.push_back(l);
         }
@@ -82,6 +86,7 @@ void Scene::build()
             if(start == nullptr || end == nullptr)return ;
 
             MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iQbs.push_back(l);
         }
@@ -95,6 +100,7 @@ void Scene::build()
             if(start == nullptr || end == nullptr)return ;
 
             MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iCbs.push_back(l);
         }
@@ -103,6 +109,7 @@ void Scene::build()
     MapBackground *_bkg = floor->getBkg();
     if(_bkg != nullptr){
         bkg = new MapItemBkg(_bkg);
+        connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
         addItem(bkg);
     }
 
@@ -168,6 +175,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             //添加item
             MapItemStation *station= new MapItemStation(p);
             MapItemStationName *stationname = new MapItemStationName(station,p);
+            connect(station,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+            connect(stationname,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(station);
             addItem(stationname);
             iStations.push_back(station);
@@ -219,6 +228,7 @@ void Scene::setBackgroundImagePath(QString _path)
 
     if(bkg==nullptr){
         bkg = new MapItemBkg(bk);
+        connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
         addItem(bkg);
     }else{
         bkg->setBkg(bk);
@@ -239,9 +249,11 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
     }
     if(MapSpirit::Map_Sprite_Type_Point == _spirit->getSpiritType())
     {
-        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+        MapPoint *p = static_cast<MapPoint *>(_spirit);
         MapItemStation *sstation = new MapItemStation(p);
         MapItemStationName *sstationName = new MapItemStationName(sstation,p);
+        connect(sstation,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+        connect(sstationName,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
         addItem(sstation);
         addItem(sstationName);
         iStations.push_back(sstation);
@@ -249,7 +261,7 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
         update();
     }else if(MapSpirit::Map_Sprite_Type_Path == _spirit->getSpiritType())
     {
-        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+        MapPath *p = static_cast<MapPath *>(_spirit);
         if(p->getPathType() == MapPath::Map_Path_Type_Line){
             MapItemStation *start = nullptr;
             MapItemStation *end = nullptr;
@@ -261,6 +273,7 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemLine *l = new MapItemLine(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iLines.push_back(l);
             update();
@@ -275,6 +288,7 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iQbs.push_back(l);
             update();
@@ -289,6 +303,7 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iCbs.push_back(l);
             update();
@@ -304,7 +319,7 @@ void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
 
     if(MapSpirit::Map_Sprite_Type_Point == _spirit->getSpiritType())
     {
-        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+        MapPoint *p = static_cast<MapPoint *>(_spirit);
 
         MapItemStation *newStation = nullptr;
         foreach (auto station, iStations) {
@@ -359,7 +374,7 @@ void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
 
     }else if(MapSpirit::Map_Sprite_Type_Path == _spirit->getSpiritType())
     {
-        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+        MapPath *p = static_cast<MapPath *>(_spirit);
         if(p->getPathType() == MapPath::Map_Path_Type_Line){
             MapItemStation *start = nullptr;
             MapItemStation *end = nullptr;
@@ -371,6 +386,7 @@ void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemLine *l = new MapItemLine(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iLines.push_back(l);
             update();
@@ -385,6 +401,7 @@ void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iQbs.push_back(l);
             update();
@@ -399,6 +416,7 @@ void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
             if(start == nullptr || end == nullptr)return ;
 
             MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
+            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
             addItem(l);
             iCbs.push_back(l);
             update();
@@ -410,7 +428,7 @@ void Scene::propertyChanged(MapFloor *_floor, MapSpirit *_spirit)
 {
     if(_floor != floor)return ;
     if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
-        MapPoint *p = dynamic_cast<MapPoint *>(_spirit);
+        MapPoint *p = static_cast<MapPoint *>(_spirit);
         foreach (auto station, iStations) {
             if(station->getPoint() == p){
                 station->my_update();
@@ -425,7 +443,7 @@ void Scene::propertyChanged(MapFloor *_floor, MapSpirit *_spirit)
         }
     }
     else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
-        MapPath *path = dynamic_cast<MapPath *>(_spirit);
+        MapPath *path = static_cast<MapPath *>(_spirit);
         if(path->getPathType() == MapPath::Map_Path_Type_Line){
             foreach (auto l, iLines) {
                 if(l->getPath() == path){
@@ -452,7 +470,7 @@ void Scene::propertyChanged(MapFloor *_floor, MapSpirit *_spirit)
         }
     }
     else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
-        MapBackground * b = dynamic_cast<MapBackground *>(_spirit);
+        MapBackground * b = static_cast<MapBackground *>(_spirit);
         if(bkg!=nullptr && bkg->getBkg() == b){
             bkg->my_update();
         }
@@ -463,7 +481,7 @@ void Scene::onSelectItemChanged()
 {
     QList<QGraphicsItem *> sis= this->selectedItems();
 
-    if(sis.length() != 1){
+    if(sis.length() > 2){
         emit sig_chooseChanged(nullptr);
     }
 
@@ -477,6 +495,14 @@ void Scene::onSelectItemChanged()
             MapItemStation *newStation = nullptr;
             if(lastSelectItem->type() == MapItemStation::Type){
                 newStation = qgraphicsitem_cast<MapItemStation*>(lastSelectItem);
+
+                foreach (auto name, iStationNames) {
+                    if(name->getStation() == newStation){
+                        name->setSelected(true);
+                        break;
+                    }
+                }
+
             }else{
                 MapItemStationName *stationName = qgraphicsitem_cast<MapItemStationName *>(lastSelectItem);
                 newStation = stationName->getStation();
@@ -496,14 +522,15 @@ void Scene::onSelectItemChanged()
                     MapItemLine *line= new MapItemLine(oldSelectStation,newStation,p);
                     oldSelectStation->addLine(line);
                     newStation->addLine(line);
+                    connect(line,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
                     addItem(line);
                     iLines.push_back(line);
                     update();
 
                     //发射信号
                     emit sig_addPath(line->getPath());
+                    newStation->setSelected(false);
                     oldSelectStation = nullptr;
-                    slot_setCurTool(T_NONE);
                 }
             }else if(cur_tool == T_QB){
                 if(oldSelectStation==nullptr){
@@ -520,13 +547,15 @@ void Scene::onSelectItemChanged()
                     MapItemQuadraticBezier *qb= new MapItemQuadraticBezier(oldSelectStation,newStation,p);
                     oldSelectStation->addQb(qb);
                     newStation->addQb(qb);
+                    connect(qb,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
                     addItem(qb);
                     iQbs.push_back(qb);
                     update();
 
                     //发射信号
                     emit sig_addPath(qb->getPath());
-                    slot_setCurTool(T_NONE);
+                    newStation->setSelected(false);
+                    oldSelectStation = nullptr;
                 }
             }else if(cur_tool == T_CB){
                 if(oldSelectStation==nullptr){
@@ -548,13 +577,15 @@ void Scene::onSelectItemChanged()
                     MapItemCubicBezier *cb= new MapItemCubicBezier(oldSelectStation,newStation,p);
                     oldSelectStation->addCb(cb);
                     newStation->addCb(cb);
+                    connect(cb,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
                     addItem(cb);
                     iCbs.push_back(cb);
                     update();
 
                     //发射信号
                     emit sig_addPath(cb->getPath());
-                    slot_setCurTool(T_NONE);
+                    newStation->setSelected(false);
+                    oldSelectStation = nullptr;
                 }
             }else if(cur_tool == T_ERASER ){
                 //清除一个站点//TODO
@@ -598,6 +629,8 @@ void Scene::onSelectItemChanged()
                 iStationNames.removeAll(stationname);
                 update();
                 emit sig_removeStation(newStation->getPoint());
+            }else{
+                emit sig_chooseChanged(newStation->getPoint());
             }
         }
 
@@ -614,6 +647,8 @@ void Scene::onSelectItemChanged()
                 update();
                 //TODO:
                 emit sig_removePath(selectLine->getPath());
+            }else{
+                emit sig_chooseChanged(selectLine->getPath());
             }
         }
         else if(lastSelectItem->type() == MapItemQuadraticBezier::Type)
@@ -628,6 +663,8 @@ void Scene::onSelectItemChanged()
                 update();
                 //TODO:
                 emit sig_removePath(selectLine->getPath());
+            }else{
+                emit sig_chooseChanged(selectLine->getPath());
             }
         }
         else if(lastSelectItem->type() == MapItemCubicBezier::Type)
@@ -642,6 +679,8 @@ void Scene::onSelectItemChanged()
                 update();
                 //TODO:
                 emit sig_removePath(selectLine->getPath());
+            }else{
+                emit sig_chooseChanged(selectLine->getPath());
             }
         }
     }
@@ -662,7 +701,7 @@ void Scene::slot_selectItem(MapSpirit *_spirit)
     }
     else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path)
     {
-        MapPath *p = dynamic_cast<MapPath *>(_spirit);
+        MapPath *p = static_cast<MapPath *>(_spirit);
 
         if(p->getPathType() == MapPath::Map_Path_Type_Line){
             foreach (auto p, iLines) {
@@ -689,7 +728,7 @@ void Scene::slot_selectItem(MapSpirit *_spirit)
 
     }
     else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
-        if(bkg->getBkg() == _spirit){
+        if(bkg!=nullptr && bkg->getBkg() == _spirit){
             bkg->setSelected(true);
         }
     }

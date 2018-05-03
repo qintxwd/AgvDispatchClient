@@ -2,7 +2,8 @@
 #include "mapitemstation.h"
 #include <QtWidgets>
 
-MapItemLine::MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation,MapPath *_path,QGraphicsItem *parent):
+MapItemLine::MapItemLine(MapItemStation *_startStation, MapItemStation *_endStation, MapPath *_path, QGraphicsItem *parent, QObject *_parent):
+    QObject(_parent),
     QGraphicsLineItem(parent),
     startStation(_startStation),
     endStation(_endStation),

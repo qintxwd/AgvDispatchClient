@@ -7,6 +7,7 @@ class MapItemStation;
 
 class MapItemStationName : public QGraphicsTextItem
 {
+    Q_OBJECT
 public:
     MapItemStationName(MapItemStation *_station,MapPoint *_point,QGraphicsItem *parent = nullptr);
 
@@ -21,8 +22,14 @@ public:
     MapItemStation *getStation(){return station;}
 
     void my_update();
+signals:
+    void sig_propertyChanged(MapSpirit *spirit);
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
 private:
     //当前的站点
     MapPoint *point;
