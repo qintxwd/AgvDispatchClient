@@ -33,14 +33,15 @@ void MapEditWindow::init()
     connect(dockView,SIGNAL(sig_cancelTool()),this,SLOT(slot_cancelTool()));
     connect(this,SIGNAL(sig_setTool(int)),dockView,SIGNAL(sig_setTool(int)));
 
-    connect(dockView,SIGNAL(sig_addStation(MapFloor*,MapPoint*)),dockMapTree,SLOT(refresh()));
-    connect(dockView,SIGNAL(sig_removeStation(MapFloor*,MapPoint*)),dockMapTree,SLOT(refresh()));
-    connect(dockView,SIGNAL(sig_addPath(MapFloor*,MapPath*)),dockMapTree,SLOT(refresh()));
-    connect(dockView,SIGNAL(sig_removePath(MapFloor*,MapPath*)),dockMapTree,SLOT(refresh()));
-    connect(dockView,SIGNAL(sig_removeBkg(MapFloor*,MapBackground*)),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_add_remove_spirit()),dockMapTree,SLOT(refresh()));
+    connect(dockView,SIGNAL(sig_add_remove_spirit()),dockProperty,SLOT(slot_shownull()));
     connect(dockView,SIGNAL(sig_chooseChanged(MapSpirit*)),dockMapTree,SLOT(slot_chooseChanged(MapSpirit*)));
     connect(dockView,SIGNAL(sig_chooseChanged(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
     connect(dockView,SIGNAL(sig_propertyChanged(MapSpirit*)),dockProperty,SLOT(slot_propertyChanged(MapSpirit*)));
+
+    //属性窗口 修改 到 地图窗口的信号
+    connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockView,SIGNAL(sig_propertyChangedFromProperty(MapSpirit*)));
+    connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockMapTree,SLOT(refresh()));
 
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));

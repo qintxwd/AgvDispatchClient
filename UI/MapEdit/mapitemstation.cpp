@@ -59,12 +59,23 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD_UNLOAD){
         painter->drawImage(boundingRect(),*imgLoadUnload);
     }
+
+    if(point->getMapChange()){
+        painter->setBrush(oldBrush);
+        painter->setPen(oldPen);
+        QPen tpen(Qt::red);
+        tpen.setWidth(width);
+        painter->setPen(tpen);
+        painter->drawEllipse(boundingRect().center(),10,10);
+    }
+
     painter->setBrush(oldBrush);
     painter->setPen(oldPen);
 }
 
 void MapItemStation::my_update()
 {
+    setPos(point->getX(),point->getY());
     prepareGeometryChange();
     update();
 }

@@ -44,20 +44,7 @@ protected:
 signals:
     void sig_cancelTool();
 
-    //添加站点
-    void sig_addStation(MapPoint *spirit);
-
-    //删除站点
-    void sig_removeStation(MapPoint *spirit);
-
-    //添加路径
-    void sig_addPath(MapPath *spirit);
-
-    //删除路径
-    void sig_removePath(MapPath *spirit);
-
-    //删除背景
-    void sig_removeBkg(MapBackground *spirit);
+    void sig_add_remove_spirit();
 
     //属性修改
     void sig_propertyChanged(MapSpirit *spirit);
@@ -72,15 +59,12 @@ public slots:
     //菜单触动,修改背景
     void setBackgroundImagePath(QString _path);
 
-    //TODO 修改工具
-    void toolChanged();
-
     //tree触动，添加删除节点
     void addSpirit(MapFloor *_floor, MapSpirit *_spirit);
-    void removeSpirit(MapFloor *_floor, MapSpirit *_spirit);
+    //void removeSpirit(MapFloor *_floor, MapSpirit *_spirit);
 
     //property触动，修改属性
-    void propertyChanged(MapFloor *_floor,MapSpirit *_spirit);
+    void propertyChanged(MapSpirit *_spirit);
 
     ////
     void onSelectItemChanged();
@@ -89,6 +73,7 @@ public slots:
     void slot_selectItem(MapSpirit *_spirit);
 
     void slot_setCurTool(int t);
+
 private:
 
     Tool cur_tool;

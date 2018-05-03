@@ -62,6 +62,7 @@ QPainterPath MapItemQuadraticBezier::shape() const
 
 void MapItemQuadraticBezier::my_update()
 {
+    P1 = QPointF(path->getP1x(),path->getP1y());
     prepareGeometryChange();
     update();
 }

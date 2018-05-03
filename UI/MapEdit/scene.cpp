@@ -184,7 +184,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             update();
 
             //发射信号
-            emit sig_addStation(p);
+            emit sig_add_remove_spirit();
         }
     }
 
@@ -222,8 +222,8 @@ void Scene::setBackgroundImagePath(QString _path)
 
     if(bkg!=nullptr && bkg->getBkg()!=nullptr){
         //删除原来的元素
-        MapBackground *bk = bkg->getBkg();
-        emit sig_removeBkg(bk);
+        removeItem(bkg);
+        bkg = nullptr;
     }
 
     if(bkg==nullptr){
@@ -234,12 +234,9 @@ void Scene::setBackgroundImagePath(QString _path)
         bkg->setBkg(bk);
         bkg->update(bkg->boundingRect());
     }
+    floor->setBkg(bk);
+    emit sig_add_remove_spirit();
     update();
-}
-
-void Scene::toolChanged()
-{
-    //setCurTool(tool);
 }
 
 void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
@@ -311,122 +308,8 @@ void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
     }
 }
 
-void Scene::removeSpirit(MapFloor *_floor, MapSpirit *_spirit)
+void Scene::propertyChanged(MapSpirit *_spirit)
 {
-    if(_floor != floor){
-        return ;
-    }
-
-    if(MapSpirit::Map_Sprite_Type_Point == _spirit->getSpiritType())
-    {
-        MapPoint *p = static_cast<MapPoint *>(_spirit);
-
-        MapItemStation *newStation = nullptr;
-        foreach (auto station, iStations) {
-            if(station->getPoint() == p){
-                newStation = station;
-                break;
-            }
-        }
-        if(newStation == nullptr)return ;
-
-        //清除一个站点//TODO
-        //要先清除，所有的相关线路
-        QList<MapItemLine *> lines = newStation->getLines();
-        foreach (auto line, lines) {
-            removeItem(line);
-            iLines.removeAll(line);
-            update();
-            emit sig_removePath(line->getPath());
-        }
-
-        QList<MapItemCubicBezier *> cbs = newStation->getCbs();
-        foreach (auto cb, cbs) {
-            removeItem(cb);
-            iCbs.removeAll(cb);
-            update();
-            emit sig_removePath(cb->getPath());
-        }
-
-        QList<MapItemQuadraticBezier *> qbs = newStation->getQbs();
-        foreach (auto qb, qbs) {
-            removeItem(qb);
-            iQbs.removeAll(qb);
-            update();
-            emit sig_removePath(qb->getPath());
-        }
-
-        //然后清除站点
-        MapItemStationName *stationname = nullptr;
-        foreach (auto sn, iStationNames) {
-            if(sn->getStation() == newStation){
-                stationname = sn;
-                break;
-            }
-        }
-        assert(stationname != nullptr);
-        removeItem(stationname);
-        removeItem(newStation);
-        iStations.removeAll(newStation);
-        iStationNames.removeAll(stationname);
-        update();
-        emit sig_removeStation(newStation->getPoint());
-
-    }else if(MapSpirit::Map_Sprite_Type_Path == _spirit->getSpiritType())
-    {
-        MapPath *p = static_cast<MapPath *>(_spirit);
-        if(p->getPathType() == MapPath::Map_Path_Type_Line){
-            MapItemStation *start = nullptr;
-            MapItemStation *end = nullptr;
-
-            foreach (auto s, iStations) {
-                if(s->getPoint()->getId() == p->getStart()){start = s;}
-                if(s->getPoint()->getId() == p->getEnd()){end = s;}
-            }
-            if(start == nullptr || end == nullptr)return ;
-
-            MapItemLine *l = new MapItemLine(start,end,p);
-            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-            addItem(l);
-            iLines.push_back(l);
-            update();
-        }
-        else if(p->getPathType() == MapPath::Map_Path_Type_Quadratic_Bezier){
-            MapItemStation *start = nullptr;
-            MapItemStation *end = nullptr;
-            foreach (auto s, iStations) {
-                if(s->getPoint()->getId() == p->getStart()){start = s;}
-                if(s->getPoint()->getId() == p->getEnd()){end = s;}
-            }
-            if(start == nullptr || end == nullptr)return ;
-
-            MapItemQuadraticBezier *l = new MapItemQuadraticBezier(start,end,p);
-            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-            addItem(l);
-            iQbs.push_back(l);
-            update();
-        }
-        else if(p->getPathType() == MapPath::Map_Path_Type_Cubic_Bezier){
-            MapItemStation *start = nullptr;
-            MapItemStation *end = nullptr;
-            foreach (auto s, iStations) {
-                if(s->getPoint()->getId() == p->getStart()){start = s;}
-                if(s->getPoint()->getId() == p->getEnd()){end = s;}
-            }
-            if(start == nullptr || end == nullptr)return ;
-
-            MapItemCubicBezier *l = new MapItemCubicBezier(start,end,p);
-            connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-            addItem(l);
-            iCbs.push_back(l);
-            update();
-        }
-    }
-}
-
-void Scene::propertyChanged(MapFloor *_floor, MapSpirit *_spirit)
-{
-    if(_floor != floor)return ;
     if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
         MapPoint *p = static_cast<MapPoint *>(_spirit);
         foreach (auto station, iStations) {
@@ -512,6 +395,43 @@ void Scene::onSelectItemChanged()
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
+
+                    //判断是否已经有线路了
+                    foreach (auto l, iLines) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iQbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iCbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+
+
                     QString lineName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
 
                     //对onemap添加线路数据
@@ -528,7 +448,7 @@ void Scene::onSelectItemChanged()
                     update();
 
                     //发射信号
-                    emit sig_addPath(line->getPath());
+                    emit sig_add_remove_spirit();
                     newStation->setSelected(false);
                     oldSelectStation = nullptr;
                 }
@@ -536,6 +456,40 @@ void Scene::onSelectItemChanged()
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
+                    //判断是否已经有线路了
+                    foreach (auto l, iLines) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iQbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iCbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
                     QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
                     int cx = (oldSelectStation->getPoint()->getX()+newStation->getPoint()->getX())/2;
                     int cy = (oldSelectStation->getPoint()->getY()+newStation->getPoint()->getY())/2;
@@ -553,7 +507,7 @@ void Scene::onSelectItemChanged()
                     update();
 
                     //发射信号
-                    emit sig_addPath(qb->getPath());
+                    emit sig_add_remove_spirit();
                     newStation->setSelected(false);
                     oldSelectStation = nullptr;
                 }
@@ -561,6 +515,40 @@ void Scene::onSelectItemChanged()
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
+                    //判断是否已经有线路了
+                    foreach (auto l, iLines) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iQbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
+                    foreach (auto l, iCbs) {
+                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
+                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
+                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        {
+                            //两个站点之间已经有线路了
+                            oldSelectStation = nullptr;
+                            return ;
+                        }
+                    }
 
                     QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
                     int cx1 = oldSelectStation->getPoint()->getX()+(newStation->getPoint()->getX() - oldSelectStation->getPoint()->getX())/3;
@@ -583,7 +571,7 @@ void Scene::onSelectItemChanged()
                     update();
 
                     //发射信号
-                    emit sig_addPath(cb->getPath());
+                    emit sig_add_remove_spirit();
                     newStation->setSelected(false);
                     oldSelectStation = nullptr;
                 }
@@ -594,24 +582,25 @@ void Scene::onSelectItemChanged()
                 foreach (auto line, lines) {
                     removeItem(line);
                     iLines.removeAll(line);
+                    floor->removePath(line->getPath());
                     update();
-                    emit sig_removePath(line->getPath());
+
                 }
 
                 QList<MapItemCubicBezier *> cbs = newStation->getCbs();
                 foreach (auto cb, cbs) {
                     removeItem(cb);
                     iCbs.removeAll(cb);
+                    floor->removePath(cb->getPath());
                     update();
-                    emit sig_removePath(cb->getPath());
                 }
 
                 QList<MapItemQuadraticBezier *> qbs = newStation->getQbs();
                 foreach (auto qb, qbs) {
                     removeItem(qb);
                     iQbs.removeAll(qb);
+                    floor->removePath(qb->getPath());
                     update();
-                    emit sig_removePath(qb->getPath());
                 }
 
                 //然后清除站点
@@ -627,8 +616,9 @@ void Scene::onSelectItemChanged()
                 removeItem(newStation);
                 iStations.removeAll(newStation);
                 iStationNames.removeAll(stationname);
+                floor->removePoint(newStation->getPoint());
                 update();
-                emit sig_removeStation(newStation->getPoint());
+                emit sig_add_remove_spirit();
             }else{
                 emit sig_chooseChanged(newStation->getPoint());
             }
@@ -644,9 +634,10 @@ void Scene::onSelectItemChanged()
                 selectLine->getEndStation()->removeLine(selectLine);
                 removeItem(selectLine);
                 iLines.removeAll(selectLine);
+                floor->removePath(selectLine->getPath());
                 update();
-                //TODO:
-                emit sig_removePath(selectLine->getPath());
+                //TODO
+                emit sig_add_remove_spirit();
             }else{
                 emit sig_chooseChanged(selectLine->getPath());
             }
@@ -660,9 +651,10 @@ void Scene::onSelectItemChanged()
                 selectLine->getEndStation()->removeQb(selectLine);
                 removeItem(selectLine);
                 iQbs.removeAll(selectLine);
+                floor->removePath(selectLine->getPath());
                 update();
                 //TODO:
-                emit sig_removePath(selectLine->getPath());
+                emit sig_add_remove_spirit();
             }else{
                 emit sig_chooseChanged(selectLine->getPath());
             }
@@ -676,9 +668,10 @@ void Scene::onSelectItemChanged()
                 selectLine->getEndStation()->removeCb(selectLine);
                 removeItem(selectLine);
                 iCbs.removeAll(selectLine);
+                floor->removePath(selectLine->getPath());
                 update();
                 //TODO:
-                emit sig_removePath(selectLine->getPath());
+                emit sig_add_remove_spirit();
             }else{
                 emit sig_chooseChanged(selectLine->getPath());
             }
@@ -733,3 +726,4 @@ void Scene::slot_selectItem(MapSpirit *_spirit)
         }
     }
 }
+

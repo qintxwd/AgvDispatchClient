@@ -206,13 +206,24 @@ void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
     }
 }
 
+void DockProperty::slot_shownull()
+{
+    slot_showSpirit(nullptr);
+}
+
 void DockProperty::slot_showSpirit(MapSpirit *s)
 {
     if(spirit == s) return ;
     spirit = s;
 
     tableWidget->update();
-    if(spirit == nullptr)return ;
+    if(spirit == nullptr)
+    {
+        for(int i=0;i<20;++i){
+            tableWidget->setRowHidden(i,true);
+        }
+        return ;
+    }
     switch (spirit->getSpiritType()) {
     case MapSpirit::Map_Sprite_Type_Point:
         showPoint();
@@ -286,90 +297,107 @@ void DockProperty::showFloor()
 
 void DockProperty::slot_PointNameChanged(QString name)
 {
+    if(spirit == nullptr)return ;
     spirit->setName(name);
-    emit sig_PointNameChanged(spirit,name);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointTypeChanged(int _type)
 {
+    if(spirit == nullptr)return ;
     MapPoint *p = static_cast<MapPoint *>(spirit);
     p->setPointType((MapPoint::Map_Point_Type)_type);
-    emit sig_PointTypeChanged(spirit,_type);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointXChanged(QString x)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setX(x.toInt());
-    emit sig_PointXChanged(spirit,x);
+    emit sig_propertyChanged(spirit);;
 }
 void DockProperty::slot_PointYChanged(QString y)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setY(y.toInt());
-    emit sig_PointYChanged(spirit,y);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointRealXChanged(QString realx)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setRealX(realx.toInt());
-    emit sig_PointRealXChanged(spirit,realx);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointRealYChanged(QString realy)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setRealY(realy.toInt());
-    emit sig_PointRealYChanged(spirit,realy);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointLabelXoffsetChanged(QString labelXoffset)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setLabelXoffset(labelXoffset.toInt());
-    emit sig_PointLabelXoffsetChanged(spirit,labelXoffset);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointLabelYoffsetChanged(QString labelYoffset)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setLabelYoffset(labelYoffset.toInt());
-    emit sig_PointLabelYoffsetChanged(spirit,labelYoffset);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointMapChangeChanged(int mapchange)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setMapChange(mapchange == 1);
-    emit sig_PointMapChangeChanged(spirit,mapchange);
+    emit sig_propertyChanged(spirit);
 }
 
 void DockProperty::slot_PathNameChanged(QString name)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setName(name);
-    emit sig_PathNameChanged(spirit,name);
+    emit sig_propertyChanged(spirit);
 }
 
 void DockProperty::slot_PathTypeChanged(int _type)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setPathType((MapPath::Map_Path_Type)_type);
-    emit sig_PathTypeChanged(spirit,_type);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PathP1XChanged(QString p1x)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setP1x(p1x.toInt());
-    emit sig_PathP1XChanged(spirit,p1x);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PathP1YChanged(QString p1y)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setP1y(p1y.toInt());
-    emit sig_PathP1YChanged(spirit,p1y);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PathP2XChanged(QString p2x)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setP2x(p2x.toInt());
-    emit sig_PathP2XChanged(spirit,p2x);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PathP2YChanged(QString p2y)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setP2y(p2y.toInt());
-    emit sig_PathP2YChanged(spirit,p2y);
+    emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_LengthChanged(QString length)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setLength(length.toInt());
-    emit sig_LengthChanged(spirit,length);
+    emit sig_propertyChanged(spirit);
 }
 
 void DockProperty::slot_FloorNameChanged(QString name)
 {
+    if(spirit == nullptr)return ;
     (static_cast<MapFloor *>(spirit))->setName(name);
-    emit sig_FloorNameChanged(spirit,name);
+    emit sig_propertyChanged(spirit);
 }

@@ -96,3 +96,5 @@ void DockMapTree::slot_chooseChanged(MapSpirit *spirit)
     }
 }
 
+
+

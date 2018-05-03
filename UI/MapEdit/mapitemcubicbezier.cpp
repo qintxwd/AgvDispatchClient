@@ -67,6 +67,8 @@ QPainterPath MapItemCubicBezier::shape() const
 
 void MapItemCubicBezier::my_update()
 {
+    P1 = QPointF(path->getP1x(),path->getP1y());
+    P2 = QPointF(path->getP2x(),path->getP2y());
     prepareGeometryChange();
     update();
 }

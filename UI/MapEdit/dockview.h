@@ -20,22 +20,10 @@ signals:
     void sig_cancelTool();
     void sig_setTool(int);
 
-    //添加站点
-    void sig_addStation(MapFloor *floor, MapPoint *spirit);
 
-    //删除站点
-    void sig_removeStation(MapFloor *floor,MapPoint *spirit);
+    void sig_add_remove_spirit();
 
-    //添加路径
-    void sig_addPath(MapFloor *floor,MapPath *spirit);
-
-    //删除路径
-    void sig_removePath(MapFloor *floor,MapPath *spirit);
-
-    //删除背景
-    void sig_removeBkg(MapFloor *floor,MapBackground *spirit);
-
-    //属性修改
+    //属性修改[map --> property & map --> tree]
     void sig_propertyChanged(MapSpirit *spirit);
 
     //选择修改
@@ -45,28 +33,15 @@ signals:
 
     void sig_selectHand();
 
+    void sig_propertyChangedFromProperty(MapSpirit *spirit);
+
 public slots:
 
     void slot_addFloor(MapFloor *floor);
 
     void slot_selectChanged(MapSpirit *spirit);
 
-
-    //添加站点
-    void slot_addStation(MapPoint *spirit);
-
-    //删除站点
-    void slot_removeStation(MapPoint *spirit);
-
-    //添加路径
-    void slot_addPath(MapPath *spirit);
-
-    //删除路径
-    void slot_removePath(MapPath *spirit);
-
-    //删除背景
-    void slot_removeBkg(MapBackground *spirit);
-
+    void slot_propertyChangedFromProperty(MapSpirit *_spirit);
 private:
     OneMap *oneMap;
 
