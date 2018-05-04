@@ -10,8 +10,9 @@ class OneMap;
 
 class MapFloor : public MapSpirit
 {
+    Q_OBJECT
 public:
-    MapFloor(int _id, QString _name,OneMap *parentMap);
+    MapFloor(int _id, QString _name,OneMap *parentMap,QObject *parent = nullptr);
     ~MapFloor();
 
     void setParentMap(OneMap *m){onemap = m;}

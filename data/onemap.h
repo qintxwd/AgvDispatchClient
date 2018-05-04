@@ -5,10 +5,12 @@
 #include "mapbackground.h"
 #include <QImage>
 //一个地图[有若干个元素组成]
-class OneMap
+class OneMap : public QObject
 {
+    Q_OBJECT
 public:
-    OneMap();
+    OneMap(QObject *parent = nullptr);
+    OneMap(const OneMap &b);
     ~OneMap();
 
     //注册一个新的元素 获取一个ID

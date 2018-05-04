@@ -5,8 +5,9 @@
 
 class MapBackground : public MapSpirit
 {
+    Q_OBJECT
 public:
-    MapBackground(int _id, QString _name, QImage _img, QString fileName);
+    MapBackground(int _id, QString _name, QImage _img, QString fileName,QObject *parent = nullptr);
     MapBackground(const MapBackground &b);
 
     void setX(int _x){x=_x;}

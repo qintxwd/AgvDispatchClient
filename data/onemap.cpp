@@ -1,9 +1,17 @@
 ﻿#include "onemap.h"
 
-OneMap::OneMap():
+OneMap::OneMap(QObject *parent):
+    QObject(parent),
     max_id(0)
 {
 
+}
+
+OneMap::OneMap(const OneMap &b)
+{
+    max_id = b.max_id;
+    floors = b.floors;
+    paths = b.paths;
 }
 
 OneMap::~OneMap()
