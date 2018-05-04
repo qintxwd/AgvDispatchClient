@@ -11,18 +11,18 @@ OneMap::OneMap(const OneMap &b)
 {
     max_id = b.max_id;
     floors = b.floors;
-    paths = b.paths;
+    rootpaths = b.rootpaths;
 }
 
 OneMap::~OneMap()
 {
     qDeleteAll(floors);
-    qDeleteAll(paths);
+    qDeleteAll(rootpaths);
 }
 
 void OneMap::addPath(MapPath *path)
 {
-    paths.append(path);
+    rootpaths.append(path);
 }
 
 void OneMap::addFloor(MapFloor *floor)
@@ -30,21 +30,30 @@ void OneMap::addFloor(MapFloor *floor)
     floors.append(floor);
 }
 
+void OneMap::addBlock(MapBlock *block)
+{
+    blocks.append(block);
+}
+
+void OneMap::removeBlock(MapBlock *block)
+{
+    blocks.removeAll(block);
+}
+
 void OneMap::removePath(MapPath *path)
 {
-    paths.removeAll(path);
+    rootpaths.removeAll(path);
 }
 void OneMap::removeFloor(MapFloor *floor)
 {
     floors.removeAll(floor);
 }
 
-void OneMap::removePathById(int id)
+void OneMap::removeRootPathById(int id)
 {
-    foreach (auto p, paths) {
+    foreach (auto p, rootpaths) {
         if(p->getId() == id){
-            paths.removeAll(p);
-            delete p;
+            rootpaths.removeAll(p);
             break;
         }
     }
@@ -54,7 +63,6 @@ void OneMap::removeFloorById(int id)
     foreach (auto f, floors) {
         if(f->getId() == id){
             floors.removeAll(f);
-            delete f;
             break;
         }
     }
@@ -70,11 +78,14 @@ OneMap *OneMap::clone()
 {
     OneMap *onemap = new OneMap;
     onemap->setMaxId(max_id);
-    foreach (auto p, paths) {
+    foreach (auto p, rootpaths) {
         onemap->addPath(new MapPath(*p));
     }
     foreach (auto f, floors) {
         onemap->addFloor(f->clone());
+    }
+    foreach (auto b, blocks) {
+        onemap->addBlock(new MapBlock(*b));
     }
     return onemap;
 }
@@ -88,10 +99,39 @@ MapFloor *OneMap::getFloorById(int id)
     return nullptr;
 }
 
-MapPath *OneMap::getPathById(int id)
+MapPath *OneMap::getRootPathById(int id)
 {
-    foreach (auto p, paths) {
+    foreach (auto p, rootpaths) {
         if(p->getId() == id)return p;
+    }
+
+    return nullptr;
+}
+
+MapBlock *OneMap::getBlockById(int id)
+{
+    foreach (auto b, blocks) {
+        if(b->getId() == id)return b;
+    }
+    return nullptr;
+}
+
+MapSpirit *OneMap::getSpiritById(int id)
+{
+    MapFloor *f = getFloorById(id);
+    if(f!=nullptr)return f;
+    MapPath *p = getRootPathById(id);
+    if(p)return p;
+    MapBlock *b = getBlockById(id);
+    if(b)return b;
+
+    foreach (auto floor, floors) {
+        foreach (auto pa, floor->getPaths()) {
+            if(pa->getId() == id)return pa;
+        }
+        foreach (auto po, floor->getPoints()) {
+            if(po->getId() == id)return po;
+        }
     }
 
     return nullptr;

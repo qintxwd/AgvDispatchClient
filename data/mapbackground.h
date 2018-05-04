@@ -8,7 +8,7 @@ class MapBackground : public MapSpirit
     Q_OBJECT
 public:
     MapBackground(int _id, QString _name, QImage _img, QString fileName,QObject *parent = nullptr);
-    MapBackground(const MapBackground &b);
+    MapBackground(const MapBackground &b);//深拷贝
 
     void setX(int _x){x=_x;}
     void setY(int _y){y=_y;}

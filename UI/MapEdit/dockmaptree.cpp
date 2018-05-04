@@ -1,6 +1,7 @@
 ﻿#include "dockmaptree.h"
 #include <QHeaderView>
 #include <QVariant>
+#include "dialogrootpath.h"
 
 DockMapTree::DockMapTree(OneMap *_onemap, QWidget *parent) : QDockWidget(parent),
     onemap(_onemap)
@@ -69,10 +70,18 @@ void DockMapTree::slot_addFloor()
 
 void DockMapTree::slot_addRootPath()
 {
-
     //弹出对话框，列出所有的mapchange 点，选择
-    //TODO
+    DialogRootPath *dlgRootPath = new DialogRootPath(onemap);
+    connect(dlgRootPath,SIGNAL(sig_add_root_path(MapPoint*,MapPoint*)),this,SLOT(slot_add_root_path(MapPoint*,MapPoint*)));
+    dlgRootPath->exec();
+}
 
+void DockMapTree::slot_add_root_path(MapPoint *from,MapPoint *to)
+{
+    QString name = QString("%1 -- %2").arg(from->getName()).arg(to->getName());
+    MapPath *path = new MapPath(onemap->getNextId(),name,from->getId(),to->getId(),MapPath::Map_Path_Type_Between_Floor,1);
+    onemap->addPath(path);
+    refresh();
 }
 
 void DockMapTree::refresh()

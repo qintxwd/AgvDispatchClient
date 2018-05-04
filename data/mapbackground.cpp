@@ -15,7 +15,7 @@ MapBackground::MapBackground(const MapBackground &b):
     MapSpirit(b),
     x(b.x),
     y(b.y),
-    img(b.img),
+    img(b.img.copy(b.img.rect())),
     imgFileName(b.imgFileName),
     width(b.width),
     height(b.height)

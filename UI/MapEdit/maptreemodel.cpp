@@ -146,7 +146,7 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
 {
     QList<MapFloor *> floors = onemap->getFloors();
 
-    QList<MapPath *> independentPaths = onemap->getPaths();
+    QList<MapPath *> independentPaths = onemap->getRootPaths();
 
     foreach (auto floor, floors) {
         MapTreeItem *item_floor = new MapTreeItem(floor,root);

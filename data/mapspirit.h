@@ -14,6 +14,7 @@ public:
         Map_Sprite_Type_Path,
         Map_Sprite_Type_Floor,
         Map_Sprite_Type_Background,
+        Map_Sprite_Type_Block,
     };
 
     MapSpirit(int _id,QString _name,Map_Spirit_Type _spirit_type,QObject *parent = nullptr);

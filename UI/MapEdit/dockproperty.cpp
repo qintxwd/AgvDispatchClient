@@ -102,7 +102,9 @@ void DockProperty::init()
     path_comboxType->addItem(QStringLiteral("直线"));
     path_comboxType->addItem(QStringLiteral("二次贝赛尔曲线"));
     path_comboxType->addItem(QStringLiteral("三次贝赛尔曲线"));
-    connect(path_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
+    path_comboxType->addItem(QStringLiteral("楼层间线路"));
+    path_comboxType->setEnabled(false);
+    //connect(path_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
     path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
     path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);
     path_itemKeyP1X->setFlags(path_itemKeyP1X->flags()&(~Qt::ItemIsEditable));
@@ -253,9 +255,11 @@ void DockProperty::showPoint()
     point_yRealInput->setText(QString("%1").arg(point->getRealY()));
     point_xLabelInput->setText(QString("%1").arg(point->getLabelXoffset()));
     point_yLabelInput->setText(QString("%1").arg(point->getLabelYoffset()));
-    point_comboxMapChange->setCurrentIndex(0);
     if(point->getMapChange()){
         point_comboxMapChange->setCurrentIndex(1);
+    }else{
+        point_comboxMapChange->setCurrentIndex(0);
+
     }
     for(int i=0;i<20;++i){
         tableWidget->setRowHidden(i,i>9);
@@ -268,10 +272,11 @@ void DockProperty::showPath()
 {
     if(spirit==nullptr)return ;
     //清空原来的数据
-    MapPath *path = static_cast<MapPath *>(spirit);
+    MapPath *path = dynamic_cast<MapPath *>(spirit);
     path_itemValueId->setText(QString("%1").arg(path->getId()));
     path_nameInput->setText(path->getName());
-    path_comboxType->setCurrentIndex((int)(path->getPathType()));
+    MapPath::Map_Path_Type type = path->getPathType();
+    path_comboxType->setCurrentIndex((int)type);
     path_xP1Input->setText(QString("%1").arg(path->getP1x()));
     path_yP1Input->setText(QString("%1").arg(path->getP1y()));
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));

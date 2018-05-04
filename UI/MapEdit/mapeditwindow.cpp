@@ -353,6 +353,10 @@ void MapEditWindow::slot_cancelTool()
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
+
+    selectSelect->setChecked(true);
+    selectHand->setChecked(false);
+    emit sig_setTool(Scene::T_NONE);
 }
 
 void MapEditWindow::on_toolErase_triggered(bool b)

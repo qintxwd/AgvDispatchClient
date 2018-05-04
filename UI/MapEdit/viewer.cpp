@@ -16,12 +16,14 @@
 
 Viewer::Viewer(QWidget *parent) :  QGraphicsView(parent)
 {
-    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-    setMouseTracking(true);	// mouse track on
-    setViewportUpdateMode(FullViewportUpdate);
+    setRenderHint(QPainter::Antialiasing, false);
+    setDragMode(QGraphicsView::RubberBandDrag);
+    setOptimizationFlags(QGraphicsView::DontSavePainterState);
+    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setMouseTracking(true);
+    setFrameStyle(QFrame::NoFrame);
 }
 
 void Viewer::toggleSelectMode()
@@ -43,18 +45,19 @@ void Viewer::wheelEvent(QWheelEvent *event)
     if (event->modifiers() & Qt::ControlModifier) {
         if (event->delta() > 0)
         {
-            if(kk<10){
+            if(kk<20){
                 ++kk;
                 scale(scaleFactor, scaleFactor);
             }
         }
         else
         {
-            if(kk>-10){
+            if(kk>-20){
                 --kk;
                 scale(1.0 / scaleFactor, 1.0 / scaleFactor);
             }
         }
+        viewport()->update();
         event->accept();
     } else {
         QGraphicsView::wheelEvent(event);
