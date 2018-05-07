@@ -10,11 +10,10 @@ class OneMap;
 
 class MapFloor : public MapSpirit
 {
+    Q_OBJECT
 public:
-    MapFloor(int _id, QString _name,OneMap *parentMap);
+    MapFloor(int _id, QString _name,QObject *parent = nullptr);
     ~MapFloor();
-
-    void setParentMap(OneMap *m){onemap = m;}
 
     void addPoint(MapPoint *p){points.append(p);}
     void addPath(MapPath *p){paths.append(p);}
@@ -39,7 +38,6 @@ private:
     QList<MapPoint *> points;///若干站点
     QList<MapPath *> paths;///若干路径
     MapBackground *bkg;///一个背景图片
-    OneMap *onemap;///楼层属于一个地图
 };
 
 #endif // MAPFLOOR_H

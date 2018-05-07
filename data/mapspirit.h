@@ -2,9 +2,11 @@
 #define MAPSPIRIT_H
 
 #include <QString>
+#include <QObject>
 
-class MapSpirit
+class MapSpirit : public QObject
 {
+    Q_OBJECT
 public:
     enum Map_Spirit_Type
     {
@@ -12,9 +14,10 @@ public:
         Map_Sprite_Type_Path,
         Map_Sprite_Type_Floor,
         Map_Sprite_Type_Background,
+        Map_Sprite_Type_Block,
     };
 
-    MapSpirit(int _id,QString _name,Map_Spirit_Type _spirit_type);
+    MapSpirit(int _id,QString _name,Map_Spirit_Type _spirit_type,QObject *parent = nullptr);
 
     MapSpirit(const MapSpirit &s);
 

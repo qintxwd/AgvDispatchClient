@@ -46,7 +46,7 @@ void MapEditWindow::init()
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
     connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockView,SLOT(slot_addBkg(MapBackground*)));
-    connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockMapTree,SLOT(refresh()));
+    //connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockMapTree,SLOT(refresh()));
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -365,6 +365,10 @@ void MapEditWindow::slot_cancelTool()
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
+
+    selectSelect->setChecked(true);
+    selectHand->setChecked(false);
+    emit sig_setTool(Scene::T_NONE);
 }
 
 void MapEditWindow::on_toolErase_triggered(bool b)

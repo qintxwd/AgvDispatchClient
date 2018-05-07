@@ -1,7 +1,7 @@
 ﻿#include "mappath.h"
 
-MapPath::MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _type, int _length, int _p1x, int _p1y, int _p2x, int _p2y):
-    MapSpirit(_id,_name,Map_Sprite_Type_Path),
+MapPath::MapPath(int _id, QString _name, int _start, int _end, Map_Path_Type _type, int _length, int _p1x, int _p1y, int _p2x, int _p2y, QObject *parent):
+    MapSpirit(_id,_name,Map_Sprite_Type_Path,parent),
     start(_start),
     end(_end),
     length(_length),

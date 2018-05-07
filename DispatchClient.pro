@@ -60,7 +60,9 @@ SOURCES += \
     UI/MapEdit/mapitemquadraticbezier.cpp \
     UI/MapEdit/mapitemcubicbezier.cpp \
     UI/MapEdit/mapitembkg.cpp \
-    UI/MapEdit/viewer.cpp
+    UI/MapEdit/viewer.cpp \
+    UI/MapEdit/dialogrootpath.cpp \
+    data/mapblock.cpp
 
 HEADERS += \
     global.h \
@@ -100,7 +102,9 @@ HEADERS += \
     UI/MapEdit/mapitemquadraticbezier.h \
     UI/MapEdit/mapitemcubicbezier.h \
     UI/MapEdit/mapitembkg.h \
-    UI/MapEdit/viewer.h
+    UI/MapEdit/viewer.h \
+    UI/MapEdit/dialogrootpath.h \
+    data/mapblock.h
 
 FORMS +=
 

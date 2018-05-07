@@ -12,40 +12,37 @@ Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScen
     oldSelectStation(nullptr),
     bkg(nullptr)
 {
-    //设置网格线
-    QPolygonF myPolygon1;
-    myPolygon1 << QPointF(0,10) << QPointF(20,10);
-    QPolygonF myPolygon2;
-    myPolygon2 << QPointF(10,0) << QPointF(10,20);
-    QPixmap pixmap(20, 20);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    QVector<qreal> dashes;//line style--虚线
-    qreal space = 2;
-    dashes << 2 << space << 2 <<space;
-    QPen pen(Qt::lightGray,1);
-    pen.setDashPattern(dashes);
-    pen.setWidth(1);
-    painter.setPen(pen);
-    painter.translate(0, 0);
-    painter.drawPolyline(myPolygon1);
-    painter.drawPolyline(myPolygon2);
-    setBackgroundBrush(pixmap);
-
-    setItemIndexMethod(BspTreeIndex);
-
-    build();
+   build();
 }
 
 Scene::~Scene()
 {
 }
 
+void Scene::drawBackground(QPainter *painter, const QRectF &rect)
+{
+
+    QPen oldpen = painter->pen();
+//    QBrush oldbrush = painter->brush();
+    //添加原点
+    QPen pen(Qt::blue);
+    pen.setWidth(1);
+    painter->setPen(pen);
+    painter->drawEllipse(QPoint(0,0),5,5);
+
+    //添加x轴
+    QPen pen2(Qt::magenta);
+    painter->setPen(pen2);
+
+    painter->drawLine(QPoint(-100000,0),QPoint(100000,0));
+
+    //添加y轴
+    painter->drawLine(QPoint(0,-100000),QPoint(0,100000));
+}
+
 
 void Scene::build()
 {
-    clear();
-
     //TODO:
     QList<MapPoint *> points = floor->getPoints();
     foreach (auto p, points) {

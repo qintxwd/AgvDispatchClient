@@ -5,6 +5,7 @@
 
 class MapPoint : public MapSpirit
 {
+Q_OBJECT
 public:
     enum Map_Point_Type{
         Map_Point_Type_Draw = 0,
@@ -16,7 +17,7 @@ public:
         Map_Point_Type_LOAD_UNLOAD,
     };
 
-    MapPoint(int _id, QString _name,Map_Point_Type _type, int _x, int _y,int _realX = 0,int _realY = 0,int _labelXoffset = 0,int _labelYoffset = -40,bool _mapChange = false);
+    MapPoint(int _id, QString _name,Map_Point_Type _type, int _x, int _y,int _realX = 0,int _realY = 0,int _labelXoffset = 0,int _labelYoffset = -40,bool _mapChange = false,QObject *parent = nullptr);
 
     MapPoint(const MapPoint &p);
 

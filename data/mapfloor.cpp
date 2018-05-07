@@ -1,9 +1,8 @@
 ﻿#include "mapfloor.h"
 
-MapFloor::MapFloor(int _id, QString _name, OneMap *parentMap):
-    MapSpirit(_id,_name,Map_Sprite_Type_Floor),
-    bkg(nullptr),
-    onemap(parentMap)
+MapFloor::MapFloor(int _id, QString _name, QObject *parent):
+    MapSpirit(_id,_name,Map_Sprite_Type_Floor,parent),
+    bkg(nullptr)
 {
 }
 
@@ -17,7 +16,7 @@ MapFloor::~MapFloor()
 //复制地图（深copy）
 MapFloor* MapFloor::clone()
 {
-    MapFloor *f = new MapFloor(getId(),getName(),onemap);
+    MapFloor *f = new MapFloor(getId(),getName());
     foreach (auto p, points) {
         MapPoint *newp = new MapPoint(*p);
         f->addPoint(newp);

@@ -1,7 +1,7 @@
 ﻿#include "mapbackground.h"
 
-MapBackground::MapBackground(int _id, QString _name, QImage _img, QString fileName):
-    MapSpirit(_id,_name,Map_Sprite_Type_Background),
+MapBackground::MapBackground(int _id, QString _name, QImage _img, QString fileName, QObject *parent):
+    MapSpirit(_id,_name,Map_Sprite_Type_Background,parent),
     x(0),
     y(0),
     width(_img.width()),
@@ -15,7 +15,7 @@ MapBackground::MapBackground(const MapBackground &b):
     MapSpirit(b),
     x(b.x),
     y(b.y),
-    img(b.img),
+    img(b.img.copy(b.img.rect())),
     imgFileName(b.imgFileName),
     width(b.width),
     height(b.height)

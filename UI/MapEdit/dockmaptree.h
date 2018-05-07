@@ -26,6 +26,8 @@ public slots:
     void slot_addFloor();
     void slot_addRootPath();
 
+    void slot_add_root_path(MapPoint *from,MapPoint *to);
+
     void refresh();
 
     void slot_chooseChanged(MapSpirit *spirit);

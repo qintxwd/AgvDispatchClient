@@ -41,6 +41,7 @@ public:
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent  *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void drawBackground(QPainter *painter, const QRectF &rect);
 signals:
     void sig_cancelTool();
 
