@@ -22,6 +22,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+unix{
+LIBS += -ljsoncpp
+}
+
+win32{
+win32:DEFINES += _CRT_SECURE_NO_WARNINGS
+win32:DEFINES += _WINSOCK_DEPRECATED_NO_WARNINGS
+INCLUDEPATH+=D:\thirdparty\jsoncpp\include
+LIBS+=D:\thirdparty\jsoncpp\lib\Debug\jsoncpp.lib
+}
 
 SOURCES += \
         main.cpp \
@@ -62,7 +72,8 @@ SOURCES += \
     UI/MapEdit/mapitembkg.cpp \
     UI/MapEdit/viewer.cpp \
     UI/MapEdit/dialogrootpath.cpp \
-    data/mapblock.cpp
+    data/mapblock.cpp \
+    data/mapgroup.cpp
 
 HEADERS += \
     global.h \
@@ -104,7 +115,8 @@ HEADERS += \
     UI/MapEdit/mapitembkg.h \
     UI/MapEdit/viewer.h \
     UI/MapEdit/dialogrootpath.h \
-    data/mapblock.h
+    data/mapblock.h \
+    data/mapgroup.h
 
 FORMS +=
 

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "mapspirit.h"
 
+//一个block内同时只允许一个AGV
 class MapBlock : public MapSpirit
 {
     Q_OBJECT
