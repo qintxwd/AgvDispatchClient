@@ -40,7 +40,22 @@ void DockView::init()
 }
 
 void DockView::slot_addFloor(MapFloor *floor)
-a
+{
+    Scene *scene = new Scene(oneMap,floor);
+    Viewer *view = new Viewer();
+    view->setScene(scene);
+
+    connect(scene,SIGNAL(sig_currentMousePos(QPointF)),this,SIGNAL(sig_currentMousePos(QPointF)));
+    connect(scene,SIGNAL(sig_cancelTool()),this,SIGNAL(sig_cancelTool()));
+    connect(this,SIGNAL(sig_setTool(int)),scene,SLOT(slot_setCurTool(int)));
+    connect(scene,SIGNAL(sig_add_remove_spirit()),this,SIGNAL(sig_add_remove_spirit()));
+    connect(scene,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+    connect(scene,SIGNAL(sig_chooseChanged(MapSpirit*)),this,SIGNAL(sig_chooseChanged(MapSpirit*)));
+    connect(this,SIGNAL(sig_selectHand()),view,SLOT(toggleDragMode()));
+    connect(this,SIGNAL(sig_selectSelect()),view,SLOT(toggleSelectMode()));
+    connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),scene,SLOT(propertyChanged(MapSpirit *)));
+    connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),this,SLOT(slot_propertyChangedFromProperty(MapSpirit *)));
+
     tabWidget->addTab(view,floor->getName());
     scenes.append(scene);
 }
