@@ -6,6 +6,7 @@
 #include "dockview.h"
 #include "dockmaptree.h"
 #include "dockproperty.h"
+#include "dockblock.h"
 
 class MapEditWindow : public QMainWindow
 {
@@ -75,6 +76,7 @@ private:
     DockMapTree *dockMapTree;
     DockProperty *dockProperty;
     DockView *dockView;
+    DockBlock *blockView;
 
     QAction *selectSelect;
     QAction *selectHand;

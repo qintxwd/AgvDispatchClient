@@ -1,6 +1,7 @@
 ﻿#include "mapeditwindow.h"
 #include "global.h"
 #include "scene.h"
+#include <QFileIconProvider>
 
 
 MapEditWindow::MapEditWindow(OneMap _oneMap, QWidget *parent) : QMainWindow(parent),
@@ -42,6 +43,8 @@ void MapEditWindow::init()
     //属性窗口 修改 到 地图窗口的信号
     connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockView,SIGNAL(sig_propertyChangedFromProperty(MapSpirit*)));
     connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockMapTree,SLOT(refresh()));
+
+    connect(blockView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
 
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
@@ -140,10 +143,12 @@ void MapEditWindow::createActions()
     dockMapTree = new DockMapTree(&oneMap);
     dockProperty = new DockProperty(&oneMap);
     dockView = new DockView(&oneMap);
+    blockView = new DockBlock(&oneMap);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
     addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
     addDockWidget(Qt::RightDockWidgetArea,dockView);
+    tabifyDockWidget(dockMapTree,blockView);
 
 
     QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
@@ -173,9 +178,9 @@ void MapEditWindow::createActions()
     selectSelect = new QAction(this);
     selectSelect->setText("select");
     selectSelect->setObjectName("selectSelect");
-    QIcon iconSelectSelect;
-    iconSelectSelect.addFile(":/images/toolbar/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
-    selectSelect->setIcon(iconSelectSelect);
+//    QIcon iconSelectSelect;
+//    iconSelectSelect.addFile(":/images/toolbar/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+//    selectSelect->setIcon(iconSelectSelect);
     selectSelect->setCheckable(true);
     selectToolBar->addAction(selectSelect);
     toolsMenu->addAction(selectSelect);
@@ -183,9 +188,9 @@ void MapEditWindow::createActions()
     selectHand = new QAction(this);
     selectHand->setText("drag");
     selectHand->setObjectName("selectHand");
-    QIcon iconSelectHand;
-    iconSelectHand.addFile(":/images/toolbar/point-report.22.png",QSize(),QIcon::Normal,QIcon::Off);
-    selectHand->setIcon(iconSelectHand);
+//    QIcon iconSelectHand;
+//    iconSelectHand.addFile(":/images/toolbar/point-report.22.png",QSize(),QIcon::Normal,QIcon::Off);
+//    selectHand->setIcon(iconSelectHand);
     selectHand->setCheckable(true);
     selectToolBar->addAction(selectHand);
     toolsMenu->addAction(selectHand);
@@ -662,6 +667,8 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
                 QImage *img = new QImage;
                 img->load(filePath);
                 MapBackground *_bkg = new MapBackground(oneMap.getNextId(),fileName,*img,fileName);
+
+
                 emit sig_addBkg(_bkg);
             }
         }

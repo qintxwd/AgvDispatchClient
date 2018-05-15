@@ -62,7 +62,10 @@ SOURCES += \
     UI/MapEdit/mapitembkg.cpp \
     UI/MapEdit/viewer.cpp \
     UI/MapEdit/dialogrootpath.cpp \
-    data/mapblock.cpp
+    data/mapblock.cpp \
+    data/mapgroup.cpp \
+    UI/MapEdit/dockblock.cpp \
+    UI/MapEdit/dialogblockedit.cpp
 
 HEADERS += \
     global.h \
@@ -104,7 +107,10 @@ HEADERS += \
     UI/MapEdit/mapitembkg.h \
     UI/MapEdit/viewer.h \
     UI/MapEdit/dialogrootpath.h \
-    data/mapblock.h
+    data/mapblock.h \
+    data/mapgroup.h \
+    UI/MapEdit/dockblock.h \
+    UI/MapEdit/dialogblockedit.h
 
 FORMS +=
 

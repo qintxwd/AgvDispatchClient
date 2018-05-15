@@ -5,7 +5,7 @@
 
 class MapPoint : public MapSpirit
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     enum Map_Point_Type{
         Map_Point_Type_Draw = 0,
@@ -30,6 +30,7 @@ public:
     int getLabelXoffset(){return labelXoffset;}
     int getLabelYoffset(){return labelYoffset;}
     bool getMapChange(){return mapChange;}
+    bool getLocked(){return locked;}
 
     void setRealX(int _realX){realX = _realX ;}
     void setRealY(int _realY){realY = _realY ;}
@@ -38,6 +39,7 @@ public:
     void setX(int _x){x = _x ;}
     void setY(int _y){y = _y ;}
     void setMapChange(bool _mapChange){mapChange = _mapChange;}
+    void setLocked(bool _locked){locked = _locked;}
 private:
     Map_Point_Type point_type;
     int x;
@@ -47,6 +49,7 @@ private:
     int labelXoffset;
     int labelYoffset;
     bool mapChange;
+    bool locked;
 };
 
 #endif // MAPPOINT_H

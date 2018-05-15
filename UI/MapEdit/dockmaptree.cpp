@@ -17,8 +17,8 @@ void DockMapTree::initUi()
     //支持右键菜单
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    addFloor = new QAction(QStringLiteral("添加楼层"),this);;
-    addPathToRoot = new QAction(QStringLiteral("添加线路"),this);;
+    addFloor = new QAction(QStringLiteral("添加楼层"),this);
+    addPathToRoot = new QAction(QStringLiteral("添加线路"),this);
 
     connect(addFloor,SIGNAL(triggered(bool)),this,SLOT(slot_addFloor()));
     connect(addPathToRoot,SIGNAL(triggered(bool)),this,SLOT(slot_addRootPath()));

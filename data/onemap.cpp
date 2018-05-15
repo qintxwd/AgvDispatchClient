@@ -35,9 +35,19 @@ void OneMap::addBlock(MapBlock *block)
     blocks.append(block);
 }
 
+void  OneMap::addGroup(MapGroup *group)
+{
+    groups.append(group);
+}
+
 void OneMap::removeBlock(MapBlock *block)
 {
     blocks.removeAll(block);
+}
+
+void OneMap::removeGroup(MapGroup *group)
+{
+    groups.removeAll(group);
 }
 
 void OneMap::removePath(MapPath *path)
@@ -87,6 +97,9 @@ OneMap *OneMap::clone()
     foreach (auto b, blocks) {
         onemap->addBlock(new MapBlock(*b));
     }
+    foreach (auto b, groups) {
+        onemap->addGroup(new MapGroup(*b));
+    }
     return onemap;
 }
 
@@ -116,6 +129,14 @@ MapBlock *OneMap::getBlockById(int id)
     return nullptr;
 }
 
+MapGroup *OneMap::getGroupById(int id)
+{
+    foreach (auto b, groups) {
+        if(b->getId() == id)return b;
+    }
+    return nullptr;
+}
+
 MapSpirit *OneMap::getSpiritById(int id)
 {
     MapFloor *f = getFloorById(id);
@@ -124,6 +145,8 @@ MapSpirit *OneMap::getSpiritById(int id)
     if(p)return p;
     MapBlock *b = getBlockById(id);
     if(b)return b;
+    MapGroup *g = getGroupById(id);
+    if(g)return g;
 
     foreach (auto floor, floors) {
         foreach (auto pa, floor->getPaths()) {

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "mapspirit.h"
 
+//一个block内同时只允许一个AGV
 class MapBlock : public MapSpirit
 {
     Q_OBJECT
@@ -12,7 +13,7 @@ public:
     MapBlock(const MapBlock& b);
     void addSpirit(int spirit){spirits.append(spirit);}
     void removeSpirit(int spirit){spirits.removeAll(spirit);}
-
+    void clear(){spirits.clear();}
     QList<int> getSpirits(){return spirits;}
 signals:
 

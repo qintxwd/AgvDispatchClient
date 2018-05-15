@@ -57,8 +57,8 @@ signals:
 
 public slots:
 
-    //菜单触动,修改背景
-    void setBackgroundImagePath(QString _path);
+//    //菜单触动,修改背景
+//    void setBackgroundImagePath(QString _path);
 
     //tree触动，添加删除节点
     void addSpirit(MapFloor *_floor, MapSpirit *_spirit);
@@ -78,8 +78,6 @@ public slots:
 private:
 
     Tool cur_tool;
-
-//    ScenePositionLabel *positoinlabel;
 
     MapItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
 

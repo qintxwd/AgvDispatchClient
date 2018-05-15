@@ -19,6 +19,7 @@ QRectF MapItemBkg::boundingRect() const
 
 void MapItemBkg::my_update()
 {
+    //setPos(bkg->getX(),bkg->getY());
     prepareGeometryChange();
     update();
 }

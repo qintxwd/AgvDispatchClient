@@ -12,7 +12,7 @@ Scene::Scene(OneMap *_onemap, MapFloor *_floor, QObject *parent) : QGraphicsScen
     oldSelectStation(nullptr),
     bkg(nullptr)
 {
-   build();
+    build();
 }
 
 Scene::~Scene()
@@ -23,7 +23,7 @@ void Scene::drawBackground(QPainter *painter, const QRectF &rect)
 {
 
     QPen oldpen = painter->pen();
-//    QBrush oldbrush = painter->brush();
+    //    QBrush oldbrush = painter->brush();
     //添加原点
     QPen pen(Qt::blue);
     pen.setWidth(1);
@@ -199,42 +199,42 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseMoveEvent(event);
 }
 
-void Scene::setBackgroundImagePath(QString _path)
-{
-    QImage img(_path);
-    if(img.isNull())
-    {
-        QMessageBox::warning(nullptr,QStringLiteral("错误"),QStringLiteral("非图像文件或不存在"));
-        return ;
-    }
+//void Scene::setBackgroundImagePath(QString _path)
+//{
+//    QImage img(_path);
+//    if(img.isNull())
+//    {
+//        QMessageBox::warning(nullptr,QStringLiteral("错误"),QStringLiteral("非图像文件或不存在"));
+//        return ;
+//    }
 
-    QString fileNameWithType = "image.jpg";
-    if(_path.contains("\\"))
-        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("\\"));
-    else if(_path.contains("/"))
-        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("/")-1);
-    QString fileName = fileNameWithType.left(fileNameWithType.indexOf("."));
+//    QString fileNameWithType = "image.jpg";
+//    if(_path.contains("\\"))
+//        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("\\"));
+//    else if(_path.contains("/"))
+//        fileNameWithType = _path.right(_path.length() - _path.lastIndexOf("/")-1);
+//    QString fileName = fileNameWithType.left(fileNameWithType.indexOf("."));
 
-    MapBackground *bk = new MapBackground(onemap->getNextId(),fileName,img,fileName);
+//    MapBackground *bk = new MapBackground(onemap->getNextId(),fileName,img,fileName);
 
-    if(bkg!=nullptr && bkg->getBkg()!=nullptr){
-        //删除原来的元素
-        removeItem(bkg);
-        bkg = nullptr;
-    }
+//    if(bkg!=nullptr && bkg->getBkg()!=nullptr){
+//        //删除原来的元素
+//        removeItem(bkg);
+//        bkg = nullptr;
+//    }
 
-    if(bkg==nullptr){
-        bkg = new MapItemBkg(bk);
-        connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-        addItem(bkg);
-    }else{
-        bkg->setBkg(bk);
-        bkg->update(bkg->boundingRect());
-    }
-    floor->setBkg(bk);
-    emit sig_add_remove_spirit();
-    update();
-}
+//    if(bkg==nullptr){
+//        bkg = new MapItemBkg(bk);
+//        connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+//        addItem(bkg);
+//    }else{
+//        bkg->setBkg(bk);
+//        bkg->update(bkg->boundingRect());
+//    }
+//    floor->setBkg(bk);
+//    emit sig_add_remove_spirit();
+//    update();
+//}
 
 void Scene::addSpirit(MapFloor *_floor,MapSpirit *_spirit)
 {
@@ -430,13 +430,17 @@ void Scene::propertyChanged(MapSpirit *_spirit)
     }
     else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
         //add bkg!
-        MapFloor *floor = static_cast<MapFloor *>(_spirit);
-        if(floor->getBkg()!=nullptr){
-            if(bkg!=nullptr){
-                removeItem(bkg);
+        MapFloor *_floor = static_cast<MapFloor *>(_spirit);
+        if(_floor == this->floor){
+            if(floor->getBkg()!=nullptr){
+                if(bkg!=nullptr){
+                    removeItem(bkg);
+                    bkg = nullptr;
+                    update();
+                }
+                bkg = new MapItemBkg(floor->getBkg());
+                addItem(bkg);
             }
-            bkg = new MapItemBkg(floor->getBkg());
-            addItem(bkg);
         }
     }
 }
@@ -723,6 +727,8 @@ void Scene::onSelectItemChanged()
                 emit sig_chooseChanged(selectLine->getPath());
             }
         }
+
+        //选择了一条曲线
         else if(lastSelectItem->type() == MapItemQuadraticBezier::Type)
         {
             MapItemQuadraticBezier *selectLine = qgraphicsitem_cast<MapItemQuadraticBezier*>(lastSelectItem);
@@ -740,6 +746,8 @@ void Scene::onSelectItemChanged()
                 emit sig_chooseChanged(selectLine->getPath());
             }
         }
+
+        //选择了一条曲线
         else if(lastSelectItem->type() == MapItemCubicBezier::Type)
         {
             MapItemCubicBezier *selectLine = qgraphicsitem_cast<MapItemCubicBezier*>(lastSelectItem);
@@ -755,6 +763,21 @@ void Scene::onSelectItemChanged()
                 emit sig_add_remove_spirit();
             }else{
                 emit sig_chooseChanged(selectLine->getPath());
+            }
+        }
+
+        //选择了背景图片
+        else if(lastSelectItem->type() == MapItemBkg::Type)
+        {
+            MapItemBkg *sekectBkg = qgraphicsitem_cast<MapItemBkg*>(lastSelectItem);
+            if(cur_tool == T_ERASER ){
+                removeItem(sekectBkg);
+                floor->removeBkg();
+                update();
+                //TODO:
+                emit sig_add_remove_spirit();
+            }else{
+                emit sig_chooseChanged(sekectBkg->getBkg());
             }
         }
     }

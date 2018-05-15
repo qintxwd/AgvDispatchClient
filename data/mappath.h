@@ -29,12 +29,14 @@ public:
     void setP2x(int _p2x){p2x = _p2x;}
     void setP2y(int _p2y){p2y = _p2y;}
     void setLength(int _length){length=_length;}
+    void setLocked(bool _locked){locked = _locked;}
 
     int getP1x(){return p1x;}
     int getP1y(){return p1y;}
     int getP2x(){return p2x;}
     int getP2y(){return p2y;}
     int getLength(){return length;}
+    bool getLocked(){return locked;}
 
 private:
     Map_Path_Type path_type;
@@ -45,6 +47,7 @@ private:
     int p1y;
     int p2y;
     int length;
+    bool locked;
 };
 
 #endif // MAPPATH_H

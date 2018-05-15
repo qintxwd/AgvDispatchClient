@@ -21,6 +21,7 @@ public slots:
     void slot_showSpirit(MapSpirit *spirit);
     void slot_propertyChanged(MapSpirit *_spirit);
 private slots:
+    //point edit
     void slot_PointNameChanged(QString name);
     void slot_PointTypeChanged(int _type);
     void slot_PointXChanged(QString x);
@@ -31,6 +32,7 @@ private slots:
     void slot_PointLabelYoffsetChanged(QString labelYoffset);
     void slot_PointMapChangeChanged(int mapchange);
 
+    //path edit
     void slot_PathNameChanged(QString name);
     void slot_PathTypeChanged(int _type);
     void slot_PathP1XChanged(QString p1x);
@@ -39,11 +41,24 @@ private slots:
     void slot_PathP2YChanged(QString p2y);
     void slot_LengthChanged(QString length);
 
+    //floor edit
     void slot_FloorNameChanged(QString name);
+
+    //bkg edit
+    void slot_BkgNameChanged(QString name);
+    void slot_BkgXChanged(QString x);
+    void slot_BkgYChanged(QString y);
+    void slot_BkgWidthChanged(QString w);
+    void slot_BkgHeightChanged(QString h);
+
+    //block edit
+    void slot_BlockNameChanged(QString name);
 private:
     void showPoint();
     void showPath();
     void showFloor();
+    void showBkg();
+    void showBlock();
     MapSpirit *spirit;
     QTableWidget *tableWidget;
     OneMap* oneMap;
@@ -110,6 +125,11 @@ private:
     QTableWidgetItem *bkg_itemKeyHeight;
     QLineEdit *bkg_heightInput;
 
+    //block
+    QTableWidgetItem *block_itemKeyId;
+    QTableWidgetItem *block_itemValueId;
+    QTableWidgetItem *block_itemKeyName;
+    QLineEdit *block_nameInput;
 
 };
 

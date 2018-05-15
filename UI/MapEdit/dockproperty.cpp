@@ -5,7 +5,7 @@ DockProperty::DockProperty(OneMap *_oneMap, QWidget *parent) : QDockWidget(paren
     oneMap(_oneMap)
 {
     setMaximumWidth(300);
-    tableWidget = new QTableWidget(20,2);
+    tableWidget = new QTableWidget(28,2);
     QStringList labels;
     labels << QStringLiteral("属性")
            << QStringLiteral("值");
@@ -133,10 +133,62 @@ void DockProperty::init()
 
     ///////floor
     floor_itemKeyId = new QTableWidgetItem("ID");
+    floor_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyId->setFlags(floor_itemKeyId->flags()&(~Qt::ItemIsEditable));
     floor_itemValueId = new QTableWidgetItem("");
+    floor_itemValueId->setTextAlignment(Qt::AlignCenter);
+    floor_itemValueId->setFlags(floor_itemValueId->flags()&(~Qt::ItemIsEditable));
     floor_itemKeyName = new QTableWidgetItem("NAME");
+    floor_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyName->setFlags(floor_itemKeyName->flags()&(~Qt::ItemIsEditable));
     floor_nameInput  = new QLineEdit("");
     connect(floor_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+
+    ///////bkg
+    bkg_itemKeyId = new QTableWidgetItem("ID");
+    bkg_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    bkg_itemKeyId->setFlags(bkg_itemKeyId->flags()&(~Qt::ItemIsEditable));
+    bkg_itemValueId = new QTableWidgetItem("");
+    bkg_itemValueId->setTextAlignment(Qt::AlignCenter);
+    bkg_itemValueId->setFlags(bkg_itemValueId->flags()&(~Qt::ItemIsEditable));
+    bkg_itemKeyName = new QTableWidgetItem("NAME");
+    bkg_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    bkg_itemKeyName->setFlags(bkg_itemKeyName->flags()&(~Qt::ItemIsEditable));
+    bkg_nameInput  = new QLineEdit("");
+    connect(bkg_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BkgNameChanged(QString)));
+    bkg_itemX = new QTableWidgetItem(QStringLiteral("X"));
+    bkg_itemX->setTextAlignment(Qt::AlignCenter);
+    bkg_itemX->setFlags(bkg_itemX->flags()&(~Qt::ItemIsEditable));
+    bkg_xInput  = new QLineEdit(QString(""));
+    connect(bkg_xInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BkgXChanged(QString)));
+    bkg_itemKeyY = new QTableWidgetItem(QStringLiteral("Y"));
+    bkg_itemKeyY->setTextAlignment(Qt::AlignCenter);
+    bkg_itemKeyY->setFlags(bkg_itemKeyY->flags()&(~Qt::ItemIsEditable));
+    bkg_yInput  = new QLineEdit(QString(""));
+    connect(bkg_yInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BkgYChanged(QString)));
+    bkg_itemWidth = new QTableWidgetItem(QStringLiteral("Width"));
+    bkg_itemWidth->setTextAlignment(Qt::AlignCenter);
+    bkg_itemWidth->setFlags(bkg_itemWidth->flags()&(~Qt::ItemIsEditable));
+    bkg_widthInput  = new QLineEdit(QString(""));
+    connect(bkg_widthInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BkgWidthChanged(QString)));
+    bkg_itemKeyHeight = new QTableWidgetItem(QStringLiteral("Height"));
+    bkg_itemKeyHeight->setTextAlignment(Qt::AlignCenter);
+    bkg_itemKeyHeight->setFlags(bkg_itemKeyHeight->flags()&(~Qt::ItemIsEditable));
+    bkg_heightInput  = new QLineEdit(QString(""));
+    connect(bkg_heightInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BkgHeightChanged(QString)));
+
+    ///////block
+    block_itemKeyId = new QTableWidgetItem("ID");
+    block_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    block_itemKeyId->setFlags(block_itemKeyId->flags()&(~Qt::ItemIsEditable));
+    block_itemValueId = new QTableWidgetItem("");
+    block_itemValueId->setTextAlignment(Qt::AlignCenter);
+    block_itemValueId->setFlags(block_itemValueId->flags()&(~Qt::ItemIsEditable));
+    block_itemKeyName = new QTableWidgetItem("NAME");
+    block_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    block_itemKeyName->setFlags(block_itemKeyName->flags()&(~Qt::ItemIsEditable));
+    block_nameInput  = new QLineEdit("");
+    connect(block_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BlockNameChanged(QString)));
 
     ////////////add to table widget
     tableWidget->setItem(0, 0, point_itemKeyId);
@@ -182,7 +234,25 @@ void DockProperty::init()
     tableWidget->setItem(19, 0, floor_itemKeyName);
     tableWidget->setCellWidget(19,1,floor_nameInput);
 
-    for(int i=0;i<20;++i){
+    tableWidget->setItem(20, 0, bkg_itemKeyId);
+    tableWidget->setItem(20, 1, bkg_itemValueId);
+    tableWidget->setItem(21, 0, bkg_itemKeyName);
+    tableWidget->setCellWidget(21,1,bkg_nameInput);
+    tableWidget->setItem(22, 0, bkg_itemX);
+    tableWidget->setCellWidget(22,1,bkg_xInput);
+    tableWidget->setItem(23, 0, bkg_itemKeyY);
+    tableWidget->setCellWidget(23,1,bkg_yInput);
+    tableWidget->setItem(24, 0, bkg_itemWidth);
+    tableWidget->setCellWidget(24,1,bkg_widthInput);
+    tableWidget->setItem(25, 0, bkg_itemKeyHeight);
+    tableWidget->setCellWidget(25,1,bkg_heightInput);
+
+    tableWidget->setItem(26, 0, block_itemKeyId);
+    tableWidget->setItem(26, 1, block_itemValueId);
+    tableWidget->setItem(27, 0, block_itemKeyName);
+    tableWidget->setCellWidget(27,1,block_nameInput);
+
+    for(int i=0;i<28;++i){
         tableWidget->setRowHidden(i,true);
     }
 
@@ -194,8 +264,8 @@ void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
     //TODO:
     if(spirit != _spirit) return ;
 
-    for(int i=0;i<20;++i){
-        tableWidget->setRowHidden(i,i>9);
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,true);
     }
 
     //只是更新数据
@@ -205,6 +275,10 @@ void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
         showPath();
     }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
         showFloor();
+    }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
+        showBkg();
+    }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Block){
+        showBlock();
     }
 }
 
@@ -221,7 +295,7 @@ void DockProperty::slot_showSpirit(MapSpirit *s)
     tableWidget->update();
     if(spirit == nullptr)
     {
-        for(int i=0;i<20;++i){
+        for(int i=0;i<28;++i){
             tableWidget->setRowHidden(i,true);
         }
         return ;
@@ -235,6 +309,12 @@ void DockProperty::slot_showSpirit(MapSpirit *s)
         break;
     case MapSpirit::Map_Sprite_Type_Floor:
         showFloor();
+        break;
+    case MapSpirit::Map_Sprite_Type_Background:
+        showBkg();
+        break;
+    case MapSpirit::Map_Sprite_Type_Block:
+        showBlock();
         break;
     default:
         break;
@@ -261,8 +341,8 @@ void DockProperty::showPoint()
         point_comboxMapChange->setCurrentIndex(0);
 
     }
-    for(int i=0;i<20;++i){
-        tableWidget->setRowHidden(i,i>9);
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,i>=10);
     }
 
     tableWidget->update();
@@ -282,8 +362,8 @@ void DockProperty::showPath()
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));
     path_yP2Input->setText(QString("%1").arg(path->getP2y()));
     path_lengthInput->setText(QString("%1").arg(path->getLength()));
-    for(int i=0;i<20;++i){
-        tableWidget->setRowHidden(i,i<=9 || i > 17);
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,i<=9 || i >= 18);
     }
     tableWidget->update();
 }
@@ -294,8 +374,38 @@ void DockProperty::showFloor()
     MapFloor *floor = static_cast<MapFloor *>(spirit);
     floor_itemValueId->setText(QString("%1").arg(floor->getId()));
     floor_nameInput->setText(floor->getName());
-    for(int i=0;i<20;++i){
-        tableWidget->setRowHidden(i,i <= 17);
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,i <= 17 || i>=20);
+    }
+    tableWidget->update();
+}
+
+void DockProperty::showBkg()
+{
+    //清空原来的数据
+    if(spirit==nullptr)return ;
+    MapBackground *bkg = static_cast<MapBackground *>(spirit);
+    bkg_itemValueId->setText(QString("%1").arg(bkg->getId()));
+    bkg_nameInput->setText(bkg->getName());
+    bkg_xInput->setText(QString("%1").arg(bkg->getX()));
+    bkg_yInput->setText(QString("%1").arg(bkg->getY()));
+    bkg_widthInput->setText(QString("%1").arg(bkg->getWidth()));
+    bkg_heightInput->setText(QString("%1").arg(bkg->getHeight()));
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,i <= 19 || i>=26);
+    }
+    tableWidget->update();
+}
+
+void DockProperty::showBlock()
+{
+    //清空原来的数据
+    if(spirit==nullptr)return ;
+    MapBlock *block = static_cast<MapBlock *>(spirit);
+    block_itemValueId->setText(QString("%1").arg(block->getId()));
+    block_nameInput->setText(block->getName());
+    for(int i=0;i<28;++i){
+        tableWidget->setRowHidden(i,i <= 25||i >=28);
     }
     tableWidget->update();
 }
@@ -406,3 +516,43 @@ void DockProperty::slot_FloorNameChanged(QString name)
     (static_cast<MapFloor *>(spirit))->setName(name);
     emit sig_propertyChanged(spirit);
 }
+
+void DockProperty::slot_BkgNameChanged(QString name)
+{
+    if(spirit == nullptr)return ;
+    spirit->setName(name);
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_BkgXChanged(QString x)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapBackground *>(spirit))->setX(x.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_BkgYChanged(QString y)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapBackground *>(spirit))->setY(y.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_BkgWidthChanged(QString w)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapBackground *>(spirit))->setWidth(w.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_BkgHeightChanged(QString h)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapBackground *>(spirit))->setHeight(h.toInt());
+    emit sig_propertyChanged(spirit);
+}
+
+
+void DockProperty::slot_BlockNameChanged(QString name)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapBlock *>(spirit))->setName(name);
+    emit sig_propertyChanged(spirit);
+}
+
