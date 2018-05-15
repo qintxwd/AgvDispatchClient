@@ -2,56 +2,6 @@
 #include <assert.h>
 #include "global.h"
 
-const char *Msg_Todo_Str[] =
-{
-    "MSG_TODO_USER_LOGIN",
-    "MSG_TODO_USER_LOGOUT",
-    "MSG_TODO_USER_CHANGED_PASSWORD",
-    "MSG_TODO_USER_LIST",
-    "MSG_TODO_USER_DELTE",
-    "MSG_TODO_USER_ADD",
-    "MSG_TODO_USER_MODIFY",
-    "MSG_TODO_MAP_CREATE_START",
-    "MSG_TODO_MAP_CREATE_ADD_STATION",
-    "MSG_TODO_MAP_CREATE_ADD_LINE",
-    "MSG_TODO_MAP_CREATE_FINISH",
-    "MSG_TODO_MAP_LIST_STATION",
-    "MSG_TODO_MAP_LIST_LINE",
-    "MSG_TODO_AGV_MANAGE_LIST",
-    "MSG_TODO_AGV_MANAGE_ADD",
-    "MSG_TODO_AGV_MANAGE_DELETE",
-    "MSG_TODO_AGV_MANAGE_MODIFY",
-    "MSG_TODO_TASK_CREATE",
-    "MSG_TODO_TASK_QUERY_STATUS",
-    "MSG_TODO_TASK_CANCEL",
-    "MSG_TODO_TASK_LIST_UNDO",
-    "MSG_TODO_TASK_LIST_DOING",
-    "MSG_TODO_TASK_LIST_DONE_TODAY",
-    "MSG_TODO_TASK_LIST_DURING",
-    "MSG_TODO_LOG_LIST_DURING",
-    "MSG_TODO_SUB_AGV_POSITION",
-    "MSG_TODO_CANCEL_SUB_AGV_POSITION",
-    "MSG_TODO_SUB_AGV_STATSU",
-    "MSG_TODO_CANCEL_SUB_AGV_STATSU",
-    "MSG_TODO_SUB_LOG",
-    "MSG_TODO_CANCEL_SUB_LOG",
-    "MSG_TODO_SUB_TASK",
-    "MSG_TODO_CANCEL_SUB_TASK",
-    "MSG_TODO_TRAFFIC_CONTROL_STATION",
-    "MSG_TODO_TRAFFIC_CONTROL_LINE",
-    "MSG_TODO_TRAFFIC_RELEASE_STATION",
-    "MSG_TODO_TRAFFIC_RELEASE_LINE",
-    "MSG_TODO_PUB_AGV_POSITION",
-    "MSG_TODO_PUB_AGV_STATUS",
-    "MSG_TODO_PUB_LOG",
-    "MSG_TODO_PUB_TASK",
-    "MSG_TODO_NOTIFY_ALL_MAP_UPDATE",
-    "MSG_TODO_NOTIFY_ALL_ERROR",
-};
-
-const char* getToDoStr(uint8_t todo){
-    return Msg_Todo_Str[todo];
-}
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false)
@@ -83,10 +33,10 @@ void MsgCenter::init()
                 responsesMtx.unlock();
                 break;
             }
-            MSG_Response msg = responses.front();
+            Json::Value response = responses.front();
             responses.pop_front();
             responsesMtx.unlock();
-            parseOneMsg(msg);
+            parseOneMsg(response);
         }
     });
 }
@@ -108,19 +58,19 @@ int MsgCenter::getServerPort()
 }
 
 //入队响应消息
-void MsgCenter::push(MSG_Response msg)
+void MsgCenter::push(const Json::Value &response)
 {
     responsesMtx.lock();
-    responses.push_back(msg);
+    responses.push_back(response);
     condition.wakeAll();
     responsesMtx.unlock();
 }
 
-void MsgCenter::requestWaitResponse(const MSG_Request & msg)
+void MsgCenter::requestWaitResponse(const Json::Value &request)
 {
     emit sendNewRequest();
-    qDebug()<<"send request:"<<" req->"<<getToDoStr(msg.head.todo)<<" queue->"<<msg.head.queuenumber;
-    if(!tcpClient.send(msg)){
+    qDebug()<<"send request:"<<" req->"<<request["todo"]<<" queue->"<<request["queuenumber"];
+    if(!tcpClient.send(request)){
         emit sendRequestFail();
         return ;
     }
@@ -134,22 +84,22 @@ void MsgCenter::requestWaitResponse(const MSG_Request & msg)
 
 }
 
-void MsgCenter::iniRequsttMsg(MSG_Request &msg)
+void MsgCenter::iniRequsttMsg(Json::Value &request)
 {
-    memset(&msg,0,sizeof(MSG_Request));
-    msg.head.head = MSG_MSG_Head_HEAD;
-    msg.head.tail = MSG_MSG_Head_TAIL;
-    msg.head.queuenumber = ++queueNumber;
+    request["queuenumber"] = ++queueNumber;
+    request["type"] = MSG_TYPE_REQUEST;
 }
 
-void MsgCenter::parseOneMsg(const MSG_Response msg)
+void MsgCenter::parseOneMsg(const Json::Value &response)
 {
     //判断消息格式是否正确
-    if(msg.head.head != MSG_MSG_Head_HEAD || msg.head.tail!=MSG_MSG_Head_TAIL)return ;
+    if(response["type"].isNull()||response["queuenumber"].isNull()||response["todo"].isNull()){
+        return ;
+    }
 
     //是否和发送请求的queuenumber序号相同，相同标记 得到响应
-    if(msg.head.queuenumber == queueNumber)getResponse = true;
-    qDebug()<<"send response:"<<" req->"<<getToDoStr(msg.head.todo)<<" queue->"<<msg.head.queuenumber<<" result->"<<msg.return_head.result;
+    if(response["queuenumber"].asInt() == queueNumber)getResponse = true;
+    qDebug()<<"send response:"<<" req->"<<response["todo"]<<" queue->"<<response["queuenumber"];
     //错误判断和显示
     if(msg.return_head.result == RETURN_MSG_RESULT_FAIL || msg.return_head.error_code != RETURN_MSG_ERROR_NO_ERROR)
     {
@@ -159,7 +109,7 @@ void MsgCenter::parseOneMsg(const MSG_Response msg)
     }
 
     //没有错误，那么根据响应的指令，找到对应的处理方式处理
-    typedef std::function<void(const MSG_Response)> ProcessFunction;
+    typedef std::function<void(const Json::Value &)> ProcessFunction;
 
     static struct
     {
@@ -174,12 +124,8 @@ void MsgCenter::parseOneMsg(const MSG_Response msg)
     { MSG_TODO_USER_DELTE,std::bind(&MsgCenter::response_user_remove,this,std::placeholders::_1) },
     { MSG_TODO_USER_ADD,std::bind(&MsgCenter::response_user_add,this,std::placeholders::_1) },
     { MSG_TODO_USER_MODIFY,std::bind(&MsgCenter::response_user_modify,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_CREATE_START,std::bind(&MsgCenter::response_map_create_start,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_CREATE_ADD_STATION,std::bind(&MsgCenter::response_map_create_add_station,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_CREATE_ADD_LINE,std::bind(&MsgCenter::response_map_create_add_line,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_CREATE_FINISH,std::bind(&MsgCenter::response_map_create_finish,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_LIST_STATION,std::bind(&MsgCenter::response_map_list_station,this,std::placeholders::_1) },
-    { MSG_TODO_MAP_LIST_LINE,std::bind(&MsgCenter::response_map_list_line,this,std::placeholders::_1) },
+    { MSG_TODO_MAP_SET_MAP,std::bind(&MsgCenter::response_map_create_start,this,std::placeholders::_1) },
+    { MSG_TODO_MAP_GET_MAP,std::bind(&MsgCenter::response_map_list_station,this,std::placeholders::_1) },
     { MSG_TODO_AGV_MANAGE_LIST,std::bind(&MsgCenter::response_agv_list,this,std::placeholders::_1) },
     { MSG_TODO_AGV_MANAGE_ADD,std::bind(&MsgCenter::response_agv_add,this,std::placeholders::_1) },
     { MSG_TODO_AGV_MANAGE_DELETE,std::bind(&MsgCenter::response_agv_delete,this,std::placeholders::_1) },
@@ -207,26 +153,26 @@ void MsgCenter::parseOneMsg(const MSG_Response msg)
     return ;
 }
 
-void MsgCenter::response_user_login(const MSG_Response msg)
+void MsgCenter::response_user_login(const Json::Value &response)
 {
     assert(msg.head.body_length == sizeof(USER_INFO));
     memcpy(&current_user_info,msg.body,msg.head.body_length);
     emit loginSuccess(current_user_info.role);
 }
 
-void MsgCenter::response_user_logout(const MSG_Response msg)
+void MsgCenter::response_user_logout(const Json::Value &response)
 {
     memset(&current_user_info,0,sizeof(USER_INFO));
 }
 
-void MsgCenter::response_user_changePassword(const MSG_Response msg)
+void MsgCenter::response_user_changePassword(const Json::Value &response)
 {
     //修改成功，需重新登录
     memset(&current_user_info,0,sizeof(USER_INFO));
     emit changePasswrodSuccess();
 }
 
-void MsgCenter::response_user_list(const MSG_Response msg)
+void MsgCenter::response_user_list(const Json::Value &response)
 {
     assert(msg.head.body_length%sizeof(USER_INFO) == 0);
     int kk = msg.head.body_length/sizeof(USER_INFO);
@@ -240,46 +186,30 @@ void MsgCenter::response_user_list(const MSG_Response msg)
         emit listUserSuccess();
 }
 
-void MsgCenter::response_user_remove(const MSG_Response msg)
+void MsgCenter::response_user_remove(const Json::Value &response)
 {
     //删除成功
     emit deleteUserSuccess();
 }
 
-void MsgCenter::response_user_add(const MSG_Response msg)
+void MsgCenter::response_user_add(const Json::Value &response)
 {
     //添加成功
     emit addUserSuccess();
 }
 
-void MsgCenter::response_user_modify(const MSG_Response msg)
+void MsgCenter::response_user_modify(const Json::Value &response)
 {
     //修改成功
     emit modifyUserSuccess();
 }
 
-void MsgCenter::response_map_create_start(const MSG_Response msg)
+void MsgCenter::response_map_set(const Json::Value &response)
 {
     emit mapCreateStart();
 }
-void MsgCenter::response_map_create_add_line(const MSG_Response msg)
-{
-    emit mapCreateAddStation();
-}
-void MsgCenter::response_map_create_add_station(const MSG_Response msg)
-{
-    emit mapCreateAddLine();
-}
-void MsgCenter::response_map_create_add_arc(const MSG_Response msg)
-{
-    emit mapCreateAddArc();
-}
-void MsgCenter::response_map_create_finish(const MSG_Response msg)
-{
-    emit mapCreateFinish();
-}
 
-void MsgCenter::response_map_list_station(const MSG_Response msg)
+void MsgCenter::response_map_get(const Json::Value &response)
 {
     int ll = msg.head.body_length/sizeof(STATION_INFO);
     for(int i=0;i<ll;++i){
@@ -290,18 +220,8 @@ void MsgCenter::response_map_list_station(const MSG_Response msg)
     emit mapStationListSuccess();
 }
 
-void MsgCenter::response_map_list_line(const MSG_Response msg)
-{
-    int ll = msg.head.body_length/sizeof(AGV_LINE);
-    for(int i=0;i<ll;++i){
-        AGV_LINE temp;
-        memcpy(&temp,msg.body+i*sizeof(AGV_LINE),sizeof(AGV_LINE));
-        mapLines.push_back(temp);
-    }
-    emit mapLinesListSuccess();
-}
 
-void MsgCenter::response_agv_list(const MSG_Response msg)
+void MsgCenter::response_agv_list(const Json::Value &response)
 {
     int ll = msg.head.body_length/sizeof(AGV_BASE_INFO);
     for(int i=0;i<ll;++i){
@@ -313,17 +233,17 @@ void MsgCenter::response_agv_list(const MSG_Response msg)
         emit listAgvSuccess();
 }
 
-void MsgCenter::response_agv_add(const MSG_Response msg)
+void MsgCenter::response_agv_add(const Json::Value &response)
 {
     emit addAgvSuccess();
 }
 
-void MsgCenter::response_agv_delete(const MSG_Response msg)
+void MsgCenter::response_agv_delete(const Json::Value &response)
 {
     emit deleteAgvSuccess();
 }
 
-void MsgCenter::response_agv_modify(const MSG_Response msg)
+void MsgCenter::response_agv_modify(const Json::Value &response)
 {
     emit modifyAgvSuccess();
 }
@@ -331,7 +251,7 @@ void MsgCenter::response_agv_modify(const MSG_Response msg)
 /////////////////////////////////////请求登录
 void MsgCenter::login(QString username,QString password)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_LOGIN;
     request.head.body_length = MSG_STRING_LEN*2;
@@ -344,7 +264,7 @@ void MsgCenter::login(QString username,QString password)
 //注销调用
 void MsgCenter::logout()
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_LOGOUT;
     request.head.body_length = 0;
@@ -354,7 +274,7 @@ void MsgCenter::logout()
 //修改密码
 void MsgCenter::changePassword(QString old_password,QString new_password)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_CHANGED_PASSWORD;
     request.head.body_length = MSG_STRING_LEN;
@@ -366,7 +286,7 @@ void MsgCenter::changePassword(QString old_password,QString new_password)
 void MsgCenter::userList()
 {
     userinfos.clear();
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_LIST;
     requestWaitResponse(request);
@@ -375,7 +295,7 @@ void MsgCenter::userList()
 //删除用户
 void MsgCenter::deleteUser(int32_t id)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_DELTE;
     request.head.body_length = sizeof(int32_t);
@@ -386,7 +306,7 @@ void MsgCenter::deleteUser(int32_t id)
 //添加用户
 void MsgCenter::adduser(QString username, QString password, int32_t role)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_ADD;
     USER_INFO u;
@@ -403,7 +323,7 @@ void MsgCenter::adduser(QString username, QString password, int32_t role)
 //修改用户
 void MsgCenter::modifyuser(int32_t id, QString username, QString password, int32_t role)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_USER_MODIFY;
     USER_INFO u;
@@ -420,7 +340,7 @@ void MsgCenter::modifyuser(int32_t id, QString username, QString password, int32
 void MsgCenter::agvList()
 {
     agvbaseinfos.clear();
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_AGV_MANAGE_LIST;
     requestWaitResponse(request);
@@ -429,7 +349,7 @@ void MsgCenter::agvList()
 
 void MsgCenter::deleteAgv(int id)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_AGV_MANAGE_DELETE;
     request.head.body_length = sizeof(int32_t);
@@ -440,7 +360,7 @@ void MsgCenter::deleteAgv(int id)
 
 void MsgCenter::addagv(QString name,QString ip,int port)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_AGV_MANAGE_ADD;
     AGV_BASE_INFO baseinfo;
@@ -456,7 +376,7 @@ void MsgCenter::addagv(QString name,QString ip,int port)
 
 void MsgCenter::modifyagv(int id,QString name,QString ip,int port)
 {
-    MSG_Request request;
+    Json::Value request;
     iniRequsttMsg(request);
     request.head.todo = MSG_TODO_AGV_MANAGE_MODIFY;
     AGV_BASE_INFO baseinfo;

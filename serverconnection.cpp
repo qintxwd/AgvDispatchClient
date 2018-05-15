@@ -67,11 +67,11 @@ void ServerConnection::init(QString ip, int _port)
 
             emit onConnect();
 
-            memset(&responsMsg,0,sizeof(responsMsg));
-
             while(!quit && socketFd>0){
                 int recvLen = 0;
-                recvLen = ::recv(socketFd, (char *)&(responsMsg.head), sizeof(MSG_Head), 0);
+                char head_flag;
+                int32_t json_length;
+                recvLen = ::recv(socketFd,&head_flag, 1, 0);
 
                 if (recvLen <= 0)
                 {
@@ -93,9 +93,9 @@ void ServerConnection::init(QString ip, int _port)
                 }
 
 
-                if(responsMsg.head.head == MSG_MSG_Head_HEAD && responsMsg.head.tail == MSG_MSG_Head_TAIL )
+                if(head_flag == MSG_MSG_HEAD)
                 {
-                    recvLen = ::recv(socketFd,(char*)&(responsMsg.return_head),sizeof(MSG_RESPONSE_HEAD),0);
+                    recvLen = ::recv(socketFd,(char*)&(json_length),sizeof(json_length),0);
                     if (recvLen <= 0)
                     {
                         if (errno == EINTR || errno == EAGAIN)
@@ -113,30 +113,47 @@ void ServerConnection::init(QString ip, int _port)
                             continue;
                         }
                     }
-                    if(responsMsg.head.body_length>0){
-                        recvLen = ::recv(socketFd,responsMsg.body,responsMsg.head.body_length,0);
-                        if (recvLen <= 0)
-                        {
-                            if (errno == EINTR || errno == EAGAIN)
+                    if(json_length>0){
+                        char *buffer = new char[json_length+1];
+                        int read_pos = 0;
+                        recvLen = 0;
+                        while(true){
+                            recvLen += ::recv(socketFd,buffer+read_pos,json_length-recvLen,0);
+                            if (recvLen <= 0)
                             {
-                            }
-                            else
-                            {
+                                if (errno == EINTR || errno == EAGAIN)
+                                {
+                                }
+                                else
+                                {
 #ifdef WIN32
-                                closesocket(socketFd);
+                                    closesocket(socketFd);
 #else
-                                close(socketFd);
+                                    close(socketFd);
 #endif
-                                socketFd = 0;
-                                emit onDisconnect();
-                                continue;
+                                    socketFd = 0;
+                                    emit onDisconnect();
+                                    break;
+                                }
+                            }else if(recvLen==json_length){
+                                break;
+                            }else{
+                                read_pos += recvLen;
                             }
                         }
-                    }
 
-                    //TODO:入队一个消息
-                    emit onRead(responsMsg);
-                    memset(&responsMsg,0,sizeof(responsMsg));
+                        if(recvLen==json_length){
+                            Json::Reader reader;
+                            Json::Value root;
+                            if (reader.parse(std::string(buffer,json_length), root))
+                            {
+                                emit onRead(root);
+                            }
+                        }
+                        delete []buffer;
+                    }else{
+                        continue;
+                    }
                 }
             }
         }
@@ -158,10 +175,20 @@ void ServerConnection::init(QString ip, int _port)
                 sendQueueMtx.unlock();
                 break;
             }
-            write_one_msg = m_queue.front();
+            Json::Value write_one_msg = m_queue.front();
             m_queue.pop_front();
             sendQueueMtx.unlock();
-            ::send(socketFd,(char *)&write_one_msg,sizeof(MSG_Head)+write_one_msg.head.body_length,0);
+
+            char headLeng[MSG_JSON_PREFIX_LENGTH] = {0xAA};
+            int length = write_one_msg.toStyledString().length();
+            //send head and length
+            snprintf(headLeng+1,4, (char *)&length,sizeof(length));
+            ::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0);
+            if (::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0)!=MSG_JSON_PREFIX_LENGTH)
+            {
+                continue ;
+            }
+            ::send(socketFd,write_one_msg.toStyledString().c_str(),write_one_msg.toStyledString().length(),0);
         }
     });
 }
@@ -176,11 +203,11 @@ void ServerConnection::reset(QString ip,int _port)
     need_reconnect = true;
 }
 
-bool ServerConnection::send(const MSG_Request &msg){
+bool ServerConnection::send(const Json::Value &json){
     if(socketFd<=0)return false;
 
     sendQueueMtx.lock();
-    m_queue.push_back(msg);
+    m_queue.push_back(json);
     condition.wakeAll();
     sendQueueMtx.unlock();
     return true;

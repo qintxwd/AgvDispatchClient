@@ -15,7 +15,7 @@ public:
     ~ServerConnection();
     void init(QString ip, int _port);
     void reset(QString ip, int _port);
-    bool send(const MSG_Request &msg);
+    bool send(const Json::Value &json);
     void disconnect();
     QString getIp(){return QString::fromStdString(serverip);}
     int getPort(){return port;}
@@ -23,7 +23,7 @@ signals:
     void onConnecting();
     void onConnect();
     void onDisconnect();
-    void onRead(MSG_Response responsMsg);
+    void onRead(Json::Value responsMsg);
 public slots:
 
 private:
@@ -42,13 +42,10 @@ private:
 
     int port;
 
-    //获取的一个响应消息
-    MSG_Response responsMsg;
-
     //////发送请求
-    MSG_Request write_one_msg;
 
-    QQueue<MSG_Request> m_queue;//发送队列
+
+    QQueue<Json::Value> m_queue;//发送队列
     QWaitCondition condition;
     QMutex sendQueueMtx;
 

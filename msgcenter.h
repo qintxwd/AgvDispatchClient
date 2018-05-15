@@ -144,38 +144,32 @@ signals:
     //任务
     void taskDetailSuccess();
 public slots:
-    void push(const MSG_Response msg);
+    void push(const Json::Value &response);
 private:
     //用户部分
-    void response_user_login(const MSG_Response msg);
-    void response_user_logout(const MSG_Response msg);
-    void response_user_changePassword(const MSG_Response msg);
-    void response_user_list(const MSG_Response msg);
-    void response_user_remove(const MSG_Response msg);
-    void response_user_add(const MSG_Response msg);
-    void response_user_modify(const MSG_Response msg);
+    void response_user_login(const Json::Value &response);
+    void response_user_logout(const Json::Value &response);
+    void response_user_changePassword(const Json::Value &response);
+    void response_user_list(const Json::Value &response);
+    void response_user_remove(const Json::Value &response);
+    void response_user_add(const Json::Value &response);
+    void response_user_modify(const Json::Value &response);
 
     //地图部分
-    void response_map_create_start(const MSG_Response msg);
-    void response_map_create_add_line(const MSG_Response msg);
-    void response_map_create_add_station(const MSG_Response msg);
-    void response_map_create_add_arc(const MSG_Response msg);
-    void response_map_create_finish(const MSG_Response msg);
-    void response_map_list_station(const MSG_Response msg);
-    void response_map_list_line(const MSG_Response msg);
-    void response_map_list_arc(const MSG_Response msg);
+    void response_map_set(const Json::Value &response);
+    void response_map_get(const Json::Value &response);
 
     //AGV 管理
-    void response_agv_list(const MSG_Response msg);
-    void response_agv_add(const MSG_Response msg);
-    void response_agv_delete(const MSG_Response msg);
-    void response_agv_modify(const MSG_Response msg);
+    void response_agv_list(const Json::Value &response);
+    void response_agv_add(const Json::Value &response);
+    void response_agv_delete(const Json::Value &response);
+    void response_agv_modify(const Json::Value &response);
 
-    void parseOneMsg(const MSG_Response msg);
+    void parseOneMsg(const Json::Value &response);
 
-    void iniRequsttMsg(MSG_Request &msg);
+    void iniRequsttMsg(Json::Value &request);
 
-    void requestWaitResponse(const MSG_Request &msg);
+    void requestWaitResponse(const Json::Value &request);
 
     std::atomic_int queueNumber;
 
@@ -199,7 +193,7 @@ private:
 
     ServerConnection tcpClient;
 
-    QQueue<MSG_Response> responses;
+    QQueue<Json::Value> responses;
     QWaitCondition condition;
     QMutex responsesMtx;
 
