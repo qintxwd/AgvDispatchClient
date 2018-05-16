@@ -199,8 +199,14 @@ private:
 
     //日志部分
     void pub_agv_log(const Json::Value &response);
+    void response_subUserLog(const Json::Value &response);
+    void response_cancelSubUserLog(const Json::Value &response);
+
 
     void parseOneMsg(const Json::Value &response);
+
+
+
 
     void iniRequsttMsg(Json::Value &request);
 

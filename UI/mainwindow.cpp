@@ -24,6 +24,7 @@ void MainWindow::init()
     connect(&msgCenter,SIGNAL(tip(QString)),this,SLOT(onTip(QString)));
     connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
+    connect(&msgCenter,SIGNAL(loginSuccess(int)),this,SLOT(updateCurrentUserInfo()));
 }
 
 void MainWindow::onServerConnect()
@@ -65,10 +66,9 @@ void MainWindow::onNewRequest()
     statusbar_info("");
 }
 
-void MainWindow::createStatusBar()
+void MainWindow::updateCurrentUserInfo()
 {
-    QStatusBar *statusbar = new QStatusBar(this);
-    QLabel *usernamelabel = new QLabel(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
+    usernamelabel->setText(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
     QString role_name = "";
     switch (current_user_info.role) {
     case USER_ROLE_VISITOR:
@@ -89,7 +89,35 @@ void MainWindow::createStatusBar()
     default:
         break;
     }
-    QLabel *userrolelabel = new QLabel(QStringLiteral("当前角色:")+role_name);
+    userrolelabel->setText(QStringLiteral("当前角色:")+role_name);
+}
+
+
+void MainWindow::createStatusBar()
+{
+    statusbar = new QStatusBar(this);
+    usernamelabel = new QLabel(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
+    QString role_name = "";
+    switch (current_user_info.role) {
+    case USER_ROLE_VISITOR:
+        role_name =QStringLiteral( "未登录");
+        break;
+    case USER_ROLE_OPERATOR:
+        role_name =QStringLiteral( "普通用户");
+        break;
+    case USER_ROLE_ADMIN:
+        role_name =QStringLiteral( "管理员");
+        break;
+    case USER_ROLE_SUPER_ADMIN:
+        role_name =QStringLiteral( "超级管理员");
+        break;
+    case USER_ROLE_DEVELOP:
+        role_name =QStringLiteral( "开发人员");
+        break;
+    default:
+        break;
+    }
+    userrolelabel = new QLabel(QStringLiteral("当前角色:")+role_name);
     info_label = new QLabel(QStringLiteral("信息:"));
     error_label = new QLabel(QStringLiteral("错误:"));
     usernamelabel->setMinimumWidth(200);

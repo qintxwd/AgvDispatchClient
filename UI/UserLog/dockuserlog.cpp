@@ -16,6 +16,7 @@ DockUserLog::DockUserLog(QWidget *parent) : QDockWidget(tr("UserLog"),parent)
 void DockUserLog::appendLog(USER_LOG log)
 {
     qDebug()<<"log==>"<<QString::fromUtf8(log.msg.c_str(),log.msg.length());
+
     int row = listModel->rowCount();
     if(row<show_max_row){
         listModel->insertRows(row, 1);
@@ -28,6 +29,7 @@ void DockUserLog::appendLog(USER_LOG log)
         QModelIndex index = listModel->index(row);
         listModel->setData(index, QString("%1\t%2").arg(log.time.c_str()).arg(QString::fromUtf8(log.msg.c_str(),log.msg.length())));
     }
+    listview->scrollToBottom();
 }
 
 void DockUserLog::onVisibilityChanged(bool v)

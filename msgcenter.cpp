@@ -142,8 +142,8 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_CANCEL_SUB_AGV_POSITION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_SUB_AGV_STATSU,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_CANCEL_SUB_AGV_STATSU,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_SUB_LOG,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_CANCEL_SUB_LOG,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_SUB_LOG,std::bind(&MsgCenter::response_subUserLog,this,std::placeholders::_1) },
+    { MSG_TODO_CANCEL_SUB_LOG,std::bind(&MsgCenter::response_cancelSubUserLog,this,std::placeholders::_1) },
     { MSG_TODO_SUB_TASK,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_CANCEL_SUB_TASK,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_CONTROL_STATION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
@@ -163,11 +163,11 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
 
 void MsgCenter::response_user_login(const Json::Value &response)
 {
-    current_user_info.id = response["user"]["id"].asInt();
-    current_user_info.role = response["user"]["role"].asInt();
-    current_user_info.status = response["user"]["status"].asInt();
-    current_user_info.username = response["user"]["username"].asString();
-    current_user_info.password = response["user"]["password"].asString();
+    current_user_info.id = response["id"].asInt();
+    current_user_info.role = response["role"].asInt();
+    current_user_info.status = response["status"].asInt();
+    current_user_info.username = response["username"].asString();
+    current_user_info.password = response["password"].asString();
 
     emit loginSuccess(current_user_info.role);
 }
@@ -388,6 +388,16 @@ void MsgCenter::response_agv_delete(const Json::Value &response)
 void MsgCenter::response_agv_modify(const Json::Value &response)
 {
     emit modifyAgvSuccess();
+}
+
+void MsgCenter::response_subUserLog(const Json::Value &response)
+{
+
+}
+
+void MsgCenter::response_cancelSubUserLog(const Json::Value &response)
+{
+
 }
 
 void MsgCenter::pub_agv_log(const Json::Value &response)

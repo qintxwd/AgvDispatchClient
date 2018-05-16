@@ -30,6 +30,7 @@ public slots:
     void onTip(QString s);
     void onErr(int errcode,QString info);
     void onNewRequest();
+    void updateCurrentUserInfo();
 private:
 
     void createActions();
@@ -42,8 +43,11 @@ private:
     DockAgvManage *dock_agv_manage;
     DockUserLog *dock_user_log;
 
+    QLabel *usernamelabel;
+    QLabel *userrolelabel;
     QLabel *info_label;
     QLabel *error_label;
+    QStatusBar *statusbar;
 };
 
 #endif // MAINWINDOW_H
