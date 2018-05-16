@@ -36,7 +36,7 @@ QVariant MapTreeItem::data(int column) const
 {
     Q_UNUSED(column)
     if(spirit==nullptr)return str;
-    return spirit->getName();//.value(column);
+    return QString::fromStdString(spirit->getName());//.value(column);
 }
 
 MapTreeItem *MapTreeItem::parentItem()

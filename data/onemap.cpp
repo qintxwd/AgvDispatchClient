@@ -18,6 +18,17 @@ OneMap::~OneMap()
 {
     qDeleteAll(floors);
     qDeleteAll(rootpaths);
+    qDeleteAll(blocks);
+    qDeleteAll(groups);
+}
+
+void OneMap::clear()
+{
+    qDeleteAll(floors);
+    qDeleteAll(rootpaths);
+    qDeleteAll(blocks);
+    qDeleteAll(groups);
+    max_id = 0;
 }
 
 void OneMap::addPath(MapPath *path)

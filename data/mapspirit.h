@@ -18,7 +18,7 @@ public:
         Map_Sprite_Type_Group,
     };
 
-    MapSpirit(int _id,QString _name,Map_Spirit_Type _spirit_type,QObject *parent = nullptr);
+    MapSpirit(int _id,std::string _name,Map_Spirit_Type _spirit_type,QObject *parent = nullptr);
 
     MapSpirit(const MapSpirit &s);
 
@@ -40,11 +40,11 @@ public:
     int getId(){return id;}
     void setId(int _id){id=_id;}
 
-    QString getName(){return name;}
-    void setName(QString _name){name=_name;}
+    std::string getName(){return name;}
+    void setName(std::string _name){name=_name;}
 private:
     int id;
-    QString name;
+    std::string name;
     Map_Spirit_Type spirit_type;
 };
 

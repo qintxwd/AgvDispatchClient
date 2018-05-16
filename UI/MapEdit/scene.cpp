@@ -166,7 +166,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             //添加站点~
             int id = onemap->getNextId();
             QString name = QString("station %1").arg(id);
-            MapPoint *p = new MapPoint(id,name,type,event->scenePos().x(),event->scenePos().y());
+            MapPoint *p = new MapPoint(id,name.toStdString(),type,event->scenePos().x(),event->scenePos().y());
             floor->addPoint(p);
 
             //添加item
@@ -517,10 +517,10 @@ void Scene::onSelectItemChanged()
                     }
 
 
-                    QString lineName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
+                    QString lineName = QString("%1 -- %2").arg(QString::fromStdString(oldSelectStation->getPoint()->getName())).arg(QString::fromStdString(newStation->getPoint()->getName()));
 
                     //对onemap添加线路数据
-                    MapPath *p = new MapPath(onemap->getNextId(),lineName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Line,1);
+                    MapPath *p = new MapPath(onemap->getNextId(),lineName.toStdString(),oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Line,1);
                     floor->addPath(p);
 
                     //添加item
@@ -575,11 +575,11 @@ void Scene::onSelectItemChanged()
                             return ;
                         }
                     }
-                    QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
+                    QString qbName = QString("%1 -- %2").arg(QString::fromStdString(oldSelectStation->getPoint()->getName())).arg(QString::fromStdString(newStation->getPoint()->getName()));
                     int cx = (oldSelectStation->getPoint()->getX()+newStation->getPoint()->getX())/2;
                     int cy = (oldSelectStation->getPoint()->getY()+newStation->getPoint()->getY())/2;
                     //对onemap添加线路数据
-                    MapPath *p = new MapPath(onemap->getNextId(),qbName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Quadratic_Bezier,1,cx,cy);
+                    MapPath *p = new MapPath(onemap->getNextId(),qbName.toStdString(),oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Quadratic_Bezier,1,cx,cy);
                     floor->addPath(p);
 
                     //添加item
@@ -635,7 +635,7 @@ void Scene::onSelectItemChanged()
                         }
                     }
 
-                    QString qbName = QString("%1 -- %2").arg(oldSelectStation->getPoint()->getName()).arg(newStation->getPoint()->getName());
+                    QString qbName = QString("%1 -- %2").arg(QString::fromStdString(oldSelectStation->getPoint()->getName())).arg(QString::fromStdString(newStation->getPoint()->getName()));
                     int cx1 = oldSelectStation->getPoint()->getX()+(newStation->getPoint()->getX() - oldSelectStation->getPoint()->getX())/3;
                     int cy1 = oldSelectStation->getPoint()->getY()+(newStation->getPoint()->getY() - oldSelectStation->getPoint()->getY())/3;
 
@@ -643,7 +643,7 @@ void Scene::onSelectItemChanged()
                     int cy2 = oldSelectStation->getPoint()->getY()+(newStation->getPoint()->getY() - oldSelectStation->getPoint()->getY())*2/3;
 
                     //对onemap添加线路数据
-                    MapPath *p = new MapPath(onemap->getNextId(),qbName,oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Cubic_Bezier,1,cx1,cy1,cx2,cy2);
+                    MapPath *p = new MapPath(onemap->getNextId(),qbName.toStdString(),oldSelectStation->getPoint()->getId(),newStation->getPoint()->getId(),MapPath::Map_Path_Type_Cubic_Bezier,1,cx1,cy1,cx2,cy2);
                     floor->addPath(p);
 
                     //添加item

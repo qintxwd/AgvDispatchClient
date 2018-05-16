@@ -9,7 +9,7 @@ class MapGroup : public MapSpirit
 {
     Q_OBJECT
 public:
-    explicit MapGroup(int _id, QString _name, QObject *parent = nullptr);
+    explicit MapGroup(int _id, std::string _name, QObject *parent = nullptr);
     MapGroup(const MapGroup& b);
 
     void init(QList<int> _spirits,QList<int> _agvs);

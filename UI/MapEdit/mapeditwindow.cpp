@@ -666,8 +666,7 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
                 QString fileName = filePath.right(filePath.length() - filePath.lastIndexOf("/")-1);
                 QImage *img = new QImage;
                 img->load(filePath);
-                MapBackground *_bkg = new MapBackground(oneMap.getNextId(),fileName,*img,fileName);
-
+                MapBackground *_bkg = new MapBackground(oneMap.getNextId(),fileName.toStdString(),*img,fileName.toStdString());
 
                 emit sig_addBkg(_bkg);
             }

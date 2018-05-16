@@ -32,7 +32,7 @@ void DockView::init()
         connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),scene,SLOT(propertyChanged(MapSpirit *)));
         connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),this,SLOT(slot_propertyChangedFromProperty(MapSpirit *)));
 
-        tabWidget->addTab(view,floor->getName());
+        tabWidget->addTab(view,QString::fromStdString(floor->getName()));
         scenes.append(scene);
     }
 
@@ -56,7 +56,7 @@ void DockView::slot_addFloor(MapFloor *floor)
     connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),scene,SLOT(propertyChanged(MapSpirit *)));
     connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),this,SLOT(slot_propertyChangedFromProperty(MapSpirit *)));
 
-    tabWidget->addTab(view,floor->getName());
+    tabWidget->addTab(view,QString::fromStdString(floor->getName()));
     scenes.append(scene);
 }
 
@@ -100,7 +100,7 @@ void DockView::slot_propertyChangedFromProperty(MapSpirit *_spirit)
         }
 
         if(tabIndex>=0){
-            tabWidget->setTabText(tabIndex,_spirit->getName());
+            tabWidget->setTabText(tabIndex,QString::fromStdString(_spirit->getName()));
         }
     }
 }

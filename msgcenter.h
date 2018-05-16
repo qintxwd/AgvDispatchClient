@@ -6,6 +6,45 @@
 #include "protocol.h"
 #include "serverconnection.h"
 
+typedef struct _USER_INFO
+{
+    int id;//id号
+    int role;//角色
+    std::string username;//用户名
+    std::string password;//密码
+    int status;//登录状态
+}USER_INFO;
+
+//AGV基本信息
+typedef struct _AGV_BASE_INFO
+{
+    int id;
+    std::string name;
+    std::string ip;
+    int port;
+}AGV_BASE_INFO;
+
+//AGV位置信息
+typedef struct _AGV_POSITION_INFO
+{
+    int id;
+    int x;
+    int y;
+    int rotation;
+}AGV_POSITION_INFO;
+
+
+typedef struct _TASK_INFO
+{
+    int id;
+    std::string produceTime;
+    std::string doTime;
+    std::string doneTime;
+    int excuteAgv;
+    int status;
+}TASK_INFO;
+
+
 class MsgCenter : public QObject
 {
     Q_OBJECT
@@ -27,16 +66,16 @@ public:
     //注销调用
     void logout();
     //修改密码
-    void changePassword(QString old_password,QString new_password);
+    void changePassword(QString new_password);
     //用户列表调用(发送获取userList的请求)
     void userList();
     QList<USER_INFO> getUserListModel(){return userinfos;}
     //删除用户
-    void deleteUser(int32_t id);
+    void deleteUser(int id);
     //添加用户
-    void adduser(QString username, QString password, int32_t role);
+    void adduser(QString username, QString password, int role);
     //修改用户
-    void modifyuser(int32_t id, QString username, QString password, int32_t role);
+    void modifyuser(int id, QString username, QString password, int role);
 
     ////////////////////////////////agv管理
     void agvList();
@@ -62,15 +101,13 @@ public:
 
     void loadMapImg();
 
+    ////////////////////////////////////日志
+
+    void subUserLog();
+
+    void cancelSubUserLog();
+
     QList<USER_LOG> getLogListModel(){return loginfos;}
-    //获取线路
-    QList<AGV_LINE> getMapLineListModel(){return mapLines;}
-
-    //获取站点
-    QList<STATION_INFO> getMapStationListModel(){return mapStations;}
-
-    //保存地图
-    void saveMap(QList<STATION_INFO> stations,QList<AGV_LINE> lines);
 
     /////////////////////////任务部分
     void taskAgvGoB(int agvId,int stationId);
@@ -114,14 +151,8 @@ signals:
     void changePasswrodSuccess();
 
     ////////////////////////地图管理
-    void mapCreateStart();
-    void mapCreateAddStation();
-    void mapCreateAddLine();
-    void mapCreateAddArc();
-    void mapCreateFinish();
-    void mapStationListSuccess();
-    void mapLinesListSuccess();
-    void mapArcListSuccess();
+    void mapSetSuccess();
+    void mapGetSuccess();
 
     ////////////////////////Agv管理
     //请求列表成功
@@ -135,6 +166,7 @@ signals:
 
     ////////////////////////日志查询
     void queryLogSuccess();
+    void pubOneLog(USER_LOG log);
 
     ////////////////////////地图信息
     void mapStationsSuccess();
@@ -144,7 +176,7 @@ signals:
     //任务
     void taskDetailSuccess();
 public slots:
-    void push(const Json::Value &response);
+    void push(Json::Value response);
 private:
     //用户部分
     void response_user_login(const Json::Value &response);
@@ -165,6 +197,9 @@ private:
     void response_agv_delete(const Json::Value &response);
     void response_agv_modify(const Json::Value &response);
 
+    //日志部分
+    void pub_agv_log(const Json::Value &response);
+
     void parseOneMsg(const Json::Value &response);
 
     void iniRequsttMsg(Json::Value &request);
@@ -181,9 +216,9 @@ private:
 
     QList<AGV_POSITION_INFO> agvpositioninfos;
 
-    QList<STATION_INFO> mapStations;
+//    QList<STATION_INFO> mapStations;
 
-    QList<AGV_LINE> mapLines;
+//    QList<AGV_LINE> mapLines;
 
     QList<USER_LOG> loginfos;
 

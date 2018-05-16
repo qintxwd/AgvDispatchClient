@@ -86,7 +86,7 @@ void DockAgvManage::modifyAgv()
         return ;
     }
     AGV_BASE_INFO u = agvinfos.at(tableWidget->currentRow());
-    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,u.name,u.ip,u.port,this);
+    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,QString::fromStdString(u.name),QString::fromStdString(u.ip),u.port,this);
     if(modifyAgvDlg->exec() == QDialog::Accepted){
         msgCenter.agvList();
     }

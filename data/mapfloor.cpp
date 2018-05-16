@@ -1,6 +1,6 @@
 ﻿#include "mapfloor.h"
 
-MapFloor::MapFloor(int _id, QString _name, QObject *parent):
+MapFloor::MapFloor(int _id, std::string _name, QObject *parent):
     MapSpirit(_id,_name,Map_Sprite_Type_Floor,parent),
     bkg(nullptr)
 {

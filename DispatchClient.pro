@@ -65,7 +65,9 @@ SOURCES += \
     data/mapblock.cpp \
     data/mapgroup.cpp \
     UI/MapEdit/dockblock.cpp \
-    UI/MapEdit/dialogblockedit.cpp
+    UI/MapEdit/dialogblockedit.cpp \
+    base64.cpp \
+    UI/UserLog/dockuserlog.cpp
 
 HEADERS += \
     global.h \
@@ -110,7 +112,9 @@ HEADERS += \
     data/mapblock.h \
     data/mapgroup.h \
     UI/MapEdit/dockblock.h \
-    UI/MapEdit/dialogblockedit.h
+    UI/MapEdit/dialogblockedit.h \
+    base64.h \
+    UI/UserLog/dockuserlog.h
 
 FORMS +=
 
@@ -119,3 +123,19 @@ DISTFILES += \
 
 RESOURCES += \
     images.qrc
+
+
+
+
+win32:CONFIG(release, debug|release): LIBS += -LD:/thirdparty/jsoncpp/lib/release/ -ljsoncpp_static
+else:win32:CONFIG(debug, debug|release): LIBS += -LD:/thirdparty/jsoncpp/lib/debug/ -ljsoncpp_static
+else:unix:!macx: LIBS += -LD:/thirdparty/jsoncpp/lib/ -ljsoncpp_static
+
+INCLUDEPATH += D:/thirdparty/jsoncpp/include
+DEPENDPATH += D:/thirdparty/jsoncpp/include
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/release/libjsoncpp_static.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/debug/libjsoncpp_static.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/release/jsoncpp_static.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/debug/jsoncpp_static.lib
+else:unix:!macx: PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/libjsoncpp_static.a

@@ -56,12 +56,6 @@ DockUserManage::DockUserManage(QWidget *parent) : QDockWidget(tr("UserManage"),p
     connect(this,SIGNAL(visibilityChanged(bool)),this,SLOT(onVisibilityChanged(bool)));
 }
 
-//void DockUserManage::reshow()
-//{
-//    stack->setCurrentIndex(0);
-//    show();
-//    msgCenter.userList();
-//}
 
 void DockUserManage::deleteUser()
 {
@@ -85,7 +79,7 @@ void DockUserManage::modifyUser()
         return ;
     }
     USER_INFO u = userinfos.at(tableWidget->currentRow());
-    DialogModifyUser *modifyUserDlg = new DialogModifyUser(u.id,u.username,u.password,u.role,this);
+    DialogModifyUser *modifyUserDlg = new DialogModifyUser(u.id,QString::fromStdString(u.username),QString::fromStdString(u.password),u.role,this);
     if(modifyUserDlg->exec() == QDialog::Accepted){
         msgCenter.userList();
     }
@@ -132,10 +126,10 @@ void DockUserManage::updateTable()
         QTableWidgetItem *itemId = new QTableWidgetItem(tr("%1").arg(u.id));
         itemId->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 0, itemId);
-        QTableWidgetItem *itemUsername = new QTableWidgetItem(u.username);
+        QTableWidgetItem *itemUsername = new QTableWidgetItem(QString::fromStdString(u.username));
         itemUsername->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 1, itemUsername);
-        QTableWidgetItem *itemPassword = new QTableWidgetItem(tr("%1").arg(u.password));
+        QTableWidgetItem *itemPassword = new QTableWidgetItem(tr("%1").arg(QString::fromStdString(u.password)));
         itemPassword->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 2, itemPassword);
 

@@ -52,7 +52,7 @@ void DialogBlockEdit::init()
         }else if(item->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
             type = "POINT";
         }
-        selectQsl.append(QString("%1 -- %2 --%3").arg(type).arg(item->getId()).arg(item->getName()));
+        selectQsl.append(QString("%1 -- %2 --%3").arg(type).arg(item->getId()).arg(QString::fromStdString(item->getName())));
     }
     selectedModel->setStringList(selectQsl);
 
@@ -65,7 +65,7 @@ void DialogBlockEdit::init()
         }else if(item->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
             type = "POINT";
         }
-        unselectQsl.append(QString("%1 -- %2 --%3").arg(type).arg(item->getId()).arg(item->getName()));
+        unselectQsl.append(QString("%1 -- %2 --%3").arg(type).arg(item->getId()).arg(QString::fromStdString(item->getName())));
     }
     unselectedModel->setStringList(unselectQsl);
 

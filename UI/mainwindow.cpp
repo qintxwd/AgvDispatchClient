@@ -3,8 +3,9 @@
 #include "global.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-    user_manage(nullptr),
-    agv_manage(nullptr)
+    dock_user_manage(nullptr),
+    dock_agv_manage(nullptr),
+    dock_user_log(nullptr)
 {
     createActions();
     createStatusBar();
@@ -108,14 +109,18 @@ void MainWindow::createActions()
     QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
     QToolBar *viewsToolBar = addToolBar(tr("Views"));
 
-    user_manage = new DockUserManage();
-    addDockWidget(Qt::RightDockWidgetArea, user_manage);
-    viewsMenu->addAction(user_manage->toggleViewAction());
-    viewsToolBar->addAction(user_manage->toggleViewAction());
-    agv_manage = new DockAgvManage();
-    addDockWidget(Qt::RightDockWidgetArea, agv_manage);
-    viewsMenu->addAction(agv_manage->toggleViewAction());
-    viewsToolBar->addAction(agv_manage->toggleViewAction());
+    dock_user_manage = new DockUserManage();
+    addDockWidget(Qt::RightDockWidgetArea, dock_user_manage);
+    viewsMenu->addAction(dock_user_manage->toggleViewAction());
+    viewsToolBar->addAction(dock_user_manage->toggleViewAction());
+    dock_agv_manage = new DockAgvManage();
+    addDockWidget(Qt::RightDockWidgetArea, dock_agv_manage);
+    viewsMenu->addAction(dock_agv_manage->toggleViewAction());
+    viewsToolBar->addAction(dock_agv_manage->toggleViewAction());
+    dock_user_log = new DockUserLog();
+    addDockWidget(Qt::RightDockWidgetArea,dock_user_log);
+    viewsMenu->addAction(dock_user_log->toggleViewAction());
+    viewsToolBar->addAction(dock_user_log->toggleViewAction());
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::about);

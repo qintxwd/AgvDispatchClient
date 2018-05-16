@@ -13,7 +13,7 @@ MapItemStationName::MapItemStationName(MapItemStation *_station, MapPoint *_poin
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 
     setPos(point->getX()+point->getLabelXoffset(),point->getY()+point->getLabelYoffset());
-    setPlainText(point->getName());
+    setPlainText(QString::fromStdString(point->getName()));
     setDefaultTextColor(Qt::black);
 }
 
@@ -21,7 +21,7 @@ void MapItemStationName::my_update()
 {
     prepareGeometryChange();
     setPos(point->getX()+point->getLabelXoffset(),point->getY()+point->getLabelYoffset());
-    setPlainText(point->getName());
+    setPlainText(QString::fromStdString(point->getName()));
     setDefaultTextColor(Qt::black);
     update();
 }

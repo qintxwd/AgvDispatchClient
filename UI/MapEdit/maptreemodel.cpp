@@ -167,7 +167,7 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
             item_path_folder->appendChild(item_path);
         }
         if(floor->getBkg()!=nullptr){
-            MapTreeItem *itemBkg = new MapTreeItem(floor->getBkg(),item_floor,floor->getBkg()->getName());
+            MapTreeItem *itemBkg = new MapTreeItem(floor->getBkg(),item_floor,QString::fromStdString(floor->getBkg()->getName()));
             item_floor->appendChild(itemBkg);
         }
 

@@ -21,7 +21,7 @@ void DialogRootPath::init()
     fromComboboxA->setObjectName("fromComboboxA");
     QList<MapFloor *> floors = onemap->getFloors();
     foreach (auto floor, floors) {
-        fromComboboxA->addItem(floor->getName());
+        fromComboboxA->addItem(QString::fromStdString(floor->getName()));
     }
     fromComboboxB = new QComboBox;
     fromComboboxB->setObjectName("fromComboboxB");
@@ -35,7 +35,7 @@ void DialogRootPath::init()
     toComboboxA->setObjectName("toComboboxA");
 
     foreach (auto floor, floors) {
-        toComboboxA->addItem(floor->getName());
+        toComboboxA->addItem(QString::fromStdString(floor->getName()));
     }
     toComboboxB = new QComboBox;
     toComboboxB->setObjectName("toComboboxB");
@@ -141,7 +141,7 @@ void DialogRootPath::on_fromComboboxA_currentIndexChanged(int index)
         if(f!=nullptr){
             foreach (auto p, f->getPoints()) {
                 if(p->getMapChange()){
-                    fromComboboxB->addItem(p->getName());
+                    fromComboboxB->addItem(QString::fromStdString(p->getName()));
                 }
             }
         }
@@ -157,7 +157,7 @@ void DialogRootPath::on_toComboboxA_currentIndexChanged(int index)
         if(f!=nullptr){
             foreach (auto p, f->getPoints()) {
                 if(p->getMapChange()){
-                    toComboboxB->addItem(p->getName());
+                    toComboboxB->addItem(QString::fromStdString(p->getName()));
                 }
             }
         }

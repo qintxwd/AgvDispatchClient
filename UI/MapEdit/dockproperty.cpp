@@ -327,7 +327,7 @@ void DockProperty::showPoint()
     //清空原来的数据
     MapPoint *point = static_cast<MapPoint *>(spirit);
     point_itemValueId->setText(QString("%1").arg(point->getId()));
-    point_nameInput->setText(point->getName());
+    point_nameInput->setText(QString::fromStdString(point->getName()));
     point_comboxType->setCurrentIndex((int)(point->getPointType()));;
     point_xInput->setText(QString("%1").arg(point->getX()));
     point_yInput->setText(QString("%1").arg(point->getY()));
@@ -354,7 +354,7 @@ void DockProperty::showPath()
     //清空原来的数据
     MapPath *path = dynamic_cast<MapPath *>(spirit);
     path_itemValueId->setText(QString("%1").arg(path->getId()));
-    path_nameInput->setText(path->getName());
+    path_nameInput->setText(QString::fromStdString(path->getName()));
     MapPath::Map_Path_Type type = path->getPathType();
     path_comboxType->setCurrentIndex((int)type);
     path_xP1Input->setText(QString("%1").arg(path->getP1x()));
@@ -373,7 +373,7 @@ void DockProperty::showFloor()
     if(spirit==nullptr)return ;
     MapFloor *floor = static_cast<MapFloor *>(spirit);
     floor_itemValueId->setText(QString("%1").arg(floor->getId()));
-    floor_nameInput->setText(floor->getName());
+    floor_nameInput->setText(QString::fromStdString(floor->getName()));
     for(int i=0;i<28;++i){
         tableWidget->setRowHidden(i,i <= 17 || i>=20);
     }
@@ -386,7 +386,7 @@ void DockProperty::showBkg()
     if(spirit==nullptr)return ;
     MapBackground *bkg = static_cast<MapBackground *>(spirit);
     bkg_itemValueId->setText(QString("%1").arg(bkg->getId()));
-    bkg_nameInput->setText(bkg->getName());
+    bkg_nameInput->setText(QString::fromStdString(bkg->getName()));
     bkg_xInput->setText(QString("%1").arg(bkg->getX()));
     bkg_yInput->setText(QString("%1").arg(bkg->getY()));
     bkg_widthInput->setText(QString("%1").arg(bkg->getWidth()));
@@ -403,7 +403,7 @@ void DockProperty::showBlock()
     if(spirit==nullptr)return ;
     MapBlock *block = static_cast<MapBlock *>(spirit);
     block_itemValueId->setText(QString("%1").arg(block->getId()));
-    block_nameInput->setText(block->getName());
+    block_nameInput->setText(QString::fromStdString(block->getName()));
     for(int i=0;i<28;++i){
         tableWidget->setRowHidden(i,i <= 25||i >=28);
     }
@@ -413,7 +413,7 @@ void DockProperty::showBlock()
 void DockProperty::slot_PointNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
-    spirit->setName(name);
+    spirit->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointTypeChanged(int _type)
@@ -469,7 +469,7 @@ void DockProperty::slot_PointMapChangeChanged(int mapchange)
 void DockProperty::slot_PathNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
-    (static_cast<MapPath *>(spirit))->setName(name);
+    (static_cast<MapPath *>(spirit))->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 
@@ -513,14 +513,14 @@ void DockProperty::slot_LengthChanged(QString length)
 void DockProperty::slot_FloorNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
-    (static_cast<MapFloor *>(spirit))->setName(name);
+    (static_cast<MapFloor *>(spirit))->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 
 void DockProperty::slot_BkgNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
-    spirit->setName(name);
+    spirit->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_BkgXChanged(QString x)
@@ -552,7 +552,7 @@ void DockProperty::slot_BkgHeightChanged(QString h)
 void DockProperty::slot_BlockNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
-    (static_cast<MapBlock *>(spirit))->setName(name);
+    (static_cast<MapBlock *>(spirit))->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 

@@ -6,6 +6,7 @@ QString g_strExeRoot;
 Configure configure;
 MsgCenter msgCenter;
 USER_INFO current_user_info;
+OneMap g_onemap;
 
 void QyhSleep(int msec)
 {
@@ -22,9 +23,9 @@ QString getErrorString(int error_code)
     case RETURN_MSG_ERROR_CODE_UNKNOW:
         ss = QStringLiteral("未知错误");
         break;
-    case RETURN_MSG_ERROR_CODE_LENGTH:
-        ss = QStringLiteral("请求数据长度不正确");
-        break;
+//    case RETURN_MSG_ERROR_CODE_LENGTH:
+//        ss = QStringLiteral("请求数据长度不正确");
+//        break;
     case RETURN_MSG_ERROR_CODE_PERMISSION_DENIED:
         ss = QStringLiteral("无权限执行该操作");
         break;

@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    qRegisterMetaType<MSG_Request>("MSG_Request");
-    qRegisterMetaType<MSG_Response>("MSG_Response");
+    qRegisterMetaType<Json::Value>("Json::Value");
+    qRegisterMetaType<USER_LOG>("USER_LOG");
     //设置应用的窗口名称
     app.setApplicationDisplayName("HRG Dispatch client");
     QCoreApplication::setOrganizationName("HRG(Hit Robot Group)");
@@ -35,19 +35,19 @@ int main(int argc, char *argv[])
 //    MainWindow *mainWindow = new MainWindow;
 //    mainWindow->showMaximized();
 
-//    LoginDialog *dialog = new LoginDialog;
+    LoginDialog *dialog = new LoginDialog;
 
-//    if ( dialog->exec() == QDialog::Accepted ) {
-//        MainWindow *mainWindow = new MainWindow;
-//        mainWindow->showMaximized();
-//    }else{
-//        return 0;
-//    }
+    if ( dialog->exec() == QDialog::Accepted ) {
+        MainWindow *mainWindow = new MainWindow;
+        mainWindow->showMaximized();
+    }else{
+        return 0;
+    }
 
-    OneMap onemap;
+//    OneMap onemap;
 
-    MapEditWindow *mapEditWindow = new MapEditWindow(onemap);
-    mapEditWindow->showMaximized();
+//    MapEditWindow *mapEditWindow = new MapEditWindow(onemap);
+//    mapEditWindow->showMaximized();
 
     return app.exec();
 }

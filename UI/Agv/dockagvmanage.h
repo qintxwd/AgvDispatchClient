@@ -3,7 +3,8 @@
 
 #include <QtWidgets>
 #include "../widgetwaiting.h"
-#include "protocol.h"
+#include "../../protocol.h"
+#include "../../msgcenter.h"
 
 class DockAgvManage : public QDockWidget
 {

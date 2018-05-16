@@ -22,6 +22,8 @@
 #include <errno.h>
 #endif
 
+#include <QDebug>
+
 #ifdef WIN32
 #pragma comment(lib,"ws2_32.lib")
 #endif
@@ -48,6 +50,8 @@ void ServerConnection::init(QString ip, int _port)
     port = (_port);
 
     thread_read = std::thread([&](){
+        char head_length[5];
+        int json_length;
         while(!quit)
         {
             if(!need_reconnect){
@@ -69,9 +73,7 @@ void ServerConnection::init(QString ip, int _port)
 
             while(!quit && socketFd>0){
                 int recvLen = 0;
-                char head_flag;
-                int32_t json_length;
-                recvLen = ::recv(socketFd,&head_flag, 1, 0);
+                recvLen = ::recv(socketFd,head_length, 5, 0);
 
                 if (recvLen <= 0)
                 {
@@ -92,28 +94,14 @@ void ServerConnection::init(QString ip, int _port)
                     }
                 }
 
+                if(recvLen<5)continue;
 
-                if(head_flag == MSG_MSG_HEAD)
+
+                if((head_length[0] & 0xFF) == MSG_MSG_HEAD)
                 {
-                    recvLen = ::recv(socketFd,(char*)&(json_length),sizeof(json_length),0);
-                    if (recvLen <= 0)
-                    {
-                        if (errno == EINTR || errno == EAGAIN)
-                        {
-                        }
-                        else
-                        {
-#ifdef WIN32
-                            closesocket(socketFd);
-#else
-                            close(socketFd);
-#endif
-                            socketFd = 0;
-                            emit onDisconnect();
-                            continue;
-                        }
-                    }
+                    snprintf((char *)&json_length,sizeof(json_length),head_length+1,sizeof(head_length)-1);
                     if(json_length>0){
+//                        qDebug()<<"json_length="<<json_length;
                         char *buffer = new char[json_length+1];
                         int read_pos = 0;
                         recvLen = 0;
@@ -135,24 +123,26 @@ void ServerConnection::init(QString ip, int _port)
                                     emit onDisconnect();
                                     break;
                                 }
-                            }else if(recvLen==json_length){
+                            }else if(recvLen>=json_length){
                                 break;
                             }else{
                                 read_pos += recvLen;
                             }
                         }
+                        if(socketFd == 0)break;
+                        if(recvLen>=0)
+                            buffer[recvLen] = '\0';
 
-                        if(recvLen==json_length){
+                        if(recvLen>=json_length){
                             Json::Reader reader;
                             Json::Value root;
                             if (reader.parse(std::string(buffer,json_length), root))
                             {
+                                qDebug() << "RECV! len=" << json_length << " json=\n" << std::string(buffer,json_length).c_str();
                                 emit onRead(root);
                             }
                         }
                         delete []buffer;
-                    }else{
-                        continue;
                     }
                 }
             }
@@ -179,11 +169,13 @@ void ServerConnection::init(QString ip, int _port)
             m_queue.pop_front();
             sendQueueMtx.unlock();
 
-            char headLeng[MSG_JSON_PREFIX_LENGTH] = {0xAA};
+            char headLeng[MSG_JSON_PREFIX_LENGTH];
+            headLeng[0] = MSG_MSG_HEAD;
             int length = write_one_msg.toStyledString().length();
             //send head and length
             snprintf(headLeng+1,4, (char *)&length,sizeof(length));
-            ::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0);
+            //qDebug()<<"send json with length = "<<length<<" :"<<write_one_msg.toStyledString().c_str();
+            qDebug() << "SEND! len=" << length << " json=\n" << write_one_msg.toStyledString().c_str();
             if (::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0)!=MSG_JSON_PREFIX_LENGTH)
             {
                 continue ;

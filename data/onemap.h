@@ -17,6 +17,8 @@ public:
 
     ~OneMap();
 
+    void clear();
+
     //注册一个新的元素 获取一个ID
     int getNextId();
 

@@ -54,8 +54,8 @@ typedef enum Msg_Todo
     MSG_TODO_USER_DELTE,//删除用户//userid[32]
     MSG_TODO_USER_ADD,//添加用户//username[MSG_STRING_LEN] password[MSG_STRING_LEN] role[1]
     MSG_TODO_USER_MODIFY,//修改用户//id[4] username[MSG_STRING_LEN] password[MSG_STRING_LEN] role[1]
-    MSG_TODO_MAP_SET_MAP,//创建地图开始
-    MSG_TODO_MAP_GET_MAP,//请求所有站点//none
+    MSG_TODO_MAP_SET_MAP,//设置地图(楼层、站点、线路、group、block)
+    MSG_TODO_MAP_GET_MAP,//获取地图(楼层、站点、线路、group、block)
     MSG_TODO_AGV_MANAGE_LIST,//车辆列表//none
     MSG_TODO_AGV_MANAGE_ADD,//增加//name[MSG_STRING_LEN]+ip[MSG_STRING_LEN]+port[4]
     MSG_TODO_AGV_MANAGE_DELETE,//删除//id[4]

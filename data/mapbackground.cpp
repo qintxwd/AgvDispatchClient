@@ -1,6 +1,6 @@
 ﻿#include "mapbackground.h"
 
-MapBackground::MapBackground(int _id, QString _name, QImage _img, QString fileName, QObject *parent):
+MapBackground::MapBackground(int _id, std::string _name, QImage _img, std::string fileName, QObject *parent):
     MapSpirit(_id,_name,Map_Sprite_Type_Background,parent),
     x(0),
     y(0),

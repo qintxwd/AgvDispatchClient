@@ -62,7 +62,7 @@ void DockMapTree::slot_addFloor()
 {
     int id = onemap->getNextId();
     QString name = QString("floor_%1").arg(id);
-    MapFloor *floor = new MapFloor(id,name,onemap);
+    MapFloor *floor = new MapFloor(id,name.toStdString(),onemap);
     onemap->addFloor(floor);
     model->fresh();
     emit sig_addFloor(floor);
@@ -78,8 +78,8 @@ void DockMapTree::slot_addRootPath()
 
 void DockMapTree::slot_add_root_path(MapPoint *from,MapPoint *to)
 {
-    QString name = QString("%1 -- %2").arg(from->getName()).arg(to->getName());
-    MapPath *path = new MapPath(onemap->getNextId(),name,from->getId(),to->getId(),MapPath::Map_Path_Type_Between_Floor,1);
+    QString name = QString("%1 -- %2").arg(QString::fromStdString(from->getName())).arg(QString::fromStdString(to->getName()));
+    MapPath *path = new MapPath(onemap->getNextId(),name.toStdString(),from->getId(),to->getId(),MapPath::Map_Path_Type_Between_Floor,1);
     onemap->addPath(path);
     refresh();
 }

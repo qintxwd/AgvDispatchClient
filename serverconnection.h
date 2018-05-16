@@ -43,8 +43,6 @@ private:
     int port;
 
     //////发送请求
-
-
     QQueue<Json::Value> m_queue;//发送队列
     QWaitCondition condition;
     QMutex sendQueueMtx;

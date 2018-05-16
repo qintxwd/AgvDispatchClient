@@ -17,7 +17,7 @@ void DockBlock::init()
     listview->setContextMenuPolicy(Qt::CustomContextMenu);
     QList<MapBlock *> blocks = oneMap->getBlocks();
     foreach (auto block, blocks) {
-        qsl<<QString("%1 -- %2").arg(block->getId()).arg(block->getName());
+        qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     }
     model->setStringList(qsl);
     listview->setModel(model);
@@ -67,9 +67,9 @@ void DockBlock::slot_addBlock()
 {
     int id = oneMap->getNextId();
     QString name = QString("block_%1").arg(id);
-    MapBlock *block = new MapBlock(id,name,oneMap);
+    MapBlock *block = new MapBlock(id,name.toStdString(),oneMap);
     oneMap->addBlock(block);
-    qsl<<QString("%1 -- %2").arg(block->getId()).arg(block->getName());
+    qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     model->setStringList(qsl);
 }
 
@@ -81,7 +81,7 @@ void DockBlock::slot_removeBlock()
     qsl.removeAt(index);
     blocks = oneMap->getBlocks();
     foreach (auto block, blocks) {
-        qsl<<QString("%1 -- %2").arg(block->getId()).arg(block->getName());
+        qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     }
     model->setStringList(qsl);
 }

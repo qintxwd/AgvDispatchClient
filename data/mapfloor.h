@@ -12,7 +12,7 @@ class MapFloor : public MapSpirit
 {
     Q_OBJECT
 public:
-    MapFloor(int _id, QString _name,QObject *parent = nullptr);
+    MapFloor(int _id, std::string _name,QObject *parent = nullptr);
     ~MapFloor();
 
     void addPoint(MapPoint *p){points.append(p);}

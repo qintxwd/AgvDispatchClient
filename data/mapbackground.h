@@ -7,7 +7,7 @@ class MapBackground : public MapSpirit
 {
     Q_OBJECT
 public:
-    MapBackground(int _id, QString _name, QImage _img, QString fileName,QObject *parent = nullptr);
+    MapBackground(int _id, std::string _name, QImage _img, std::string fileName,QObject *parent = nullptr);
     MapBackground(const MapBackground &b);//深拷贝
 
     void setX(int _x){x=_x;}
@@ -20,14 +20,14 @@ public:
     int getWidth(){return width;}
     int getHeight(){return height;}
 
-    QString getFileName(){return imgFileName;}
+    std::string getFileName(){return imgFileName;}
     QImage getImg(){return img;}
 
-    void setFileName(QString _filename){imgFileName = _filename;}
+    void setFileName(std::string _filename){imgFileName = _filename;}
     void setImg(QImage _img){img=_img;}
 private:
     QImage img;
-    QString imgFileName;
+    std::string imgFileName;
     int x;
     int y;
     int width;
