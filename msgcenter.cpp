@@ -284,18 +284,23 @@ void MsgCenter::response_map_get(const Json::Value &response)
 
         //3.floor->bkg
         Json::Value bkg = floor["bkg"];
-        int bkg_id = bkg["id"].asInt();
-        std::string bkg_name = bkg["name"].asString();
-        std::string filename = bkg["filename"].asString();
-        std::string datas = bkg["data"].asString();
-        char *imgdata = new char[datas.length()*2+1];
-        int len = base64_decode(imgdata,(char *)datas.c_str(),datas.length());
+        if(!bkg.isNull()){
+            int bkg_id = bkg["id"].asInt();
+            std::string bkg_name = bkg["name"].asString();
+            std::string filename = bkg["filename"].asString();
+            std::string datas = bkg["data"].asString();
+            int len = bkg["len"].asInt();
+            int x = bkg["x"].asInt();
+            int y = bkg["y"].asInt();
+            int width = bkg["width"].asInt();
+            int height = bkg["height"].asInt();
 
-        QImage img;
-        img.loadFromData(QByteArray(imgdata,len));
-        MapBackground *mb_bkg = new MapBackground(bkg_id,bkg_name,img,filename);
-        map_floor->setBkg(mb_bkg);
-
+            char *imgdata = new char[datas.length()*2+1];
+            int len_decode = base64_decode(imgdata,(char *)datas.c_str(),datas.length());
+            assert(len_decode == len);
+            MapBackground *mb_bkg = new MapBackground(bkg_id,bkg_name,imgdata,len,width,height,filename);
+            map_floor->setBkg(mb_bkg);
+        }
         g_onemap.addFloor(map_floor);
     }
 

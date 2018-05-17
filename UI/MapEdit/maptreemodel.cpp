@@ -144,9 +144,9 @@ int MapTreeModel::rowCount(const QModelIndex &parent) const
 
 void MapTreeModel::setupModelData(MapTreeItem *root)
 {
-    QList<MapFloor *> floors = onemap->getFloors();
+    QList<MapFloor *> floors = QList<MapFloor *>::fromStdList(onemap->getFloors());
 
-    QList<MapPath *> independentPaths = onemap->getRootPaths();
+    QList<MapPath *> independentPaths = QList<MapPath *>::fromStdList(onemap->getRootPaths());
 
     foreach (auto floor, floors) {
         MapTreeItem *item_floor = new MapTreeItem(floor,root);

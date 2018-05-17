@@ -1,7 +1,6 @@
 ﻿#include "mapspirit.h"
 
-MapSpirit::MapSpirit(int _id, std::string _name, Map_Spirit_Type _spirit_type, QObject *parent):
-    QObject(parent),
+MapSpirit::MapSpirit(int _id, std::string _name, Map_Spirit_Type _spirit_type):
     spirit_type(_spirit_type),
     id(_id),
     name(_name)

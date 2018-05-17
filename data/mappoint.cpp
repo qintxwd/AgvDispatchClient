@@ -1,7 +1,7 @@
 ﻿#include "mappoint.h"
 
-MapPoint::MapPoint(int _id, std::string _name, Map_Point_Type _type, int _x, int _y, int _realX, int _realY, int _labelXoffset, int _labelYoffset, bool _mapChange,bool _locked, QObject *parent):
-    MapSpirit(_id,_name,Map_Sprite_Type_Point,parent),
+MapPoint::MapPoint(int _id, std::string _name, Map_Point_Type _type, int _x, int _y, int _realX, int _realY, int _labelXoffset, int _labelYoffset, bool _mapChange, bool _locked):
+    MapSpirit(_id,_name,Map_Sprite_Type_Point),
     x(_x),
     y(_y),
     labelXoffset(_labelXoffset),

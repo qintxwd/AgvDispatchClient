@@ -1,6 +1,8 @@
 ﻿#ifndef ONEMAP_H
 #define ONEMAP_H
 
+#include <list>
+
 #include "mapfloor.h"
 #include "mapbackground.h"
 #include "mapblock.h"
@@ -8,11 +10,10 @@
 
 
 //一个地图[有若干个元素组成]
-class OneMap : public QObject
+class OneMap
 {
-    Q_OBJECT
 public:
-    OneMap(QObject *parent = nullptr);
+    OneMap();
     OneMap(const OneMap &b);
 
     ~OneMap();
@@ -42,10 +43,10 @@ public:
     //复制地图（深copy）
     OneMap* clone();
 
-    QList<MapFloor *> getFloors(){return floors;}
-    QList<MapPath *> getRootPaths(){return rootpaths;}
-    QList<MapBlock *> getBlocks(){return blocks;}
-    QList<MapGroup *> getGroups(){return groups;}
+    std::list<MapFloor *> getFloors(){return floors;}
+    std::list<MapPath *> getRootPaths(){return rootpaths;}
+    std::list<MapBlock *> getBlocks(){return blocks;}
+    std::list<MapGroup *> getGroups(){return groups;}
 
     MapFloor *getFloorById(int id);
     MapPath *getRootPathById(int id);
@@ -56,10 +57,10 @@ public:
 
     void setMaxId(int maxid){max_id = maxid; }
 private:
-    QList<MapFloor *> floors;///楼层
-    QList<MapPath *> rootpaths;///楼层之间的道路
-    QList<MapBlock *> blocks;////block
-    QList<MapGroup *> groups;////groups
+    std::list<MapFloor *> floors;///楼层
+    std::list<MapPath *> rootpaths;///楼层之间的道路
+    std::list<MapBlock *> blocks;////block
+    std::list<MapGroup *> groups;////groups
     int max_id;
 };
 

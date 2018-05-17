@@ -62,7 +62,7 @@ void DockMapTree::slot_addFloor()
 {
     int id = onemap->getNextId();
     QString name = QString("floor_%1").arg(id);
-    MapFloor *floor = new MapFloor(id,name.toStdString(),onemap);
+    MapFloor *floor = new MapFloor(id,name.toStdString());
     onemap->addFloor(floor);
     model->fresh();
     emit sig_addFloor(floor);

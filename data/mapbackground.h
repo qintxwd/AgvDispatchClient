@@ -1,14 +1,13 @@
 ﻿#ifndef MAPBACKGROUND_H
 #define MAPBACKGROUND_H
-#include <QImage>
+
 #include "mapspirit.h"
 
 class MapBackground : public MapSpirit
 {
-    Q_OBJECT
 public:
-    MapBackground(int _id, std::string _name, QImage _img, std::string fileName,QObject *parent = nullptr);
-    MapBackground(const MapBackground &b);//深拷贝
+    MapBackground(int _id, std::string _name, char *_img_data, int _img_data_len, int _width, int _height, std::string fileName);
+    virtual ~MapBackground();
 
     void setX(int _x){x=_x;}
     void setY(int _y){y=_y;}
@@ -21,12 +20,17 @@ public:
     int getHeight(){return height;}
 
     std::string getFileName(){return imgFileName;}
-    QImage getImg(){return img;}
+    char* getImgData(){return img_data;}
+    int getImgDataLen(){return img_data_len;}
 
     void setFileName(std::string _filename){imgFileName = _filename;}
-    void setImg(QImage _img){img=_img;}
+    void setImgData(char *_img_data){img_data=_img_data;}
+    void setImgDataLen(int _img_data_len){img_data_len=_img_data_len;}
+
+    MapBackground* clone();//深拷贝
 private:
-    QImage img;
+    char *img_data;//图片数据
+    int img_data_len;//图片数据长度
     std::string imgFileName;
     int x;
     int y;

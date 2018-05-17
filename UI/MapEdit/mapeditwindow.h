@@ -12,7 +12,7 @@ class MapEditWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MapEditWindow(OneMap _oneMap,QWidget *parent = nullptr);
+    explicit MapEditWindow(OneMap *_oneMap,QWidget *parent = nullptr);
     void init();
 signals:
     void sig_setTool(int);
@@ -71,7 +71,7 @@ private:
 
     QLabel *pos_label;
 
-    OneMap oneMap;//地图编辑器的一个map
+    OneMap *oneMap;//地图编辑器的一个map
 
     DockMapTree *dockMapTree;
     DockProperty *dockProperty;

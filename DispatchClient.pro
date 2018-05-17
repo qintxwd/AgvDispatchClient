@@ -55,7 +55,6 @@ SOURCES += \
     UI/MapEdit/stationinputdialog.cpp \
     data/mapbackground.cpp \
     UI/MapEdit/mapitemstation.cpp \
-    UI/MapEdit/mapitemline.cpp \
     UI/MapEdit/mapitemstationname.cpp \
     UI/MapEdit/mapitemquadraticbezier.cpp \
     UI/MapEdit/mapitemcubicbezier.cpp \
@@ -67,7 +66,8 @@ SOURCES += \
     UI/MapEdit/dockblock.cpp \
     UI/MapEdit/dialogblockedit.cpp \
     base64.cpp \
-    UI/UserLog/dockuserlog.cpp
+    UI/UserLog/dockuserlog.cpp \
+    UI/MapEdit/mapitemline.cpp
 
 HEADERS += \
     global.h \
@@ -102,7 +102,6 @@ HEADERS += \
     UI/MapEdit/stationinputdialog.h \
     data/mapbackground.h \
     UI/MapEdit/mapitemstation.h \
-    UI/MapEdit/mapitemline.h \
     UI/MapEdit/mapitemstationname.h \
     UI/MapEdit/mapitemquadraticbezier.h \
     UI/MapEdit/mapitemcubicbezier.h \
@@ -114,7 +113,8 @@ HEADERS += \
     UI/MapEdit/dockblock.h \
     UI/MapEdit/dialogblockedit.h \
     base64.h \
-    UI/UserLog/dockuserlog.h
+    UI/UserLog/dockuserlog.h \
+    UI/MapEdit/mapitemline.h
 
 FORMS +=
 

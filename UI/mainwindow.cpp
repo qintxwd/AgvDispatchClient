@@ -2,10 +2,13 @@
 
 #include "global.h"
 
+#include "MapEdit/mapeditwindow.h"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dock_user_manage(nullptr),
     dock_agv_manage(nullptr),
-    dock_user_log(nullptr)
+    dock_user_log(nullptr),
+    editWindow(nullptr)
 {
     createActions();
     createStatusBar();
@@ -150,6 +153,13 @@ void MainWindow::createActions()
     viewsMenu->addAction(dock_user_log->toggleViewAction());
     viewsToolBar->addAction(dock_user_log->toggleViewAction());
 
+    action_map_edit = new QAction("Map Edit");
+    action_map_edit->setCheckable(false);
+    viewsMenu->addAction(action_map_edit);
+    viewsToolBar->addAction(action_map_edit);
+
+    connect(action_map_edit,SIGNAL(triggered(bool)),this,SLOT(onMapEdit()));
+
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
     aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -189,3 +199,11 @@ void MainWindow::statusbar_err(QString msg)
     error_label->setText(QStringLiteral("错误:")+msg);
 }
 
+void MainWindow::onMapEdit()
+{
+    if(editWindow){
+        editWindow->close();
+    }
+    editWindow = new MapEditWindow(g_onemap.clone());
+    editWindow->show();
+}

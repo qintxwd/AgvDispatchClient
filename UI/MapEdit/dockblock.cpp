@@ -15,7 +15,7 @@ void DockBlock::init()
     listview = new QListView;
     setWindowTitle(QStringLiteral("地图Block"));
     listview->setContextMenuPolicy(Qt::CustomContextMenu);
-    QList<MapBlock *> blocks = oneMap->getBlocks();
+    QList<MapBlock *> blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     foreach (auto block, blocks) {
         qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     }
@@ -45,7 +45,7 @@ void DockBlock::init()
 
 void DockBlock::slot_selectChanged(QModelIndex index)
 {
-    QList<MapBlock *> blocks = oneMap->getBlocks();
+    QList<MapBlock *> blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     if(index.row()<blocks.length()){
         emit sig_chooseSpirit(blocks[index.row()]);
     }else{
@@ -67,7 +67,7 @@ void DockBlock::slot_addBlock()
 {
     int id = oneMap->getNextId();
     QString name = QString("block_%1").arg(id);
-    MapBlock *block = new MapBlock(id,name.toStdString(),oneMap);
+    MapBlock *block = new MapBlock(id,name.toStdString());
     oneMap->addBlock(block);
     qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     model->setStringList(qsl);
@@ -76,10 +76,10 @@ void DockBlock::slot_addBlock()
 void DockBlock::slot_removeBlock()
 {
     int index = listview->currentIndex().row();
-    QList<MapBlock *> blocks = oneMap->getBlocks();
+    QList<MapBlock *> blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     oneMap->removeBlock(blocks[index]);
     qsl.removeAt(index);
-    blocks = oneMap->getBlocks();
+    blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     foreach (auto block, blocks) {
         qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     }
@@ -89,7 +89,7 @@ void DockBlock::slot_removeBlock()
 void DockBlock::slot_editBlock()
 {
     int index = listview->currentIndex().row();
-    QList<MapBlock *> blocks = oneMap->getBlocks();
+    QList<MapBlock *> blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     DialogBlockEdit *dbe = new DialogBlockEdit(oneMap,blocks[index]);
     dbe->exec();
 

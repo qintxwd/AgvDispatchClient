@@ -44,7 +44,7 @@ void Scene::drawBackground(QPainter *painter, const QRectF &rect)
 void Scene::build()
 {
     //TODO:
-    QList<MapPoint *> points = floor->getPoints();
+    QList<MapPoint *> points = QList<MapPoint *>::fromStdList(floor->getPoints());
     foreach (auto p, points) {
         MapItemStation *station = new MapItemStation(p);
         MapItemStationName *stationname = new MapItemStationName(station,p);
@@ -56,7 +56,7 @@ void Scene::build()
         iStationNames.append(stationname);
     }
 
-    QList<MapPath *> path = floor->getPaths();
+    QList<MapPath *> path = QList<MapPath *>::fromStdList(floor->getPaths());
     foreach (auto p, path) {
         if(p->getPathType() == MapPath::Map_Path_Type_Line){
             MapItemStation *start = nullptr;

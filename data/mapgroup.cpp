@@ -1,7 +1,7 @@
 ﻿#include "mapgroup.h"
 
-MapGroup::MapGroup(int _id, std::string _name, QObject *parent) :
-    MapSpirit(_id,_name,Map_Sprite_Type_Group,parent)
+MapGroup::MapGroup(int _id, std::string _name) :
+    MapSpirit(_id,_name,Map_Sprite_Type_Group)
 {
 
 }
@@ -14,7 +14,7 @@ MapGroup::MapGroup(const MapGroup& b):
 {
 }
 
-void MapGroup::init(QList<int> _spirits,QList<int> _agvs)
+void MapGroup::init(std::list<int> _spirits, std::list<int> _agvs)
 {
     spirits = _spirits;
     agvs = _agvs;

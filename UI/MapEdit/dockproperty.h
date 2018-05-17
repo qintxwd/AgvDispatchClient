@@ -12,8 +12,8 @@ class DockProperty : public QDockWidget
     Q_OBJECT
 public:
     explicit DockProperty(OneMap* _oneMap, QWidget *parent = nullptr);
-
-    void init();
+    void initTabTable();
+    void initTableContent();
 signals:
     void sig_propertyChanged(MapSpirit *spirit);
 public slots:
@@ -35,6 +35,7 @@ private slots:
     //path edit
     void slot_PathNameChanged(QString name);
     void slot_PathTypeChanged(int _type);
+    void slot_PathDirectionChanged(int _directino);
     void slot_PathP1XChanged(QString p1x);
     void slot_PathP1YChanged(QString p1y);
     void slot_PathP2XChanged(QString p2x);
@@ -60,7 +61,15 @@ private:
     void showBkg();
     void showBlock();
     MapSpirit *spirit;
-    QTableWidget *tableWidget;
+    QTableWidget *tableWidget_blank;//空白
+    QTableWidget *tableWidget_point;//站点
+    QTableWidget *tableWidget_path;//路径
+    QTableWidget *tableWidget_floor;//楼层
+    QTableWidget *tableWidget_bkg;//背景图片
+    QTableWidget *tableWidget_block;//区块
+
+    QTabWidget *tabwidget;
+
     OneMap* oneMap;
 
 private:
@@ -94,6 +103,8 @@ private:
     QLineEdit *path_nameInput;
     QTableWidgetItem *path_itemKeyType;
     QComboBox *path_comboxType;
+    QTableWidgetItem *path_itemKeyDirection;
+    QComboBox *path_comboxDirection;
     QTableWidgetItem *path_itemKeyP1X;
     QLineEdit *path_xP1Input;
     QTableWidgetItem *path_itemKeyP1Y;

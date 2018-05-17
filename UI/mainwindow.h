@@ -7,6 +7,7 @@
 #include "User/dockusermanage.h"
 #include "Agv/dockagvmanage.h"
 #include "UserLog/dockuserlog.h"
+#include "MapEdit/mapeditwindow.h"
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +32,8 @@ public slots:
     void onErr(int errcode,QString info);
     void onNewRequest();
     void updateCurrentUserInfo();
+
+    void onMapEdit();
 private:
 
     void createActions();
@@ -48,6 +51,10 @@ private:
     QLabel *info_label;
     QLabel *error_label;
     QStatusBar *statusbar;
+
+    QAction *action_map_edit;
+
+    MapEditWindow *editWindow;
 };
 
 #endif // MAINWINDOW_H

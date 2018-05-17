@@ -14,7 +14,7 @@ void DockView::init()
 {
     tabWidget = new QTabWidget;
 
-    QList<MapFloor *> floors = oneMap->getFloors();
+    auto floors = oneMap->getFloors();
 
     foreach (auto floor, floors) {
         Scene *scene = new Scene(oneMap,floor);
@@ -62,7 +62,7 @@ void DockView::slot_addFloor(MapFloor *floor)
 
 void DockView::slot_addBkg(MapBackground *_bkg){
     int kk = tabWidget->currentIndex();
-    QList<MapFloor *> floors = oneMap->getFloors();
+    auto floors = QList<MapFloor *>::fromStdList(oneMap->getFloors());
     if(kk<floors.length()){
         floors[kk]->setBkg(_bkg);
         emit sig_propertyChangedFromProperty(floors[kk]);

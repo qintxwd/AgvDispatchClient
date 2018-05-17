@@ -5,20 +5,70 @@ DockProperty::DockProperty(OneMap *_oneMap, QWidget *parent) : QDockWidget(paren
     oneMap(_oneMap)
 {
     setMaximumWidth(300);
-    tableWidget = new QTableWidget(28,2);
+    initTabTable();
+    setWidget(tabwidget);
+    setWindowTitle(QStringLiteral("结点属性"));
+    initTableContent();
+}
+
+void DockProperty::initTabTable()
+{
+    tabwidget = new QTabWidget;
+    tabwidget->tabBar()->hide();
+    tableWidget_blank = new QTableWidget(0,2);
+
+    tableWidget_point = new QTableWidget(10,2);
+    tableWidget_path = new QTableWidget(8,2);
+    tableWidget_floor = new QTableWidget(2,2);
+    tableWidget_bkg = new QTableWidget(6,2);
+    tableWidget_block = new QTableWidget(2,2);
+
     QStringList labels;
     labels << QStringLiteral("属性")
            << QStringLiteral("值");
-    tableWidget->setHorizontalHeaderLabels(labels);
-    tableWidget->verticalHeader()->hide();
-    tableWidget->setShowGrid(true);
-    tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    setWidget(tableWidget);
-    setWindowTitle(QStringLiteral("结点属性"));
-    init();
+    tableWidget_blank->setHorizontalHeaderLabels(labels);
+    tableWidget_blank->verticalHeader()->hide();
+    tableWidget_blank->setShowGrid(true);
+    tableWidget_blank->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    tableWidget_point->setHorizontalHeaderLabels(labels);
+    tableWidget_point->verticalHeader()->hide();
+    tableWidget_point->setShowGrid(true);
+    tableWidget_point->setContextMenuPolicy(Qt::CustomContextMenu);
+
+
+    tableWidget_path->setHorizontalHeaderLabels(labels);
+    tableWidget_path->verticalHeader()->hide();
+    tableWidget_path->setShowGrid(true);
+    tableWidget_path->setContextMenuPolicy(Qt::CustomContextMenu);
+
+
+    tableWidget_floor->setHorizontalHeaderLabels(labels);
+    tableWidget_floor->verticalHeader()->hide();
+    tableWidget_floor->setShowGrid(true);
+    tableWidget_floor->setContextMenuPolicy(Qt::CustomContextMenu);
+
+
+    tableWidget_bkg->setHorizontalHeaderLabels(labels);
+    tableWidget_bkg->verticalHeader()->hide();
+    tableWidget_bkg->setShowGrid(true);
+    tableWidget_bkg->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    tableWidget_block->setHorizontalHeaderLabels(labels);
+    tableWidget_block->verticalHeader()->hide();
+    tableWidget_block->setShowGrid(true);
+    tableWidget_block->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    tabwidget->addTab(tableWidget_blank,"");
+    tabwidget->addTab(tableWidget_point,"");
+    tabwidget->addTab(tableWidget_path,"");
+    tabwidget->addTab(tableWidget_floor,"");
+    tabwidget->addTab(tableWidget_bkg,"");
+    tabwidget->addTab(tableWidget_block,"");
+    tabwidget->setCurrentIndex(0);
 }
 
-void DockProperty::init()
+void DockProperty::initTableContent()
 {
     /////////point
     point_itemKeyId = new QTableWidgetItem("ID");
@@ -104,7 +154,17 @@ void DockProperty::init()
     path_comboxType->addItem(QStringLiteral("三次贝赛尔曲线"));
     path_comboxType->addItem(QStringLiteral("楼层间线路"));
     path_comboxType->setEnabled(false);
-    //connect(path_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathTypeChanged(int)));
+
+    path_itemKeyDirection = new QTableWidgetItem(QStringLiteral("方向"));
+    path_itemKeyDirection->setTextAlignment(Qt::AlignCenter);
+    path_itemKeyDirection->setFlags(path_itemKeyDirection->flags()&(~Qt::ItemIsEditable));
+    path_comboxDirection = new QComboBox(); // 下拉选择框控件
+    path_comboxDirection->addItem(QStringLiteral("双向"));
+    path_comboxDirection->addItem(QStringLiteral("start-->end"));
+    path_comboxDirection->addItem(QStringLiteral("end-->start"));
+    path_comboxDirection->setEnabled(true);
+    connect(path_comboxDirection,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathDirectionChanged(int)));
+
     path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
     path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);
     path_itemKeyP1X->setFlags(path_itemKeyP1X->flags()&(~Qt::ItemIsEditable));
@@ -191,70 +251,68 @@ void DockProperty::init()
     connect(block_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BlockNameChanged(QString)));
 
     ////////////add to table widget
-    tableWidget->setItem(0, 0, point_itemKeyId);
-    tableWidget->setItem(0, 1, point_itemValueId);
-    tableWidget->setItem(1, 0, point_itemKeyName);
-    tableWidget->setCellWidget(1,1,point_nameInput);
-    tableWidget->setItem(2, 0, point_itemKeyType);
-    tableWidget->setCellWidget(2, 1, (QWidget*)point_comboxType);
-    tableWidget->setItem(3, 0, point_itemKeyX);
-    tableWidget->setCellWidget(3,1,point_xInput);
-    tableWidget->setItem(4, 0, point_itemKeyY);
-    tableWidget->setCellWidget(4,1,point_yInput);
-    tableWidget->setItem(5, 0, point_itemKeyRealX);
-    tableWidget->setCellWidget(5,1,point_xRealInput);
-    tableWidget->setItem(6, 0, point_itemKeyRealY);
-    tableWidget->setCellWidget(6,1,point_yRealInput);
-    tableWidget->setItem(7, 0, point_itemKeyLabelX);
-    tableWidget->setCellWidget(7,1,point_xLabelInput);
-    tableWidget->setItem(8, 0, point_itemKeyLabelY);
-    tableWidget->setCellWidget(8,1,point_yLabelInput);
-    tableWidget->setItem(9, 0, point_itemKeyMapChange);
-    tableWidget->setCellWidget(9, 1, (QWidget*)point_comboxMapChange);
+    tableWidget_point->setItem(0, 0, point_itemKeyId);
+    tableWidget_point->setItem(0, 1, point_itemValueId);
+    tableWidget_point->setItem(1, 0, point_itemKeyName);
+    tableWidget_point->setCellWidget(1,1,point_nameInput);
+    tableWidget_point->setItem(2, 0, point_itemKeyType);
+    tableWidget_point->setCellWidget(2, 1, (QWidget*)point_comboxType);
+    tableWidget_point->setItem(3, 0, point_itemKeyX);
+    tableWidget_point->setCellWidget(3,1,point_xInput);
+    tableWidget_point->setItem(4, 0, point_itemKeyY);
+    tableWidget_point->setCellWidget(4,1,point_yInput);
+    tableWidget_point->setItem(5, 0, point_itemKeyRealX);
+    tableWidget_point->setCellWidget(5,1,point_xRealInput);
+    tableWidget_point->setItem(6, 0, point_itemKeyRealY);
+    tableWidget_point->setCellWidget(6,1,point_yRealInput);
+    tableWidget_point->setItem(7, 0, point_itemKeyLabelX);
+    tableWidget_point->setCellWidget(7,1,point_xLabelInput);
+    tableWidget_point->setItem(8, 0, point_itemKeyLabelY);
+    tableWidget_point->setCellWidget(8,1,point_yLabelInput);
+    tableWidget_point->setItem(9, 0, point_itemKeyMapChange);
+    tableWidget_point->setCellWidget(9, 1, (QWidget*)point_comboxMapChange);
 
-    tableWidget->setItem(10, 0, path_itemKeyId);
-    tableWidget->setItem(10, 1, path_itemValueId);
-    tableWidget->setItem(11, 0, path_itemKeyName);
-    tableWidget->setCellWidget(11,1,path_nameInput);
-    tableWidget->setItem(12, 0, path_itemKeyType);
-    tableWidget->setCellWidget(12, 1, (QWidget*)path_comboxType);
-    tableWidget->setItem(13, 0, path_itemKeyP1X);
-    tableWidget->setCellWidget(13,1,path_xP1Input);
-    tableWidget->setItem(14, 0, path_itemKeyP1Y);
-    tableWidget->setCellWidget(14,1,path_yP1Input);
-    tableWidget->setItem(15, 0, path_itemKeyP2X);
-    tableWidget->setCellWidget(15,1,path_xP2Input);
-    tableWidget->setItem(16, 0, path_itemKeyP2Y);
-    tableWidget->setCellWidget(16,1,path_yP2Input);
-    tableWidget->setItem(17, 0, path_itemKeyLength);
-    tableWidget->setCellWidget(17,1,path_lengthInput);
+    tableWidget_path->setItem(0, 0, path_itemKeyId);
+    tableWidget_path->setItem(0, 1, path_itemValueId);
+    tableWidget_path->setItem(1, 0, path_itemKeyName);
+    tableWidget_path->setCellWidget(1,1,path_nameInput);
+    tableWidget_path->setItem(2, 0, path_itemKeyType);
+    tableWidget_path->setCellWidget(2, 1, (QWidget*)path_comboxType);
+    tableWidget_path->setItem(3, 0, path_itemKeyDirection);
+    tableWidget_path->setCellWidget(3, 1, (QWidget*)path_comboxDirection);
+    tableWidget_path->setItem(4, 0, path_itemKeyP1X);
+    tableWidget_path->setCellWidget(4,1,path_xP1Input);
+    tableWidget_path->setItem(5, 0, path_itemKeyP1Y);
+    tableWidget_path->setCellWidget(5,1,path_yP1Input);
+    tableWidget_path->setItem(6, 0, path_itemKeyP2X);
+    tableWidget_path->setCellWidget(6,1,path_xP2Input);
+    tableWidget_path->setItem(7, 0, path_itemKeyP2Y);
+    tableWidget_path->setCellWidget(7,1,path_yP2Input);
+    tableWidget_path->setItem(8, 0, path_itemKeyLength);
+    tableWidget_path->setCellWidget(8,1,path_lengthInput);
 
-    tableWidget->setItem(18, 0, floor_itemKeyId);
-    tableWidget->setItem(18, 1, floor_itemValueId);
-    tableWidget->setItem(19, 0, floor_itemKeyName);
-    tableWidget->setCellWidget(19,1,floor_nameInput);
+    tableWidget_floor->setItem(0, 0, floor_itemKeyId);
+    tableWidget_floor->setItem(0, 1, floor_itemValueId);
+    tableWidget_floor->setItem(1, 0, floor_itemKeyName);
+    tableWidget_floor->setCellWidget(1,1,floor_nameInput);
 
-    tableWidget->setItem(20, 0, bkg_itemKeyId);
-    tableWidget->setItem(20, 1, bkg_itemValueId);
-    tableWidget->setItem(21, 0, bkg_itemKeyName);
-    tableWidget->setCellWidget(21,1,bkg_nameInput);
-    tableWidget->setItem(22, 0, bkg_itemX);
-    tableWidget->setCellWidget(22,1,bkg_xInput);
-    tableWidget->setItem(23, 0, bkg_itemKeyY);
-    tableWidget->setCellWidget(23,1,bkg_yInput);
-    tableWidget->setItem(24, 0, bkg_itemWidth);
-    tableWidget->setCellWidget(24,1,bkg_widthInput);
-    tableWidget->setItem(25, 0, bkg_itemKeyHeight);
-    tableWidget->setCellWidget(25,1,bkg_heightInput);
+    tableWidget_bkg->setItem(0, 0, bkg_itemKeyId);
+    tableWidget_bkg->setItem(0, 1, bkg_itemValueId);
+    tableWidget_bkg->setItem(1, 0, bkg_itemKeyName);
+    tableWidget_bkg->setCellWidget(1,1,bkg_nameInput);
+    tableWidget_bkg->setItem(2, 0, bkg_itemX);
+    tableWidget_bkg->setCellWidget(2,1,bkg_xInput);
+    tableWidget_bkg->setItem(3, 0, bkg_itemKeyY);
+    tableWidget_bkg->setCellWidget(3,1,bkg_yInput);
+    tableWidget_bkg->setItem(4, 0, bkg_itemWidth);
+    tableWidget_bkg->setCellWidget(4,1,bkg_widthInput);
+    tableWidget_bkg->setItem(5, 0, bkg_itemKeyHeight);
+    tableWidget_bkg->setCellWidget(5,1,bkg_heightInput);
 
-    tableWidget->setItem(26, 0, block_itemKeyId);
-    tableWidget->setItem(26, 1, block_itemValueId);
-    tableWidget->setItem(27, 0, block_itemKeyName);
-    tableWidget->setCellWidget(27,1,block_nameInput);
-
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,true);
-    }
+    tableWidget_block->setItem(0, 0, block_itemKeyId);
+    tableWidget_block->setItem(0, 1, block_itemValueId);
+    tableWidget_block->setItem(1, 0, block_itemKeyName);
+    tableWidget_block->setCellWidget(1,1,block_nameInput);
 
 }
 
@@ -263,10 +321,7 @@ void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
 {
     //TODO:
     if(spirit != _spirit) return ;
-
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,true);
-    }
+    tabwidget->setCurrentIndex(0);
 
     //只是更新数据
     if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
@@ -292,14 +347,8 @@ void DockProperty::slot_showSpirit(MapSpirit *s)
     if(spirit == s) return ;
     spirit = s;
 
-    tableWidget->update();
-    if(spirit == nullptr)
-    {
-        for(int i=0;i<28;++i){
-            tableWidget->setRowHidden(i,true);
-        }
-        return ;
-    }
+    tabwidget->setCurrentIndex(0);
+    if(spirit == nullptr)return ;
     switch (spirit->getSpiritType()) {
     case MapSpirit::Map_Sprite_Type_Point:
         showPoint();
@@ -341,11 +390,8 @@ void DockProperty::showPoint()
         point_comboxMapChange->setCurrentIndex(0);
 
     }
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,i>=10);
-    }
-
-    tableWidget->update();
+    tableWidget_point->update();
+    tabwidget->setCurrentIndex(1);
 }
 
 void DockProperty::showPath()
@@ -357,15 +403,15 @@ void DockProperty::showPath()
     path_nameInput->setText(QString::fromStdString(path->getName()));
     MapPath::Map_Path_Type type = path->getPathType();
     path_comboxType->setCurrentIndex((int)type);
+    int direction = path->getDirection();
+    path_comboxDirection->setCurrentIndex(direction);
     path_xP1Input->setText(QString("%1").arg(path->getP1x()));
     path_yP1Input->setText(QString("%1").arg(path->getP1y()));
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));
     path_yP2Input->setText(QString("%1").arg(path->getP2y()));
     path_lengthInput->setText(QString("%1").arg(path->getLength()));
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,i<=9 || i >= 18);
-    }
-    tableWidget->update();
+    tableWidget_path->update();
+    tabwidget->setCurrentIndex(2);
 }
 void DockProperty::showFloor()
 {
@@ -374,10 +420,8 @@ void DockProperty::showFloor()
     MapFloor *floor = static_cast<MapFloor *>(spirit);
     floor_itemValueId->setText(QString("%1").arg(floor->getId()));
     floor_nameInput->setText(QString::fromStdString(floor->getName()));
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,i <= 17 || i>=20);
-    }
-    tableWidget->update();
+    tableWidget_floor->update();
+    tabwidget->setCurrentIndex(3);
 }
 
 void DockProperty::showBkg()
@@ -391,10 +435,8 @@ void DockProperty::showBkg()
     bkg_yInput->setText(QString("%1").arg(bkg->getY()));
     bkg_widthInput->setText(QString("%1").arg(bkg->getWidth()));
     bkg_heightInput->setText(QString("%1").arg(bkg->getHeight()));
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,i <= 19 || i>=26);
-    }
-    tableWidget->update();
+    tableWidget_bkg->update();
+    tabwidget->setCurrentIndex(4);
 }
 
 void DockProperty::showBlock()
@@ -404,10 +446,8 @@ void DockProperty::showBlock()
     MapBlock *block = static_cast<MapBlock *>(spirit);
     block_itemValueId->setText(QString("%1").arg(block->getId()));
     block_nameInput->setText(QString::fromStdString(block->getName()));
-    for(int i=0;i<28;++i){
-        tableWidget->setRowHidden(i,i <= 25||i >=28);
-    }
-    tableWidget->update();
+    tableWidget_block->update();
+    tabwidget->setCurrentIndex(5);
 }
 
 void DockProperty::slot_PointNameChanged(QString name)
@@ -470,6 +510,13 @@ void DockProperty::slot_PathNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPath *>(spirit))->setName(name.toStdString());
+    emit sig_propertyChanged(spirit);
+}
+
+void DockProperty::slot_PathDirectionChanged(int _directino)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapPath *>(spirit))->setDirection(_directino);
     emit sig_propertyChanged(spirit);
 }
 

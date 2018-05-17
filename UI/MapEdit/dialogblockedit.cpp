@@ -21,14 +21,15 @@ void DialogBlockEdit::init()
     selectedModel = new QStringListModel;
 
     //1.already select list
-    selectedIds = block->getSpirits();
+
+    selectedIds = QList<int>::fromStdList(block->getSpirits());
     //2.all points paths list
     auto pp = onemap->getRootPaths();
     foreach (auto p, pp) {
         unselectIds.append(p->getId());
     }
 
-    QList<MapFloor *> floors = onemap->getFloors();
+    QList<MapFloor *> floors = QList<MapFloor *>::fromStdList(onemap->getFloors());
     foreach (auto floor, floors) {
         auto points = floor->getPoints();
         auto paths = floor->getPaths();

@@ -4,9 +4,10 @@
 #include <QFileIconProvider>
 
 
-MapEditWindow::MapEditWindow(OneMap _oneMap, QWidget *parent) : QMainWindow(parent),
+MapEditWindow::MapEditWindow(OneMap *_oneMap, QWidget *parent) : QMainWindow(parent),
     oneMap(_oneMap)
 {
+    setWindowTitle("Map edit");
     createActions();
     createStatusBar();
 
@@ -140,10 +141,10 @@ void MapEditWindow::createStatusBar()
 void MapEditWindow::createActions()
 {
 
-    dockMapTree = new DockMapTree(&oneMap);
-    dockProperty = new DockProperty(&oneMap);
-    dockView = new DockView(&oneMap);
-    blockView = new DockBlock(&oneMap);
+    dockMapTree = new DockMapTree(oneMap);
+    dockProperty = new DockProperty(oneMap);
+    dockView = new DockView(oneMap);
+    blockView = new DockBlock(oneMap);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
     addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
@@ -660,13 +661,19 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
         selectHand->setChecked(false);
         emit sig_setTool(Scene::T_NONE);
 
-        if(oneMap.getFloors().length()>0){
+        if(oneMap->getFloors().size()>0){
             QString filePath = QFileDialog::getOpenFileName(this,tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp)"));
             if(filePath.length()>0){
                 QString fileName = filePath.right(filePath.length() - filePath.lastIndexOf("/")-1);
-                QImage *img = new QImage;
-                img->load(filePath);
-                MapBackground *_bkg = new MapBackground(oneMap.getNextId(),fileName.toStdString(),*img,fileName.toStdString());
+                QImage img;
+                img.load(filePath);
+
+                QByteArray ba;
+                QDataStream ds(&ba,QIODevice::WriteOnly);
+                ds<<img;
+                qDebug()<<ba.size();
+
+                MapBackground *_bkg = new MapBackground(oneMap->getNextId(),fileName.toStdString(),ba.data(),ba.size(),img.width(),img.height(),fileName.toStdString());
 
                 emit sig_addBkg(_bkg);
             }

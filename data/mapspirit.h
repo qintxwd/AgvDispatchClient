@@ -1,12 +1,10 @@
 ﻿#ifndef MAPSPIRIT_H
 #define MAPSPIRIT_H
 
-#include <QString>
-#include <QObject>
+#include <string>
 
-class MapSpirit : public QObject
+class MapSpirit
 {
-    Q_OBJECT
 public:
     enum Map_Spirit_Type
     {
@@ -18,7 +16,7 @@ public:
         Map_Sprite_Type_Group,
     };
 
-    MapSpirit(int _id,std::string _name,Map_Spirit_Type _spirit_type,QObject *parent = nullptr);
+    MapSpirit(int _id,std::string _name,Map_Spirit_Type _spirit_type);
 
     MapSpirit(const MapSpirit &s);
 

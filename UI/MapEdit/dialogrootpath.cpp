@@ -19,7 +19,7 @@ void DialogRootPath::init()
     QLabel *fromlabel = new QLabel("from");
     fromComboboxA = new QComboBox;
     fromComboboxA->setObjectName("fromComboboxA");
-    QList<MapFloor *> floors = onemap->getFloors();
+    QList<MapFloor *> floors = QList<MapFloor *>::fromStdList(onemap->getFloors());
     foreach (auto floor, floors) {
         fromComboboxA->addItem(QString::fromStdString(floor->getName()));
     }
@@ -87,14 +87,15 @@ void DialogRootPath::on_okbtn_clicked(bool b)
             int toIndexA = toComboboxA->currentIndex();
             int toIndexB = toComboboxB->currentIndex();
 
-            auto floors = onemap->getFloors();
+            auto floors = QList<MapFloor *>::fromStdList(onemap->getFloors());
             auto floorFrom = floors[fromIndexA];
             auto floorTo = floors[toIndexA];
 
             MapPoint *from  = nullptr;
             MapPoint *to = nullptr;
 
-            foreach (auto p, floorFrom->getPoints()) {
+            auto points =  QList<MapPoint *>::fromStdList(floorFrom->getPoints());
+            foreach (auto p, points) {
                 if(p->getMapChange()){
                     if(fromIndexB == 0){
                         from = p;
@@ -105,7 +106,8 @@ void DialogRootPath::on_okbtn_clicked(bool b)
                 }
             }
 
-            foreach (auto p, floorTo->getPoints()) {
+            points =  QList<MapPoint *>::fromStdList(floorTo->getPoints());
+            foreach (auto p, points) {
                 if(p->getMapChange()){
                     if(toIndexB == 0){
                         to = p;
@@ -136,8 +138,9 @@ void DialogRootPath::on_fromComboboxA_currentIndexChanged(int index)
 {
     fromComboboxB->clear();
 
-    if(index<onemap->getFloors().length()){
-        MapFloor *f = onemap->getFloors()[index];
+    auto fs = QList<MapFloor *>::fromStdList( onemap->getFloors());
+    if(index<fs.length()){
+        MapFloor *f = fs[index];
         if(f!=nullptr){
             foreach (auto p, f->getPoints()) {
                 if(p->getMapChange()){
@@ -151,9 +154,9 @@ void DialogRootPath::on_fromComboboxA_currentIndexChanged(int index)
 void DialogRootPath::on_toComboboxA_currentIndexChanged(int index)
 {
     toComboboxB->clear();
-
-    if(index<onemap->getFloors().length()){
-        MapFloor *f = onemap->getFloors()[index];
+    auto fs = QList<MapFloor *>::fromStdList( onemap->getFloors());
+    if(index<fs.length()){
+        MapFloor *f = fs[index];
         if(f!=nullptr){
             foreach (auto p, f->getPoints()) {
                 if(p->getMapChange()){

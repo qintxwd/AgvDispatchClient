@@ -5,7 +5,7 @@ MapItemBkg::MapItemBkg(MapBackground *_bkg, QGraphicsItem *parent) : QGraphicsOb
     bkg(_bkg)
 {
     setZValue(1);
-    setFlags(ItemIsSelectable|ItemIsMovable| QGraphicsItem::ItemIsFocusable);
+    setFlags(ItemIsSelectable| QGraphicsItem::ItemIsFocusable);
     setAcceptHoverEvents(true);
     setPos(bkg->getX(),bkg->getY());
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
@@ -40,7 +40,21 @@ void MapItemBkg::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     pen.setWidth(1);
     painter->setPen(pen);
     painter->drawRect(boundingRect());
-    painter->drawImage(boundingRect(),bkg->getImg());
+
+    if(img.isNull()){
+        if(bkg!=nullptr && bkg->getImgData()!=nullptr && bkg->getImgDataLen()>0){
+            QImage img;
+            QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());
+            QDataStream ds(&ba,QIODevice::ReadOnly);
+            ds>>img;
+            if(!img.isNull()){
+                painter->drawImage(boundingRect(),img);
+            }
+        }
+    }else{
+        painter->drawImage(boundingRect(),img);
+    }
+
     painter->setPen(oldPen);
 }
 

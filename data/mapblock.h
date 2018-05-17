@@ -1,26 +1,23 @@
 ﻿#ifndef MAPBLOCK_H
 #define MAPBLOCK_H
 
-#include <QObject>
+#include <list>
 #include "mapspirit.h"
 
 //一个block内同时只允许一个AGV
 class MapBlock : public MapSpirit
 {
-    Q_OBJECT
 public:
-    explicit MapBlock(int _id, std::string _name, QObject *parent = nullptr);
+    explicit MapBlock(int _id, std::string _name);
     MapBlock(const MapBlock& b);
-    void addSpirit(int spirit){spirits.append(spirit);}
-    void removeSpirit(int spirit){spirits.removeAll(spirit);}
+    void addSpirit(int spirit){spirits.push_back(spirit);}
+    void removeSpirit(int spirit){
+        spirits.remove(spirit);
+    }
     void clear(){spirits.clear();}
-    QList<int> getSpirits(){return spirits;}
-signals:
-
-public slots:
-
+    std::list<int> getSpirits(){return spirits;}
 private:
-    QList<int> spirits;
+    std::list<int> spirits;
 };
 
 #endif // MAPBLOCK_H

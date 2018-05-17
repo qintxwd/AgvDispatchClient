@@ -35,6 +35,7 @@ public slots:
 
 private:
     MapBackground *bkg;
+    QImage img;
 };
 
 #endif // MAPITEMBKG_H

@@ -1,34 +1,28 @@
 ﻿#ifndef MAPGROUP_H
 #define MAPGROUP_H
 
-#include <QObject>
+#include <list>
 #include "mapspirit.h"
 
 //一个区块，只允许部分车辆通行
 class MapGroup : public MapSpirit
 {
-    Q_OBJECT
 public:
-    explicit MapGroup(int _id, std::string _name, QObject *parent = nullptr);
+    explicit MapGroup(int _id, std::string _name);
     MapGroup(const MapGroup& b);
 
-    void init(QList<int> _spirits,QList<int> _agvs);
+    void init(std::list<int> _spirits, std::list<int> _agvs);
 
-    void addSpirit(int spirit){spirits.append(spirit);}
-    void removeSpirit(int spirit){spirits.removeAll(spirit);}
-    QList<int> getSpirits(){return spirits;}
+    void addSpirit(int spirit){spirits.push_back(spirit);}
+    void removeSpirit(int spirit){spirits.remove(spirit);}
+    std::list<int> getSpirits(){return spirits;}
 
-    void addAgv(int agv){agvs.append(agv);}
-    void removeAgv(int agv){agvs.removeAll(agv);}
-    QList<int> getAgvs(){return agvs;}
-
-signals:
-
-public slots:
-
+    void addAgv(int agv){agvs.push_back(agv);}
+    void removeAgv(int agv){agvs.remove(agv);}
+    std::list<int> getAgvs(){return agvs;}
 private:
-    QList<int> spirits;//区块
-    QList<int> agvs;//通行车辆
+    std::list<int> spirits;//区块
+    std::list<int> agvs;//通行车辆
 };
 
 #endif // MAPGROUP_H

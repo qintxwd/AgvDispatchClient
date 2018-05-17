@@ -6,7 +6,6 @@
 
 class MapPath : public MapSpirit
 {
-    Q_OBJECT
 public:
     enum Map_Path_Type{
         Map_Path_Type_Line = 0,
@@ -15,7 +14,7 @@ public:
         Map_Path_Type_Between_Floor,//楼层间线路
     };
 
-    MapPath(int _id, std::string _name, int _start, int _end, Map_Path_Type _type, int _length, int _p1x = 0, int _p1y = 0, int _p2x=0, int _p2y = 0, bool _locked = false, QObject *parent = nullptr);
+    MapPath(int _id, std::string _name, int _start, int _end, Map_Path_Type _type, int _length, int _p1x = 0, int _p1y = 0, int _p2x=0, int _p2y = 0, bool _locked = false, int _direction = 0);
     MapPath(const MapPath &p);
     void setPathType(Map_Path_Type _path_type){path_type=_path_type;}
     Map_Path_Type getPathType(){return path_type;}
@@ -30,6 +29,7 @@ public:
     void setP2y(int _p2y){p2y = _p2y;}
     void setLength(int _length){length=_length;}
     void setLocked(bool _locked){locked = _locked;}
+    void setDirection(int _direction){direction = _direction;}
 
     int getP1x(){return p1x;}
     int getP1y(){return p1y;}
@@ -37,7 +37,7 @@ public:
     int getP2y(){return p2y;}
     int getLength(){return length;}
     bool getLocked(){return locked;}
-
+    int getDirection(){return direction;}// 0 (双向)  1(start-->end)  2(end-->start)
 private:
     Map_Path_Type path_type;
     int start;
@@ -48,6 +48,7 @@ private:
     int p2y;
     int length;
     bool locked;
+    int direction;// 0 (双向)  1(start-->end)  2(end-->start)
 };
 
 #endif // MAPPATH_H
