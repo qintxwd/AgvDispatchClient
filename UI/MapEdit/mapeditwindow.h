@@ -20,7 +20,7 @@ signals:
     void sig_setSelectSelect();
     void sig_setSelectHand();
 
-    void sig_addBkg(MapBackground *_bkg);
+    void sig_addBkg(int _bkg);
 public slots:
 
     void about();

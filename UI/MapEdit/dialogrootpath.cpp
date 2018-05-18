@@ -94,11 +94,13 @@ void DialogRootPath::on_okbtn_clicked(bool b)
             MapPoint *from  = nullptr;
             MapPoint *to = nullptr;
 
-            auto points =  QList<MapPoint *>::fromStdList(floorFrom->getPoints());
+            auto points =  QList<int>::fromStdList(floorFrom->getPoints());
             foreach (auto p, points) {
-                if(p->getMapChange()){
+                MapPoint *ppp = static_cast<MapPoint *>(onemap->getSpiritById(p));
+
+                if(ppp->getMapChange()){
                     if(fromIndexB == 0){
-                        from = p;
+                        from = ppp;
                         break;
                     }else{
                         --fromIndexB;
@@ -106,11 +108,12 @@ void DialogRootPath::on_okbtn_clicked(bool b)
                 }
             }
 
-            points =  QList<MapPoint *>::fromStdList(floorTo->getPoints());
+            points =  QList<int>::fromStdList(floorTo->getPoints());
             foreach (auto p, points) {
-                if(p->getMapChange()){
+                MapPoint *ppp = static_cast<MapPoint *>(onemap->getSpiritById(p));
+                if(ppp->getMapChange()){
                     if(toIndexB == 0){
-                        to = p;
+                        to = ppp;
                         break;
                     }else{
                         --toIndexB;
@@ -142,9 +145,12 @@ void DialogRootPath::on_fromComboboxA_currentIndexChanged(int index)
     if(index<fs.length()){
         MapFloor *f = fs[index];
         if(f!=nullptr){
-            foreach (auto p, f->getPoints()) {
-                if(p->getMapChange()){
-                    fromComboboxB->addItem(QString::fromStdString(p->getName()));
+            auto ps = f->getPoints();
+            foreach (auto p, ps) {
+                MapPoint *ppp = static_cast<MapPoint *>( onemap->getSpiritById(p));
+                if(ppp==nullptr)continue;
+                if(ppp->getMapChange()){
+                    fromComboboxB->addItem(QString::fromStdString(ppp->getName()));
                 }
             }
         }
@@ -158,9 +164,12 @@ void DialogRootPath::on_toComboboxA_currentIndexChanged(int index)
     if(index<fs.length()){
         MapFloor *f = fs[index];
         if(f!=nullptr){
-            foreach (auto p, f->getPoints()) {
-                if(p->getMapChange()){
-                    toComboboxB->addItem(QString::fromStdString(p->getName()));
+            auto ps = f->getPoints();
+            foreach (auto p, ps) {
+                MapPoint *ppp = static_cast<MapPoint *>( onemap->getSpiritById(p));
+                if(ppp==nullptr)continue;
+                if(ppp->getMapChange()){
+                    toComboboxB->addItem(QString::fromStdString(ppp->getName()));
                 }
             }
         }

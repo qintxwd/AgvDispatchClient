@@ -9,9 +9,9 @@ class MapGroup : public MapSpirit
 {
 public:
     explicit MapGroup(int _id, std::string _name);
-    MapGroup(const MapGroup& b);
-
-    void init(std::list<int> _spirits, std::list<int> _agvs);
+    virtual ~MapGroup();
+    virtual MapSpirit *clone();
+    MapGroup(const MapGroup& b) = delete;
 
     void addSpirit(int spirit){spirits.push_back(spirit);}
     void removeSpirit(int spirit){spirits.remove(spirit);}
@@ -19,7 +19,7 @@ public:
 
     void addAgv(int agv){agvs.push_back(agv);}
     void removeAgv(int agv){agvs.remove(agv);}
-    std::list<int> getAgvs(){return agvs;}
+    std::list<int> getAgvs()  const {return agvs;}
 private:
     std::list<int> spirits;//区块
     std::list<int> agvs;//通行车辆

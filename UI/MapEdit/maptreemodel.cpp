@@ -158,16 +158,22 @@ void MapTreeModel::setupModelData(MapTreeItem *root)
         item_floor->appendChild(item_path_folder);
         auto points = floor->getPoints();
         foreach (auto __point, points) {
-            MapTreeItem *item_point = new MapTreeItem(__point,item_point_folder);
+            MapPoint *pp =  static_cast<MapPoint*>(onemap->getSpiritById(__point));
+            if(pp==nullptr)continue;
+            MapTreeItem *item_point = new MapTreeItem(pp,item_point_folder);
             item_point_folder->appendChild(item_point);
         }
         auto paths = floor->getPaths();
         foreach (auto __path, paths) {
-            MapTreeItem *item_path = new MapTreeItem(__path,item_path_folder);
+            MapPath *pp =  static_cast<MapPath*>(onemap->getSpiritById(__path));
+            if(pp==nullptr)continue;
+            MapTreeItem *item_path = new MapTreeItem(pp,item_path_folder);
             item_path_folder->appendChild(item_path);
         }
-        if(floor->getBkg()!=nullptr){
-            MapTreeItem *itemBkg = new MapTreeItem(floor->getBkg(),item_floor,QString::fromStdString(floor->getBkg()->getName()));
+        if(floor->getBkg()!=0){
+            MapBackground *bkg = static_cast<MapBackground*>(onemap->getSpiritById(floor->getBkg()));
+            if(bkg==nullptr)continue;
+            MapTreeItem *itemBkg = new MapTreeItem(bkg,item_floor,QString::fromStdString(bkg->getName()));
             item_floor->appendChild(itemBkg);
         }
 

@@ -9,13 +9,16 @@ class MapBlock : public MapSpirit
 {
 public:
     explicit MapBlock(int _id, std::string _name);
-    MapBlock(const MapBlock& b);
+    virtual ~MapBlock();
+    virtual MapSpirit *clone() ;
+    MapBlock(const MapBlock& b) = delete;
+
     void addSpirit(int spirit){spirits.push_back(spirit);}
     void removeSpirit(int spirit){
         spirits.remove(spirit);
     }
     void clear(){spirits.clear();}
-    std::list<int> getSpirits(){return spirits;}
+    std::list<int> getSpirits() const {return spirits;}
 private:
     std::list<int> spirits;
 };

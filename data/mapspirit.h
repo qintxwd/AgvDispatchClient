@@ -18,12 +18,11 @@ public:
 
     MapSpirit(int _id,std::string _name,Map_Spirit_Type _spirit_type);
 
-    MapSpirit(const MapSpirit &s);
+    MapSpirit(const MapSpirit &s) = delete;
 
-    virtual MapSpirit::~MapSpirit()
-    {
+    virtual ~MapSpirit();
 
-    }
+    virtual MapSpirit *clone();
 
     bool operator ==(const MapSpirit &s){
         return id == s.id;
@@ -35,10 +34,10 @@ public:
     }
     void setSpiritType(Map_Spirit_Type __type){spirit_type = __type;}
 
-    int getId(){return id;}
+    int getId() const{return id;}
     void setId(int _id){id=_id;}
 
-    std::string getName(){return name;}
+    std::string getName() const {return name;}
     void setName(std::string _name){name=_name;}
 private:
     int id;

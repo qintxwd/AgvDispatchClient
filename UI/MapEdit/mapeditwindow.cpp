@@ -49,7 +49,7 @@ void MapEditWindow::init()
 
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
-    connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockView,SLOT(slot_addBkg(MapBackground*)));
+    connect(this,SIGNAL(sig_addBkg(int)),dockView,SLOT(slot_addBkg(int)));
     //connect(this,SIGNAL(sig_addBkg(MapBackground*)),dockMapTree,SLOT(refresh()));
 
     QMetaObject::connectSlotsByName(this);
@@ -674,8 +674,8 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
                 qDebug()<<ba.size();
 
                 MapBackground *_bkg = new MapBackground(oneMap->getNextId(),fileName.toStdString(),ba.data(),ba.size(),img.width(),img.height(),fileName.toStdString());
-
-                emit sig_addBkg(_bkg);
+                oneMap->addSpirit(_bkg);
+                emit sig_addBkg(_bkg->getId());
             }
         }
         addBkgd->setChecked(false);

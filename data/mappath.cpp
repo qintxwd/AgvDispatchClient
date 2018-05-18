@@ -15,15 +15,14 @@ MapPath::MapPath(int _id, std::string _name, int _start, int _end, Map_Path_Type
 {
 }
 
-MapPath::MapPath(const MapPath &p):
-    MapSpirit(p),
-    start(p.start),
-    end(p.end),
-    path_type(p.path_type),
-    length(p.length),
-    p1x(p.p1x),
-    p1y(p.p1y),
-    p2x(p.p2x),
-    p2y(p.p2y)
+MapPath::~MapPath()
 {
+
 }
+
+MapSpirit *MapPath::clone()
+{
+    MapPath *p = new MapPath(getId(),getName(),getStart(),getEnd(),getPathType(),getLength(),getP1x(),getP1y(),getP2x(),getP2y(),getLocked(),getDirection());
+    return p;
+}
+

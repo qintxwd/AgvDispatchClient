@@ -260,7 +260,8 @@ void MsgCenter::response_map_get(const Json::Value &response)
             bool mapChange = point["mapChange"].asBool();
             bool locked = point["locked"].asBool();
             MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)point_type,x,y,realX,realY,labelXoffset,labelYoffset,mapChange,locked);
-            map_floor->addPoint(p);
+            g_onemap.addSpirit(p);
+            map_floor->addPoint(p->getId());
         }
 
         //2.floor->paths
@@ -279,7 +280,8 @@ void MsgCenter::response_map_get(const Json::Value &response)
             bool length = path["length"].asInt();
             bool locked = path["locked"].asBool();
             MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)path_type,length,p1x,p2x,p1y,p2y,locked);
-            map_floor->addPath(p);
+            g_onemap.addSpirit(p);
+            map_floor->addPath(p->getId());
         }
 
         //3.floor->bkg
@@ -299,9 +301,10 @@ void MsgCenter::response_map_get(const Json::Value &response)
             int len_decode = base64_decode(imgdata,(char *)datas.c_str(),datas.length());
             assert(len_decode == len);
             MapBackground *mb_bkg = new MapBackground(bkg_id,bkg_name,imgdata,len,width,height,filename);
-            map_floor->setBkg(mb_bkg);
+            g_onemap.addSpirit(mb_bkg);
+            map_floor->setBkg(mb_bkg->getId());
         }
-        g_onemap.addFloor(map_floor);
+        g_onemap.addSpirit(map_floor);
     }
 
     ////4.root paths
@@ -320,7 +323,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
         bool length = path["length"].asInt();
         bool locked = path["locked"].asBool();
         MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)path_type,length,p1x,p2x,p1y,p2y,locked);
-        g_onemap.addPath(p);
+        g_onemap.addSpirit(p);
     }
 
     ////5.blocks
@@ -336,7 +339,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
             int spirit = spirits[c].asInt();
             map_block->addSpirit(spirit);
         }
-        g_onemap.addBlock(map_block);
+        g_onemap.addSpirit(map_block);
     }
 
     ////6.groups
@@ -357,7 +360,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
             int agvid = agvs[c].asInt();
             map_group->addAgv(agvid);
         }
-        g_onemap.addGroup(map_group);
+        g_onemap.addSpirit(map_group);
     }
 
 

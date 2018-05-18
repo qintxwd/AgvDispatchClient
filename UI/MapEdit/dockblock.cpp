@@ -68,7 +68,7 @@ void DockBlock::slot_addBlock()
     int id = oneMap->getNextId();
     QString name = QString("block_%1").arg(id);
     MapBlock *block = new MapBlock(id,name.toStdString());
-    oneMap->addBlock(block);
+    oneMap->addSpirit(block);
     qsl<<QString("%1 -- %2").arg(block->getId()).arg(QString::fromStdString(block->getName()));
     model->setStringList(qsl);
 }
@@ -77,7 +77,7 @@ void DockBlock::slot_removeBlock()
 {
     int index = listview->currentIndex().row();
     QList<MapBlock *> blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
-    oneMap->removeBlock(blocks[index]);
+    oneMap->removeSpirit(blocks[index]);
     qsl.removeAt(index);
     blocks = QList<MapBlock *>::fromStdList(oneMap->getBlocks());
     foreach (auto block, blocks) {

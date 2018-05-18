@@ -60,7 +60,7 @@ void DockView::slot_addFloor(MapFloor *floor)
     scenes.append(scene);
 }
 
-void DockView::slot_addBkg(MapBackground *_bkg){
+void DockView::slot_addBkg(int _bkg){
     int kk = tabWidget->currentIndex();
     auto floors = QList<MapFloor *>::fromStdList(oneMap->getFloors());
     if(kk<floors.length()){

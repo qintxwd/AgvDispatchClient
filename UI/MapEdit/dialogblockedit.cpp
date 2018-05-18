@@ -34,10 +34,10 @@ void DialogBlockEdit::init()
         auto points = floor->getPoints();
         auto paths = floor->getPaths();
         foreach (auto p, points) {
-            unselectIds.append(p->getId());
+            unselectIds.append(p);
         }
         foreach (auto p, paths) {
-            unselectIds.append(p->getId());
+            unselectIds.append(p);
         }
     }
     foreach (auto id, selectedIds) {
