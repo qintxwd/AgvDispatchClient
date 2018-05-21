@@ -119,7 +119,7 @@ void Scene::build()
 
 void Scene::slot_setCurTool(int t)
 {
-    if(t>=T_NONE && t<=T_CB){
+    if(t>=T_NONE && t<=T_CB_DOUBLE){
         if(cur_tool == t)return ;
         cur_tool = static_cast<Tool>(t);
         oldSelectStation = nullptr;
@@ -499,7 +499,7 @@ void Scene::onSelectItemChanged()
                 newStation = stationName->getStation();
             }
 
-            if(cur_tool == T_LINE){
+            if(cur_tool == T_LINE_DOUBLE || cur_tool == T_LINE_SINGLE){
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
@@ -555,7 +555,7 @@ void Scene::onSelectItemChanged()
                     newStation->setSelected(false);
                     oldSelectStation = nullptr;
                 }
-            }else if(cur_tool == T_QB){
+            }else if(cur_tool == T_QB_DOUBLE || cur_tool == T_QB_SINGLE){
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){
@@ -615,7 +615,7 @@ void Scene::onSelectItemChanged()
                     newStation->setSelected(false);
                     oldSelectStation = nullptr;
                 }
-            }else if(cur_tool == T_CB){
+            }else if(cur_tool == T_CB_DOUBLE || cur_tool == T_CB_SINGLE){
                 if(oldSelectStation==nullptr){
                     oldSelectStation = newStation;
                 }else if(oldSelectStation!=newStation){

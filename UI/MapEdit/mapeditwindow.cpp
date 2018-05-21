@@ -179,9 +179,9 @@ void MapEditWindow::createActions()
     selectSelect = new QAction(this);
     selectSelect->setText("select");
     selectSelect->setObjectName("selectSelect");
-//    QIcon iconSelectSelect;
-//    iconSelectSelect.addFile(":/images/toolbar/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
-//    selectSelect->setIcon(iconSelectSelect);
+    //    QIcon iconSelectSelect;
+    //    iconSelectSelect.addFile(":/images/toolbar/edit-delete-2.png",QSize(),QIcon::Normal,QIcon::Off);
+    //    selectSelect->setIcon(iconSelectSelect);
     selectSelect->setCheckable(true);
     selectToolBar->addAction(selectSelect);
     toolsMenu->addAction(selectSelect);
@@ -189,9 +189,9 @@ void MapEditWindow::createActions()
     selectHand = new QAction(this);
     selectHand->setText("drag");
     selectHand->setObjectName("selectHand");
-//    QIcon iconSelectHand;
-//    iconSelectHand.addFile(":/images/toolbar/point-report.22.png",QSize(),QIcon::Normal,QIcon::Off);
-//    selectHand->setIcon(iconSelectHand);
+    //    QIcon iconSelectHand;
+    //    iconSelectHand.addFile(":/images/toolbar/point-report.22.png",QSize(),QIcon::Normal,QIcon::Off);
+    //    selectHand->setIcon(iconSelectHand);
     selectHand->setCheckable(true);
     selectToolBar->addAction(selectHand);
     toolsMenu->addAction(selectHand);
@@ -276,35 +276,75 @@ void MapEditWindow::createActions()
     toolsToolBar->addAction(toolStationLoadUnload);
     toolsMenu->addAction(toolStationLoadUnload);
 
-    toolLine = new QAction(this);
-    toolLine->setText("Line");
-    toolLine->setObjectName("toolLine");
+    toolLineDouble = new QAction(this);
+    toolLineDouble->setText("Double direction Line");
+    toolLineDouble->setObjectName("toolLineDouble");
     QIcon iconLine;
     iconLine.addFile(":/images/toolbar/path-direct.22.png",QSize(),QIcon::Normal,QIcon::Off);
-    toolLine->setIcon(iconLine);
-    toolLine->setCheckable(true);
-    toolsToolBar->addAction(toolLine);
-    toolsMenu->addAction(toolLine);
+    toolLineDouble->setIcon(iconLine);
+    toolLineDouble->setCheckable(true);
 
-    toolQb = new QAction(this);
-    toolQb->setText("2-Bezier");
-    toolQb->setObjectName("toolQb");
+    toolLineSingle = new QAction(this);
+    toolLineSingle->setText("Single direction Line");
+    toolLineSingle->setObjectName("toolLineSingle");
+    toolLineSingle->setIcon(iconLine);
+    toolLineSingle->setCheckable(true);
+
+
+    toolQbDouble = new QAction(this);
+    toolQbDouble->setText("Double 2-Bezier");
+    toolQbDouble->setObjectName("toolQbDouble");
     QIcon iconQb;
     iconQb.addFile(":/images/toolbar/path-bezier.22.png",QSize(),QIcon::Normal,QIcon::Off);
-    toolQb->setIcon(iconQb);
-    toolQb->setCheckable(true);
-    toolsToolBar->addAction(toolQb);
-    toolsMenu->addAction(toolQb);
+    toolQbDouble->setIcon(iconQb);
+    toolQbDouble->setCheckable(true);
 
-    toolCb = new QAction(this);
-    toolCb->setText("3-Bezier");
-    toolCb->setObjectName("toolCb");
+    toolQbSingle = new QAction(this);
+    toolQbSingle->setText("Single 2-Bezier");
+    toolQbSingle->setObjectName("toolQbSingle");
+    toolQbSingle->setIcon(iconQb);
+    toolQbSingle->setCheckable(true);
+
+    toolCbDouble = new QAction(this);
+    toolCbDouble->setText("Double 3-Bezier");
+    toolCbDouble->setObjectName("toolCbDouble");
     QIcon iconCb;
     iconCb.addFile(":/images/toolbar/path-bezier.22.png",QSize(),QIcon::Normal,QIcon::Off);
-    toolCb->setIcon(iconCb);
-    toolCb->setCheckable(true);
-    toolsToolBar->addAction(toolCb);
-    toolsMenu->addAction(toolCb);
+    toolCbDouble->setIcon(iconCb);
+    toolCbDouble->setCheckable(true);
+
+    toolCbSingle = new QAction(this);
+    toolCbSingle->setText("Single 3-Bezier");
+    toolCbSingle->setObjectName("toolCbSingle");
+    toolCbSingle->setIcon(iconCb);
+    toolCbSingle->setCheckable(true);
+
+    toolLineMenu = new QMenu("Line");
+    toolLineMenu->setObjectName("toolLineMenu");
+    toolLineMenu->setIcon(iconLine);
+    toolLineMenu->addAction(toolLineDouble);
+    toolLineMenu->addAction(toolLineSingle);
+    connect(toolLineMenu->menuAction(),SIGNAL(triggered(bool)),this,SLOT(on_toolLineDouble_triggered(bool)));
+    toolsMenu->addMenu(toolLineMenu);
+    toolsToolBar->addAction(toolLineMenu->menuAction());
+
+    toolQbMenu = new QMenu("Line");
+    toolQbMenu->setObjectName("toolQbMenu");
+    toolQbMenu->setIcon(iconQb);
+    toolQbMenu->addAction(toolQbDouble);
+    toolQbMenu->addAction(toolQbSingle);
+    connect(toolQbMenu->menuAction(),SIGNAL(triggered(bool)),this,SLOT(on_toolQbDouble_triggered(bool)));
+    toolsMenu->addMenu(toolQbMenu);
+    toolsToolBar->addAction(toolQbMenu->menuAction());
+
+    toolCbMenu = new QMenu("Line");
+    toolCbMenu->setObjectName("toolCbMenu");
+    toolCbMenu->setIcon(iconCb);
+    toolCbMenu->addAction(toolCbDouble);
+    toolCbMenu->addAction(toolCbSingle);
+    connect(toolCbMenu->menuAction(),SIGNAL(triggered(bool)),this,SLOT(on_toolCbDouble_triggered(bool)));
+    toolsMenu->addMenu(toolCbMenu);
+    toolsToolBar->addAction(toolCbMenu->menuAction());
 
     addBkgd = new QAction(this);
     addBkgd->setText("set background img");
@@ -368,9 +408,12 @@ void MapEditWindow::slot_cancelTool()
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
 
     selectSelect->setChecked(true);
     selectHand->setChecked(false);
@@ -387,9 +430,13 @@ void MapEditWindow::on_toolErase_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_ERASER);
@@ -408,9 +455,12 @@ void MapEditWindow::on_toolStationDraw_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
 
     if(b){
         emit sig_setTool(Scene::T_STATION_DRAW);
@@ -429,9 +479,13 @@ void MapEditWindow::on_toolStationReport_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_REPORT);
@@ -450,9 +504,13 @@ void MapEditWindow::on_toolStationHalt_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_HALT);
@@ -470,9 +528,13 @@ void MapEditWindow::on_toolStationCharge_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_CHARGE);
@@ -490,9 +552,13 @@ void MapEditWindow::on_toolStationLoad_triggered(bool b)
     //toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_LOAD);
@@ -510,9 +576,13 @@ void MapEditWindow::on_toolStationUnload_triggered(bool b)
     toolStationLoad->setChecked(false);
     //toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_UNLOAD);
@@ -531,9 +601,13 @@ void MapEditWindow::on_toolStationLoadUnload_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     //toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
         emit sig_setTool(Scene::T_STATION_LOAD_UNLOAD);
@@ -541,7 +615,8 @@ void MapEditWindow::on_toolStationLoadUnload_triggered(bool b)
         emit sig_setTool(Scene::T_NONE);
     }
 }
-void MapEditWindow::on_toolLine_triggered(bool b)
+
+void MapEditWindow::on_toolLineSingle_triggered(bool b)
 {
     toolErase->setChecked(false);
     toolStationDraw->setChecked(false);
@@ -551,17 +626,22 @@ void MapEditWindow::on_toolLine_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    //toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+
+    //toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
 
     if(b){
-        emit sig_setTool(Scene::T_LINE);
+        emit sig_setTool(Scene::T_LINE_SINGLE);
     }else{
         emit sig_setTool(Scene::T_NONE);
     }
 }
-void MapEditWindow::on_toolQb_triggered(bool b)
+void MapEditWindow::on_toolQbSingle_triggered(bool b)
 {
     toolErase->setChecked(false);
     toolStationDraw->setChecked(false);
@@ -571,17 +651,20 @@ void MapEditWindow::on_toolQb_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    //toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    //toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
 
     if(b){
-        emit sig_setTool(Scene::T_QB);
+        emit sig_setTool(Scene::T_QB_SINGLE);
     }else{
         emit sig_setTool(Scene::T_NONE);
     }
 }
-void MapEditWindow::on_toolCb_triggered(bool b)
+void MapEditWindow::on_toolCbSingle_triggered(bool b)
 {
     toolErase->setChecked(false);
     toolStationDraw->setChecked(false);
@@ -591,12 +674,86 @@ void MapEditWindow::on_toolCb_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    //toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    //toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
 
     if(b){
-        emit sig_setTool(Scene::T_CB);
+        emit sig_setTool(Scene::T_CB_SINGLE);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
+void MapEditWindow::on_toolLineDouble_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    //toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
+
+    if(b){
+        emit sig_setTool(Scene::T_LINE_DOUBLE);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolQbDouble_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    //toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_QB_DOUBLE);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+void MapEditWindow::on_toolCbDouble_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    //toolCbDouble->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_CB_DOUBLE);
     }else{
         emit sig_setTool(Scene::T_NONE);
     }
@@ -612,9 +769,12 @@ void MapEditWindow::on_selectSelect_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
     //selectSelect->setChecked(false);
     selectHand->setChecked(false);
     emit sig_setTool(Scene::T_NONE);
@@ -631,9 +791,12 @@ void MapEditWindow::on_selectHand_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
-    toolLine->setChecked(false);
-    toolQb->setChecked(false);
-    toolCb->setChecked(false);
+    toolLineSingle->setChecked(false);
+    toolQbSingle->setChecked(false);
+    toolCbSingle->setChecked(false);
+    toolLineDouble->setChecked(false);
+    toolQbDouble->setChecked(false);
+    toolCbDouble->setChecked(false);
     selectSelect->setChecked(false);
     //selectHand->setChecked(false);
     emit sig_setTool(Scene::T_NONE);
@@ -654,9 +817,12 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
         toolStationLoad->setChecked(false);
         toolStationUnload->setChecked(false);
         toolStationLoadUnload->setChecked(false);
-        toolLine->setChecked(false);
-        toolQb->setChecked(false);
-        toolCb->setChecked(false);
+        toolLineSingle->setChecked(false);
+        toolQbSingle->setChecked(false);
+        toolCbSingle->setChecked(false);
+        toolLineDouble->setChecked(false);
+        toolQbDouble->setChecked(false);
+        toolCbDouble->setChecked(false);
         selectSelect->setChecked(false);
         selectHand->setChecked(false);
         emit sig_setTool(Scene::T_NONE);
