@@ -49,9 +49,14 @@ public slots:
     void on_toolStationLoad_triggered(bool b);
     void on_toolStationUnload_triggered(bool b);
     void on_toolStationLoadUnload_triggered(bool b);
-    void on_toolLine_triggered(bool b);
-    void on_toolQb_triggered(bool b);
-    void on_toolCb_triggered(bool b);
+
+    void on_toolLineSingle_triggered(bool b);
+    void on_toolQbSingle_triggered(bool b);
+    void on_toolCbSingle_triggered(bool b);
+    void on_toolLineDouble_triggered(bool b);
+    void on_toolQbDouble_triggered(bool b);
+    void on_toolCbDouble_triggered(bool b);
+
     void on_addBkgd_triggered(bool b);
 
     void on_selectSelect_triggered(bool b);
@@ -89,9 +94,17 @@ private:
     QAction *toolStationLoad;
     QAction *toolStationUnload;
     QAction *toolStationLoadUnload;
-    QAction *toolLine;
-    QAction *toolQb;
-    QAction *toolCb;
+
+    QMenu *toolLineMenu;
+    QMenu *toolQbMenu;
+    QMenu *toolCbMenu;
+
+    QAction *toolLineDouble;
+    QAction *toolQbDouble;
+    QAction *toolCbDouble;
+    QAction *toolLineSingle;
+    QAction *toolQbSingle;
+    QAction *toolCbSingle;
 
     QAction *addBkgd;
 };
