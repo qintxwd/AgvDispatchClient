@@ -36,6 +36,9 @@ public slots:
     void onErr(int errcode,QString info);
     void onNewRequest();
 
+    void slot_load_map_success();
+    void slot_set_map_success();
+
     void slot_currentMousePos(QPointF pos);
 
     void slot_cancelTool();
@@ -53,9 +56,10 @@ public slots:
     void on_toolQb_triggered(bool b);
     void on_toolCb_triggered(bool b);
     void on_addBkgd_triggered(bool b);
-
     void on_selectSelect_triggered(bool b);
     void on_selectHand_triggered(bool b);
+    void on_toolSave_triggered(bool b);
+    void on_toolLoad_triggered(bool b);
 private:
 
     void createActions();
@@ -92,6 +96,10 @@ private:
     QAction *toolLine;
     QAction *toolQb;
     QAction *toolCb;
+
+    QAction *toolSave;
+    QAction *toolLoad;
+
 
     QAction *addBkgd;
 };

@@ -5,6 +5,7 @@
 #include "common.h"
 #include "protocol.h"
 #include "serverconnection.h"
+#include  "data/onemap.h"
 
 typedef struct _USER_INFO
 {
@@ -93,13 +94,8 @@ public:
 
     ////////////////////////////////////地图
     //载入地图信息
-    void loadMap();
-
-    void mapStationList();
-
-    void mapLinesList();
-
-    void loadMapImg();
+    void mapSave(OneMap *onemap);
+    void mapLoad();
 
     ////////////////////////////////////日志
 

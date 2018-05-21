@@ -26,6 +26,9 @@ void MapEditWindow::init()
     connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
 
+    connect(&msgCenter,SIGNAL(mapSetSuccess()),this,SLOT(onNewRequest()));
+    connect(&msgCenter,SIGNAL(mapGetSuccess()),this,SLOT(onNewRequest()));
+
     //对树 的操作( 只有两个操作 添加楼层、选择不同的节点)
     connect(dockMapTree,SIGNAL(sig_addFloor(MapFloor*)),dockView,SLOT(slot_addFloor(MapFloor*)));
     connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
@@ -93,6 +96,15 @@ void MapEditWindow::onNewRequest()
     statusbar_err("");
     statusbar_info("");
 }
+void MapEditWindow::slot_load_map_success()
+{
+    msgCenter.mapLoad();
+}
+void MapEditWindow::slot_set_map_success()
+{
+    this->oneMap = g_onemap.clone();
+    //TODO:重新载入
+}
 
 void MapEditWindow::createStatusBar()
 {
@@ -152,8 +164,10 @@ void MapEditWindow::createActions()
     tabifyDockWidget(dockMapTree,blockView);
 
 
+    QMenu *mapMenu = menuBar()->addMenu(tr("Maps"));
     QMenu *viewsMenu = menuBar()->addMenu(tr("Views"));
     QMenu *toolsMenu = menuBar()->addMenu(tr("Tools"));
+    QToolBar *mapsToolBar = addToolBar(tr("Maps"));
     QToolBar *viewsToolBar = addToolBar(tr("Views"));
     QToolBar *selectToolBar = addToolBar(tr("Selects"));
     QToolBar *toolsToolBar = addToolBar(tr("Tools"));
@@ -174,6 +188,19 @@ void MapEditWindow::createActions()
 
     QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"), this, &MapEditWindow::aboutHrg);
     aboutQtAct->setStatusTip(tr("Show the HRG's About box"));
+
+    toolSave = new QAction(this);
+    toolSave->setText("save map");
+    toolSave->setCheckable(false);
+    toolSave->setObjectName("toolSave");
+    toolLoad = new QAction(this);
+    toolLoad->setText("load map");
+    toolLoad->setObjectName("toolLoad");
+    toolLoad->setCheckable(false);
+    mapMenu->addAction(toolSave);
+    mapMenu->addAction(toolLoad);
+    mapsToolBar->addAction(toolSave);
+    mapsToolBar->addAction(toolLoad);
 
 
     selectSelect = new QAction(this);
@@ -641,6 +668,16 @@ void MapEditWindow::on_selectHand_triggered(bool b)
         emit sig_setSelectHand();
     else
         emit sig_setSelectSelect();
+}
+
+void MapEditWindow::on_toolSave_triggered(bool b)
+{
+    msgCenter.mapSave(oneMap);
+}
+
+void MapEditWindow::on_toolLoad_triggered(bool b)
+{
+    msgCenter.mapLoad();
 }
 
 void MapEditWindow::on_addBkgd_triggered(bool b)
