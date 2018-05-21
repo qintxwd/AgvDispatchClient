@@ -43,12 +43,12 @@ void MapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem
     triangle_end[2].setX(endStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
     triangle_end[2].setY(endStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
 
-    triangle_start[0] = startStation->pos();
-    angle = atan2(P1.y() - startStation->pos().y(),P1.x()- startStation->pos().x());
-    triangle_start[1].setX(startStation->pos().x()+polygonLength*cos(angle-M_PI*polygonAngle/180));
-    triangle_start[1].setY(startStation->pos().y()+polygonLength*sin(angle-M_PI*polygonAngle/180));
-    triangle_start[2].setX(startStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
-    triangle_start[2].setY(startStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
+    //    triangle_start[0] = startStation->pos();
+    //    angle = atan2(P1.y() - startStation->pos().y(),P1.x()- startStation->pos().x());
+    //    triangle_start[1].setX(startStation->pos().x()+polygonLength*cos(angle-M_PI*polygonAngle/180));
+    //    triangle_start[1].setY(startStation->pos().y()+polygonLength*sin(angle-M_PI*polygonAngle/180));
+    //    triangle_start[2].setX(startStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
+    //    triangle_start[2].setY(startStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
 
 
     QPen oldPen  = painter->pen();
@@ -75,13 +75,13 @@ void MapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem
     //画箭头
     QBrush share_brush(_color);
     painter->setBrush(share_brush);
-    if(path->getDirection() == 0 || path->getDirection() == 1){
-        painter->drawPolygon(triangle_end,3,Qt::WindingFill);
-    }
+    //if(path->getDirection() == 0 || path->getDirection() == 1){
+    painter->drawPolygon(triangle_end,3,Qt::WindingFill);
+    //}
 
-    if(path->getDirection() == 0 || path->getDirection() == 2){
-        painter->drawPolygon(triangle_start,3,Qt::WindingFill);
-    }
+    //    if(path->getDirection() == 0 || path->getDirection() == 2){
+    //        painter->drawPolygon(triangle_start,3,Qt::WindingFill);
+    //    }
 
     painter->setPen(oldPen);
     painter->setBrush(oldBrush);
@@ -91,18 +91,18 @@ QPainterPath MapItemCubicBezier::shape() const
 {
     QPainterPath qpath;
     qpath.moveTo(startStation->pos());
-    if(path->getDirection() == 0 || path->getDirection() == 2){
-        qpath.lineTo(triangle_start[1]);
-        qpath.lineTo(triangle_start[2]);
-        qpath.lineTo(triangle_start[0]);
-    }
+    //    if(path->getDirection() == 0 || path->getDirection() == 2){
+    //        qpath.lineTo(triangle_start[1]);
+    //        qpath.lineTo(triangle_start[2]);
+    //        qpath.lineTo(triangle_start[0]);
+    //    }
 
     qpath.cubicTo(P1,P2, endStation->pos());
-    if(path->getDirection() == 0 || path->getDirection() == 1){
-        qpath.lineTo(triangle_end[1]);
-        qpath.lineTo(triangle_end[2]);
-        qpath.lineTo(triangle_end[0]);
-    }
+    //if(path->getDirection() == 0 || path->getDirection() == 1){
+    qpath.lineTo(triangle_end[1]);
+    qpath.lineTo(triangle_end[2]);
+    qpath.lineTo(triangle_end[0]);
+    //}
 
     qpath.addRect(QRect(P1.x()-5,P1.y()-5,10,10));
     qpath.addRect(QRect(P2.x()-5,P2.y()-5,10,10));

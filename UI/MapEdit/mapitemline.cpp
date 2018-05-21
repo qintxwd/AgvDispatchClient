@@ -40,12 +40,12 @@ void MapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     triangle_end[2].setX(endStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
     triangle_end[2].setY(endStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
 
-    triangle_start[0] = startStation->pos();
-    angle = atan2(endStation->pos().y() - startStation->pos().y(),endStation->pos().x()- startStation->pos().x());
-    triangle_start[1].setX(startStation->pos().x()+polygonLength*cos(angle-M_PI*polygonAngle/180));
-    triangle_start[1].setY(startStation->pos().y()+polygonLength*sin(angle-M_PI*polygonAngle/180));
-    triangle_start[2].setX(startStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
-    triangle_start[2].setY(startStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
+    //    triangle_start[0] = startStation->pos();
+    //    angle = atan2(endStation->pos().y() - startStation->pos().y(),endStation->pos().x()- startStation->pos().x());
+    //    triangle_start[1].setX(startStation->pos().x()+polygonLength*cos(angle-M_PI*polygonAngle/180));
+    //    triangle_start[1].setY(startStation->pos().y()+polygonLength*sin(angle-M_PI*polygonAngle/180));
+    //    triangle_start[2].setX(startStation->pos().x()+polygonLength*cos(angle+M_PI*polygonAngle/180));
+    //    triangle_start[2].setY(startStation->pos().y()+polygonLength*sin(angle+M_PI*polygonAngle/180));
 
     QPen oldPen  = painter->pen();
     QBrush oldBrush  = painter->brush();
@@ -65,13 +65,13 @@ void MapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     //画箭头
     QBrush share_brush(_color);
     painter->setBrush(share_brush);
-    if(path->getDirection() == 0 || path->getDirection() == 1){
-        painter->drawPolygon(triangle_end,3,Qt::WindingFill);
-    }
+    //if(path->getDirection() == 0 || path->getDirection() == 1){
+    painter->drawPolygon(triangle_end,3,Qt::WindingFill);
+    //}
 
-    if(path->getDirection() == 0 || path->getDirection() == 2){
-        painter->drawPolygon(triangle_start,3,Qt::WindingFill);
-    }
+    //    if(path->getDirection() == 0 || path->getDirection() == 2){
+    //        painter->drawPolygon(triangle_start,3,Qt::WindingFill);
+    //    }
 
     painter->setPen(oldPen);
     painter->setBrush(oldBrush);
@@ -82,18 +82,18 @@ QPainterPath MapItemLine::shape() const
     QPainterPath qpath;
 
     qpath.moveTo(startStation->pos());
-    if(path->getDirection() == 0 || path->getDirection() == 2){
-        qpath.lineTo(triangle_start[1]);
-        qpath.lineTo(triangle_start[2]);
-        qpath.lineTo(triangle_start[0]);
-    }
+    //    if(path->getDirection() == 0 || path->getDirection() == 2){
+    //        qpath.lineTo(triangle_start[1]);
+    //        qpath.lineTo(triangle_start[2]);
+    //        qpath.lineTo(triangle_start[0]);
+    //    }
 
     qpath.lineTo(endStation->pos());
-    if(path->getDirection() == 0 || path->getDirection() == 1){
-        qpath.lineTo(triangle_end[1]);
-        qpath.lineTo(triangle_end[2]);
-        qpath.lineTo(triangle_end[0]);
-    }
+    //if(path->getDirection() == 0 || path->getDirection() == 1){
+    qpath.lineTo(triangle_end[1]);
+    qpath.lineTo(triangle_end[2]);
+    qpath.lineTo(triangle_end[0]);
+    //}
     return qpath;
 }
 void MapItemLine::my_update()

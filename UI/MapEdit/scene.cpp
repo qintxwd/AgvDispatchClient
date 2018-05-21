@@ -506,10 +506,8 @@ void Scene::onSelectItemChanged()
 
                     //判断是否已经有线路了
                     foreach (auto l, iLines) {
-                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        if(l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -517,10 +515,8 @@ void Scene::onSelectItemChanged()
                         }
                     }
                     foreach (auto l, iQbs) {
-                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        if(l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -528,10 +524,8 @@ void Scene::onSelectItemChanged()
                         }
                     }
                     foreach (auto l, iCbs) {
-                        if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                        if(l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId())
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;

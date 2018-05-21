@@ -35,7 +35,7 @@ private:
     MapItemStation *startStation;
     MapItemStation *endStation;
     MapPath *path;
-    QPointF triangle_start[3];//箭头三角
+//    QPointF triangle_start[3];//箭头三角
     QPointF triangle_end[3];//箭头三角
 };
 

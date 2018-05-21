@@ -35,7 +35,7 @@ private slots:
     //path edit
     void slot_PathNameChanged(QString name);
     void slot_PathTypeChanged(int _type);
-    void slot_PathDirectionChanged(int _directino);
+    //void slot_PathDirectionChanged(int _directino);
     void slot_PathP1XChanged(QString p1x);
     void slot_PathP1YChanged(QString p1y);
     void slot_PathP2XChanged(QString p2x);
@@ -103,8 +103,8 @@ private:
     QLineEdit *path_nameInput;
     QTableWidgetItem *path_itemKeyType;
     QComboBox *path_comboxType;
-    QTableWidgetItem *path_itemKeyDirection;
-    QComboBox *path_comboxDirection;
+//    QTableWidgetItem *path_itemKeyDirection;
+//    QComboBox *path_comboxDirection;
     QTableWidgetItem *path_itemKeyP1X;
     QLineEdit *path_xP1Input;
     QTableWidgetItem *path_itemKeyP1Y;

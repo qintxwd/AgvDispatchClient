@@ -155,15 +155,15 @@ void DockProperty::initTableContent()
     path_comboxType->addItem(QStringLiteral("楼层间线路"));
     path_comboxType->setEnabled(false);
 
-    path_itemKeyDirection = new QTableWidgetItem(QStringLiteral("方向"));
-    path_itemKeyDirection->setTextAlignment(Qt::AlignCenter);
-    path_itemKeyDirection->setFlags(path_itemKeyDirection->flags()&(~Qt::ItemIsEditable));
-    path_comboxDirection = new QComboBox(); // 下拉选择框控件
-    path_comboxDirection->addItem(QStringLiteral("双向"));
-    path_comboxDirection->addItem(QStringLiteral("start-->end"));
-    path_comboxDirection->addItem(QStringLiteral("end-->start"));
-    path_comboxDirection->setEnabled(true);
-    connect(path_comboxDirection,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathDirectionChanged(int)));
+//    path_itemKeyDirection = new QTableWidgetItem(QStringLiteral("方向"));
+//    path_itemKeyDirection->setTextAlignment(Qt::AlignCenter);
+//    path_itemKeyDirection->setFlags(path_itemKeyDirection->flags()&(~Qt::ItemIsEditable));
+//    path_comboxDirection = new QComboBox(); // 下拉选择框控件
+//    path_comboxDirection->addItem(QStringLiteral("双向"));
+//    path_comboxDirection->addItem(QStringLiteral("start-->end"));
+//    path_comboxDirection->addItem(QStringLiteral("end-->start"));
+//    path_comboxDirection->setEnabled(true);
+//    connect(path_comboxDirection,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathDirectionChanged(int)));
 
     path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
     path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);
@@ -278,18 +278,18 @@ void DockProperty::initTableContent()
     tableWidget_path->setCellWidget(1,1,path_nameInput);
     tableWidget_path->setItem(2, 0, path_itemKeyType);
     tableWidget_path->setCellWidget(2, 1, (QWidget*)path_comboxType);
-    tableWidget_path->setItem(3, 0, path_itemKeyDirection);
-    tableWidget_path->setCellWidget(3, 1, (QWidget*)path_comboxDirection);
-    tableWidget_path->setItem(4, 0, path_itemKeyP1X);
-    tableWidget_path->setCellWidget(4,1,path_xP1Input);
-    tableWidget_path->setItem(5, 0, path_itemKeyP1Y);
-    tableWidget_path->setCellWidget(5,1,path_yP1Input);
-    tableWidget_path->setItem(6, 0, path_itemKeyP2X);
-    tableWidget_path->setCellWidget(6,1,path_xP2Input);
-    tableWidget_path->setItem(7, 0, path_itemKeyP2Y);
-    tableWidget_path->setCellWidget(7,1,path_yP2Input);
-    tableWidget_path->setItem(8, 0, path_itemKeyLength);
-    tableWidget_path->setCellWidget(8,1,path_lengthInput);
+//    tableWidget_path->setItem(3, 0, path_itemKeyDirection);
+//    tableWidget_path->setCellWidget(3, 1, (QWidget*)path_comboxDirection);
+    tableWidget_path->setItem(3, 0, path_itemKeyP1X);
+    tableWidget_path->setCellWidget(3,1,path_xP1Input);
+    tableWidget_path->setItem(4, 0, path_itemKeyP1Y);
+    tableWidget_path->setCellWidget(4,1,path_yP1Input);
+    tableWidget_path->setItem(5, 0, path_itemKeyP2X);
+    tableWidget_path->setCellWidget(5,1,path_xP2Input);
+    tableWidget_path->setItem(6, 0, path_itemKeyP2Y);
+    tableWidget_path->setCellWidget(6,1,path_yP2Input);
+    tableWidget_path->setItem(7, 0, path_itemKeyLength);
+    tableWidget_path->setCellWidget(7,1,path_lengthInput);
 
     tableWidget_floor->setItem(0, 0, floor_itemKeyId);
     tableWidget_floor->setItem(0, 1, floor_itemValueId);
@@ -403,8 +403,8 @@ void DockProperty::showPath()
     path_nameInput->setText(QString::fromStdString(path->getName()));
     MapPath::Map_Path_Type type = path->getPathType();
     path_comboxType->setCurrentIndex((int)type);
-    int direction = path->getDirection();
-    path_comboxDirection->setCurrentIndex(direction);
+//    int direction = path->getDirection();
+//    path_comboxDirection->setCurrentIndex(direction);
     path_xP1Input->setText(QString("%1").arg(path->getP1x()));
     path_yP1Input->setText(QString("%1").arg(path->getP1y()));
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));
@@ -513,12 +513,12 @@ void DockProperty::slot_PathNameChanged(QString name)
     emit sig_propertyChanged(spirit);
 }
 
-void DockProperty::slot_PathDirectionChanged(int _directino)
-{
-    if(spirit == nullptr)return ;
-    (static_cast<MapPath *>(spirit))->setDirection(_directino);
-    emit sig_propertyChanged(spirit);
-}
+//void DockProperty::slot_PathDirectionChanged(int _directino)
+//{
+//    if(spirit == nullptr)return ;
+//    (static_cast<MapPath *>(spirit))->setDirection(_directino);
+//    emit sig_propertyChanged(spirit);
+//}
 
 void DockProperty::slot_PathTypeChanged(int _type)
 {
