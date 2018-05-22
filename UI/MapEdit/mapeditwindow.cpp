@@ -701,16 +701,21 @@ void MapEditWindow::on_addBkgd_triggered(bool b)
         if(oneMap->getFloors().size()>0){
             QString filePath = QFileDialog::getOpenFileName(this,tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp)"));
             if(filePath.length()>0){
+                //file name
                 QString fileName = filePath.right(filePath.length() - filePath.lastIndexOf("/")-1);
+
+                //data
+                QByteArray ba;
+                QFile *file = new QFile(filePath);
+                file->open(QIODevice::ReadOnly);
+                ba = file->readAll();
+                file->close();
+
+                //img
                 QImage img;
                 img.load(filePath);
 
-                QByteArray ba;
-                QDataStream ds(&ba,QIODevice::WriteOnly);
-                ds<<img;
-                qDebug()<<ba.size();
-
-                MapBackground *_bkg = new MapBackground(oneMap->getNextId(),fileName.toStdString(),ba.data(),ba.size(),img.width(),img.height(),fileName.toStdString());
+                MapBackground *_bkg = new MapBackground(oneMap->getNextId(),fileName.toStdString(),ba.data(),ba.length(),img.width(),img.height(),fileName.toStdString());
                 oneMap->addSpirit(_bkg);
                 emit sig_addBkg(_bkg->getId());
             }

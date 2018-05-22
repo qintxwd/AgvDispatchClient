@@ -45,8 +45,7 @@ void MapItemBkg::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         if(bkg!=nullptr && bkg->getImgData()!=nullptr && bkg->getImgDataLen()>0){
             QImage img;
             QByteArray ba(bkg->getImgData(),bkg->getImgDataLen());
-            QDataStream ds(&ba,QIODevice::ReadOnly);
-            ds>>img;
+            img.loadFromData(ba);
             if(!img.isNull()){
                 painter->drawImage(boundingRect(),img);
             }

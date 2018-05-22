@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "global.h"
 #include "base64.h"
+#include <iostream>
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false)
@@ -230,139 +231,124 @@ void MsgCenter::response_map_get(const Json::Value &response)
 {
     g_onemap.clear();
     //地图信息
-    Json::Value mapmap = response["map"];
-    int max_id = mapmap["max_id"].asInt();
-
-    ////floors
-    Json::Value floors = mapmap["floors"];
-
-    for(int i=0;i<floors.size();++i){
-
-        //0.floor id name
-        Json::Value floor = floors[i];
-        int floor_id = floor["id"].asInt();
-        std::string floor_name = floor["name"].asString();
-        MapFloor *map_floor = new MapFloor(floor_id,floor_name);
-
-        //1.floor->points
-        Json::Value points = floor["points"];
-        for(int a = 0;a<points.size();++a){
-            Json::Value point = points[a];
-            int id = point["id"].asInt();
-            std::string name = point["name"].asString();
-            int point_type = point["point_type"].asInt();
-            int x = point["x"].asInt();
-            int y = point["y"].asInt();
-            int realX = point["realX"].asInt();
-            int realY = point["realY"].asInt();
-            int labelXoffset = point["labelXoffset"].asInt();
-            int labelYoffset = point["labelYoffset"].asInt();
-            bool mapChange = point["mapChange"].asBool();
-            bool locked = point["locked"].asBool();
-            MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)point_type,x,y,realX,realY,labelXoffset,labelYoffset,mapChange,locked);
-            g_onemap.addSpirit(p);
-            map_floor->addPoint(p->getId());
-        }
-
-        //2.floor->paths
-        Json::Value paths = floor["paths"];
-        for(int b = 0;b<paths.size();++b){
-            Json::Value path = paths[b];
-            int id = path["id"].asInt();
-            std::string name = path["name"].asString();
-            int path_type = path["path_type"].asInt();
-            int start = path["start"].asInt();
-            int end = path["end"].asInt();
-            int p1x = path["p1x"].asInt();
-            int p2x = path["p2x"].asInt();
-            int p1y = path["p1y"].asInt();
-            int p2y = path["p2y"].asInt();
-            bool length = path["length"].asInt();
-            bool locked = path["locked"].asBool();
-            MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)path_type,length,p1x,p2x,p1y,p2y,locked);
-            g_onemap.addSpirit(p);
-            map_floor->addPath(p->getId());
-        }
-
-        //3.floor->bkg
-        Json::Value bkg = floor["bkg"];
-        if(!bkg.isNull()){
-            int bkg_id = bkg["id"].asInt();
-            std::string bkg_name = bkg["name"].asString();
-            std::string filename = bkg["filename"].asString();
-            std::string datas = bkg["data"].asString();
-            int len = bkg["len"].asInt();
-            int x = bkg["x"].asInt();
-            int y = bkg["y"].asInt();
-            int width = bkg["width"].asInt();
-            int height = bkg["height"].asInt();
-
-            char *imgdata = new char[datas.length()*2+1];
-            int len_decode = base64_decode(imgdata,(char *)datas.c_str(),datas.length());
-            assert(len_decode == len);
-            MapBackground *mb_bkg = new MapBackground(bkg_id,bkg_name,imgdata,len,width,height,filename);
-            g_onemap.addSpirit(mb_bkg);
-            map_floor->setBkg(mb_bkg->getId());
-        }
-        g_onemap.addSpirit(map_floor);
-    }
-
-    ////4.root paths
-    Json::Value rootpaths = mapmap["rootpaths"];
-    for(int b = 0;b<rootpaths.size();++b){
-        Json::Value path = rootpaths[b];
-        int id = path["id"].asInt();
-        std::string name = path["name"].asString();
-        int path_type = path["path_type"].asInt();
-        int start = path["start"].asInt();
-        int end = path["end"].asInt();
-        int p1x = path["p1x"].asInt();
-        int p2x = path["p2x"].asInt();
-        int p1y = path["p1y"].asInt();
-        int p2y = path["p2y"].asInt();
-        bool length = path["length"].asInt();
-        bool locked = path["locked"].asBool();
-        MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)path_type,length,p1x,p2x,p1y,p2y,locked);
+    for (int i = 0; i < response["stations"].size(); ++i)
+    {
+        Json::Value station = response["stations"][i];
+        int id = station["id"].asInt();
+        std::string name = station["name"].asString();
+        int station_type = station["point_type"].asInt();
+        int x = station["x"].asInt();
+        int y = station["y"].asInt();
+        int realX = station["realX"].asInt();
+        int realY = station["realY"].asInt();
+        int labelXoffset = station["labelXoffset"].asInt();
+        int labelYoffset = station["labelYoffset"].asInt();
+        bool mapchanged = station["mapchanged"].asBool();
+        bool locked = station["locked"].asBool();
+        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchanged,locked);
         g_onemap.addSpirit(p);
     }
 
-    ////5.blocks
-    Json::Value blocks = mapmap["blocks"];
-    for(int b = 0;b<blocks.size();++b){
-        Json::Value block = blocks[b];
+    //2.解析线路
+    for (int i = 0; i < response["lines"].size(); ++i)
+    {
+        Json::Value line = response["lines"][i];
+        int id = line["id"].asInt();
+        std::string name = line["name"].asString();
+        int type = line["type"].asInt();
+        int start = line["start"].asInt();
+        int end = line["end"].asInt();
+        int p1x = line["p1x"].asInt();
+        int p1y = line["p1y"].asInt();
+        int p2x = line["p2x"].asInt();
+        int p2y = line["p2y"].asInt();
+        int length = line["length"].asInt();
+        bool locked = line["locked"].asBool();
+        MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)type,length,p1x,p1y,p2x,p2y,locked);
+        g_onemap.addSpirit(p);
+    }
+
+    //4.解析背景图片
+    for (int i = 0; i < response["bkgs"].size(); ++i)
+    {
+        Json::Value bkg = response["bkgs"][i];
+        int id = bkg["id"].asInt();
+        std::string name = bkg["name"].asString();
+        std::string database64 = bkg["data"].asString();
+        int lenlen = Base64decode_len(database64.c_str());
+        char *data = new char[lenlen];
+        Base64decode(data,database64.c_str());
+        int imgdatalen = bkg["data_len"].asInt();
+        int width = bkg["width"].asInt();
+        int height = bkg["height"].asInt();
+        int x = bkg["x"].asInt();
+        int y = bkg["y"].asInt();
+        std::string filename = bkg["filename"].asString();
+        MapBackground *p = new MapBackground(id,name,data, lenlen,width,height,filename);
+        p->setX(x);
+        p->setY(y);
+        g_onemap.addSpirit(p);
+    }
+
+    //3.解析楼层
+    for (int i = 0; i < response["floors"].size(); ++i)
+    {
+        Json::Value floor = response["floors"][i];
+        int id = floor["id"].asInt();
+        std::string name = floor["name"].asString();
+        Json::Value points = floor["points"];
+        Json::Value paths = floor["paths"];
+        int bkg = floor["bkg"].asInt();
+        MapFloor *p = new MapFloor(id,name);
+        p->setBkg(bkg);
+        for(int k=0;k<points.size();++k){
+            Json::Value point = points[k];
+            p->addPoint(point.asInt());
+        }
+        for(int k=0;k<paths.size();++k){
+            Json::Value path = points[k];
+            p->addPath(path.asInt());
+        }
+        g_onemap.addSpirit(p);
+    }
+
+    //5.解析block
+    for (int i = 0; i < response["blocks"].size(); ++i)
+    {
+        Json::Value block = response["blocks"][i];
         int id = block["id"].asInt();
         std::string name = block["name"].asString();
-
-        MapBlock *map_block = new MapBlock(id,name);
         Json::Value spirits = block["spirits"];
-        for(int c = 0;c<spirits.size();++c){
-            int spirit = spirits[c].asInt();
-            map_block->addSpirit(spirit);
+        MapBlock *p = new MapBlock(id,name);
+        for(int k=0;k<spirits.size();++k){
+            Json::Value spirit = spirits[k];
+            p->addSpirit(spirit.asInt());
         }
-        g_onemap.addSpirit(map_block);
+        g_onemap.addSpirit(p);
     }
 
-    ////6.groups
-    Json::Value groups = mapmap["groups"];
-    for(int b = 0;b<groups.size();++b){
-        Json::Value group = groups[b];
+    //6.解析group
+    for (int i = 0; i < response["groups"].size(); ++i)
+    {
+        Json::Value group = response["groups"][i];
         int id = group["id"].asInt();
         std::string name = group["name"].asString();
-
-        MapGroup *map_group = new MapGroup(id,name);
         Json::Value spirits = group["spirits"];
-        for(int c = 0;c<spirits.size();++c){
-            int spirit = spirits[c].asInt();
-            map_group->addSpirit(spirit);
+        MapGroup *p = new MapGroup(id,name);
+        for(int k=0;k<spirits.size();++k){
+            Json::Value spirit = spirits[k];
+            p->addSpirit(spirit.asInt());
         }
         Json::Value agvs = group["agvs"];
-        for(int c = 0;c<agvs.size();++c){
-            int agvid = agvs[c].asInt();
-            map_group->addAgv(agvid);
+        for(int k=0;k<agvs.size();++k){
+            Json::Value agv = agvs[k];
+            p->addAgv(agv.asInt());
         }
-        g_onemap.addSpirit(map_group);
+        g_onemap.addSpirit(p);
     }
 
+    int max_id = response["maxId"].asInt();
+    g_onemap.setMaxId(max_id);
 
     emit mapGetSuccess();
 }
@@ -554,6 +540,20 @@ void MsgCenter::cancelSubUserLog()
     requestWaitResponse(request);
 }
 
+QString ByteArrayToHexString(QByteArray data){
+    QString ret(data.toHex().toUpper());
+    int len = ret.length()/2;
+    //qDebug()<<len;
+    for(int i=1;i<len;i++)
+    {
+        //qDebug()<<i;
+        ret.insert(2*i+i-1," ");
+    }
+
+    return ret;
+}
+
+
 void MsgCenter::mapSave(OneMap *onemap)
 {
     //上传地图信息
@@ -608,11 +608,22 @@ void MsgCenter::mapSave(OneMap *onemap)
             Json::Value pv;
             pv["id"] = p->getId();
             pv["name"] = p->getName();
+//            QByteArray qba(p->getImgData(),p->getImgDataLen());
+//            qDebug()<<"before";
+//            qDebug()<<qba.length();
+//            qDebug()<<ByteArrayToHexString(qba.left(10));
+//            qDebug()<<ByteArrayToHexString(qba.right(10));
 
-            int lenlen = base64_enc_len(p->getImgDataLen());
-            char *ss = new char[lenlen+1];
-            base64_encode(ss,p->getImgData(),p->getImgDataLen());
-            ss[lenlen] = '\0';
+            int lenlen = Base64encode_len(p->getImgDataLen());
+            char *ss = new char[lenlen];
+            Base64encode(ss,p->getImgData(),p->getImgDataLen());
+
+//            qDebug()<<"after";
+//            QString after = QString(ss);
+//            qDebug()<<after.length();
+//            qDebug()<<after.left(10);
+//            qDebug()<<after.right(10);
+
             pv["data"] = std::string(ss);
             delete ss;
             pv["data_len"] = p->getImgDataLen();
@@ -699,4 +710,8 @@ void MsgCenter::mapLoad()
     Json::Value request;
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_GET_MAP;
+
+
+
+
 }
