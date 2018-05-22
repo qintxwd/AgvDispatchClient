@@ -2,10 +2,7 @@
 #include "global.h"
 #include "scene.h"
 #include <QFileIconProvider>
-#include "dockview.h"
-#include "dockmaptree.h"
-#include "dockproperty.h"
-#include "dockblock.h"
+
 
 MapEditWindow::MapEditWindow(OneMap *_oneMap, QWidget *parent) : QMainWindow(parent),
     oneMap(_oneMap)
@@ -15,11 +12,6 @@ MapEditWindow::MapEditWindow(OneMap *_oneMap, QWidget *parent) : QMainWindow(par
     createStatusBar();
 
     init();
-}
-
-MapEditWindow::~MapEditWindow()
-{
-    delete oneMap;
 }
 
 void MapEditWindow::init()

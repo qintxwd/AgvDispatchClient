@@ -47,7 +47,6 @@ void Scene::build()
     QList<int> points = QList<int>::fromStdList(floor->getPoints());
     foreach (auto p, points) {
         MapPoint *ppp = static_cast<MapPoint *>(onemap->getSpiritById(p));
-        if(ppp==nullptr)continue;
         MapItemStation *station = new MapItemStation(ppp);
         MapItemStationName *stationname = new MapItemStationName(station,ppp);
         connect(station,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
@@ -61,7 +60,6 @@ void Scene::build()
     QList<int> path = QList<int>::fromStdList(floor->getPaths());
     foreach (auto p, path) {
         MapPath *ppp = static_cast<MapPath *>(onemap->getSpiritById(p));
-        if(ppp == nullptr)continue;
         if(ppp->getPathType() == MapPath::Map_Path_Type_Line){
             MapItemStation *start = nullptr;
             MapItemStation *end = nullptr;
@@ -121,11 +119,11 @@ void Scene::build()
 
 void Scene::slot_setCurTool(int t)
 {
-    if(t>=T_NONE && t<=T_CB){
-        if(cur_tool == t)return ;
-        cur_tool = static_cast<Tool>(t);
-        oldSelectStation = nullptr;
-    }
+//    if(t>=T_NONE && t<=T_CB){
+//        if(cur_tool == t)return ;
+//        cur_tool = static_cast<Tool>(t);
+//        oldSelectStation = nullptr;
+//    }
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)

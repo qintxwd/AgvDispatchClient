@@ -3,13 +3,19 @@
 #include "global.h"
 
 #include "MapEdit/mapeditwindow.h"
+#include "Monitor/dockblock.h"
+#include "Monitor/dockmaptree.h"
+#include "Monitor/dockproperty.h"
+#include "Monitor/dockview.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dock_user_manage(nullptr),
     dock_agv_manage(nullptr),
     dock_user_log(nullptr),
-    editWindow(nullptr)
+    editWindow(nullptr),
+    oneMap(g_onemap.clone())
 {
+    setWindowTitle("agv dispatch client");
     createActions();
     createStatusBar();
 
@@ -28,6 +34,7 @@ void MainWindow::init()
     connect(&msgCenter,SIGNAL(err(int,QString)),this,SLOT(onErr(int,QString)));
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
     connect(&msgCenter,SIGNAL(loginSuccess(int)),this,SLOT(updateCurrentUserInfo()));
+    connect(&msgCenter,SIGNAL(mapGetSuccess()),this,SLOT(onMapLoad()));
 }
 
 void MainWindow::onServerConnect()
@@ -167,6 +174,47 @@ void MainWindow::createActions()
     QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"), this, &MainWindow::aboutHrg);
     aboutQtAct->setStatusTip(tr("Show the HRG's About box"));
 
+    //////////////////////////////////新增加
+
+    dockMapTree = new DockMapTree(oneMap);
+    dockProperty = new DockProperty(oneMap);
+    dockView = new DockView(oneMap);
+    blockView = new DockBlock(oneMap);
+
+    addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
+    addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
+//    addDockWidget(Qt::RightDockWidgetArea,dockView);
+    tabifyDockWidget(dockMapTree,blockView);
+
+    addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
+    addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
+    addDockWidget(Qt::RightDockWidgetArea,dockView);
+    tabifyDockWidget(dockMapTree,blockView);
+
+    setCentralWidget(dockView);
+
+    QToolBar *selectToolBar = addToolBar(tr("Selects"));
+
+    selectSelect = new QAction(this);
+    selectSelect->setText("select");
+    selectSelect->setObjectName("selectSelect");
+    selectSelect->setCheckable(true);
+    selectToolBar->addAction(selectSelect);
+
+    selectHand = new QAction(this);
+    selectHand->setText("drag");
+    selectHand->setObjectName("selectHand");
+    selectHand->setCheckable(true);
+    selectToolBar->addAction(selectHand);
+
+    viewsMenu->addAction(dockMapTree->toggleViewAction());
+    viewsToolBar->addAction(dockMapTree->toggleViewAction());
+
+    viewsMenu->addAction(dockProperty->toggleViewAction());
+    viewsToolBar->addAction(dockProperty->toggleViewAction());
+
+    viewsMenu->addAction(blockView->toggleViewAction());
+    viewsToolBar->addAction(blockView->toggleViewAction());
 }
 
 void MainWindow::about()
@@ -203,7 +251,14 @@ void MainWindow::onMapEdit()
 {
     if(editWindow){
         editWindow->close();
+        delete editWindow;
     }
     editWindow = new MapEditWindow(g_onemap.clone());
     editWindow->show();
+}
+
+void MainWindow::onMapLoad()
+{
+    oneMap = g_onemap.clone();
+    //TODO:重新载入
 }

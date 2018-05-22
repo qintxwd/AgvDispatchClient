@@ -5,7 +5,8 @@
 #include <iostream>
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
-    quit(false)
+    quit(false),
+    isMapLoaded(false)
 {
 
 }
@@ -229,6 +230,7 @@ void MsgCenter::response_map_set(const Json::Value &response)
 
 void MsgCenter::response_map_get(const Json::Value &response)
 {
+    //TODO:
     g_onemap.clear();
     //地图信息
     for (int i = 0; i < response["stations"].size(); ++i)
@@ -349,7 +351,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
 
     int max_id = response["maxId"].asInt();
     g_onemap.setMaxId(max_id);
-
+    isMapLoaded = true;
     emit mapGetSuccess();
 }
 
@@ -710,8 +712,5 @@ void MsgCenter::mapLoad()
     Json::Value request;
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_GET_MAP;
-
-
-
-
+    requestWaitResponse(request);
 }

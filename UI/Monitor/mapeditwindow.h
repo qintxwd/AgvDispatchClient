@@ -3,19 +3,16 @@
 
 #include <QtWidgets>
 #include <QMainWindow>
-#include "../../data/onemap.h"
-
-class DockView;
-class DockMapTree;
-class DockProperty;
-class DockBlock;
+#include "dockview.h"
+#include "dockmaptree.h"
+#include "dockproperty.h"
+#include "dockblock.h"
 
 class MapEditWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MapEditWindow(OneMap *_oneMap,QWidget *parent = nullptr);
-    ~MapEditWindow();
     void init();
 signals:
     void sig_setTool(int);

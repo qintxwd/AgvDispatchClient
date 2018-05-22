@@ -113,8 +113,8 @@ public:
     void taskAgvPassAGoBCircle(int agvId,int stationAId,int stationBId);
 
     void taskCancel(int taskId);
-//    void taskDetail(int taskId);
-//    QList<TaskNode> getAgvTaskDetail(){return agvtasknodes;}
+
+    bool getIsMapLoaded(){return isMapLoaded;}
 
 signals:
     //连接状态改变
@@ -237,6 +237,8 @@ private:
     volatile bool quit;
 
     std::thread thread_msg_process;
+
+    bool isMapLoaded;
 };
 
 #endif // MSGCENTER_H

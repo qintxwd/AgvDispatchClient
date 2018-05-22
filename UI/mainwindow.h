@@ -7,7 +7,12 @@
 #include "User/dockusermanage.h"
 #include "Agv/dockagvmanage.h"
 #include "UserLog/dockuserlog.h"
-#include "MapEdit/mapeditwindow.h"
+
+class MapEditWindow;
+class DockView;
+class DockMapTree;
+class DockProperty;
+class DockBlock;
 
 class MainWindow : public QMainWindow
 {
@@ -34,6 +39,8 @@ public slots:
     void updateCurrentUserInfo();
 
     void onMapEdit();
+
+    void onMapLoad();
 private:
 
     void createActions();
@@ -55,6 +62,16 @@ private:
     QAction *action_map_edit;
 
     MapEditWindow *editWindow;
+
+
+    //TODO 新增加
+    OneMap *oneMap;
+    DockMapTree *dockMapTree;
+    DockProperty *dockProperty;
+    DockView *dockView;
+    DockBlock *blockView;
+    QAction *selectSelect;
+    QAction *selectHand;
 };
 
 #endif // MAINWINDOW_H

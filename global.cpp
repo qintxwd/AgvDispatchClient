@@ -7,6 +7,7 @@ Configure configure;
 MsgCenter msgCenter;
 USER_INFO current_user_info;
 OneMap g_onemap;
+QMutex g_onemap_mtx;
 
 void QyhSleep(int msec)
 {

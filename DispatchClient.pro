@@ -67,7 +67,26 @@ SOURCES += \
     UI/MapEdit/dialogblockedit.cpp \
     base64.cpp \
     UI/UserLog/dockuserlog.cpp \
-    UI/MapEdit/mapitemline.cpp
+    UI/MapEdit/mapitemline.cpp \
+    UI/Monitor/dialogblockedit.cpp \
+    UI/Monitor/dialogrootpath.cpp \
+    UI/Monitor/dockblock.cpp \
+    UI/Monitor/dockmaptree.cpp \
+    UI/Monitor/dockproperty.cpp \
+    UI/Monitor/dockview.cpp \
+    UI/Monitor/mapeditwindow.cpp \
+    UI/Monitor/mapitembkg.cpp \
+    UI/Monitor/mapitemcubicbezier.cpp \
+    UI/Monitor/mapitemline.cpp \
+    UI/Monitor/mapitemquadraticbezier.cpp \
+    UI/Monitor/mapitemstation.cpp \
+    UI/Monitor/mapitemstationname.cpp \
+    UI/Monitor/maptreeitem.cpp \
+    UI/Monitor/maptreemodel.cpp \
+    UI/Monitor/scene.cpp \
+    UI/Monitor/scenepositionlabel.cpp \
+    UI/Monitor/stationinputdialog.cpp \
+    UI/Monitor/viewer.cpp
 
 HEADERS += \
     global.h \
@@ -114,7 +133,25 @@ HEADERS += \
     UI/MapEdit/dialogblockedit.h \
     base64.h \
     UI/UserLog/dockuserlog.h \
-    UI/MapEdit/mapitemline.h
+    UI/MapEdit/mapitemline.h \
+    UI/Monitor/dockblock.h \
+    UI/Monitor/dockmaptree.h \
+    UI/Monitor/dockproperty.h \
+    UI/Monitor/dockview.h \
+    UI/Monitor/mapeditwindow.h \
+    UI/Monitor/mapitembkg.h \
+    UI/Monitor/mapitemcubicbezier.h \
+    UI/Monitor/mapitemline.h \
+    UI/Monitor/mapitemquadraticbezier.h \
+    UI/Monitor/mapitemstation.h \
+    UI/Monitor/mapitemstationname.h \
+    UI/Monitor/maptreeitem.h \
+    UI/Monitor/maptreemodel.h \
+    UI/Monitor/scene.h \
+    UI/Monitor/scenepositionlabel.h \
+    UI/Monitor/stationinputdialog.h \
+    UI/Monitor/viewer.h \
+    UI/Monitor/dialogblockedit.h
 
 FORMS +=
 

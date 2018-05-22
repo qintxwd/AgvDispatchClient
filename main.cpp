@@ -4,6 +4,7 @@
 #include <QApplication>
 
 #include "UI/MapEdit/mapeditwindow.h"
+#include <QProgressDialog>
 
 #define HRG_DISPATCH_VERSION_STR "1.0.1"
 
@@ -32,22 +33,36 @@ int main(int argc, char *argv[])
     //初始化到服务器的链接
     msgCenter.init();
 
-//    MainWindow *mainWindow = new MainWindow;
-//    mainWindow->showMaximized();
+    //    MainWindow *mainWindow = new MainWindow;
+    //    mainWindow->showMaximized();
 
     LoginDialog *dialog = new LoginDialog;
 
     if ( dialog->exec() == QDialog::Accepted ) {
-        MainWindow *mainWindow = new MainWindow;
-        mainWindow->showMaximized();
+
+        //载入地图，显示一个3秒的进度条，如果载入成功，显示主窗口。否则提示并退出
+        QProgressDialog pd(("load from server"),("cancel"),0,50000);
+        pd.setWindowTitle(("loading"));
+        pd.show();
+        msgCenter.mapLoad();
+        for(int i = 0;i < 50000;++i)
+        {
+            pd.setValue(i);
+            QCoreApplication::processEvents();//避免界面冻结
+            if(pd.wasCanceled()) break;
+        }
+        pd.setValue(50000);
+        if(pd.wasCanceled())return 0;
+        if(msgCenter.getIsMapLoaded()){
+            MainWindow *mainWindow = new MainWindow();
+            mainWindow->showMaximized();
+        }else{
+            QMessageBox::warning(nullptr,QStringLiteral("载入失败"),QStringLiteral("载入失败"));
+            return 0;
+        }
     }else{
         return 0;
     }
-
-//    OneMap onemap;
-
-//    MapEditWindow *mapEditWindow = new MapEditWindow(onemap);
-//    mapEditWindow->showMaximized();
 
     return app.exec();
 }
