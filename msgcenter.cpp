@@ -563,7 +563,7 @@ void MsgCenter::mapSave(OneMap *onemap)
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_SET_MAP;
 
-    std::list<MapSpirit *> allspirit = g_onemap.getAllElement();
+    std::list<MapSpirit *> allspirit = onemap->getAllElement();
 
     Json::Value v_points;
     Json::Value v_paths;
@@ -704,7 +704,7 @@ void MsgCenter::mapSave(OneMap *onemap)
         request["blocks"] = v_blocks;
     if (v_groups.size() > 0)
         request["groups"] = v_groups;
-    request["maxId"] = g_onemap.getMaxId();
+    request["maxId"] = onemap->getMaxId();
 
     requestWaitResponse(request);
 }
