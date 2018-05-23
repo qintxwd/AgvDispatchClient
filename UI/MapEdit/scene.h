@@ -28,6 +28,7 @@ public:
         T_STATION_LOAD,//站点
         T_STATION_UNLOAD,//站点
         T_STATION_LOAD_UNLOAD,//站点
+        T_STATION_ORIGIN,//站点
         T_LINE,//直线
         T_QB,//弧线1
         T_CB,//弧线2

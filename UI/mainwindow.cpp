@@ -290,13 +290,16 @@ void MainWindow::onMapLoad()
 
 void MainWindow::on_selectSelect_triggered(bool b)
 {
+    selectHand->setChecked(false);
     emit sig_setSelectSelect();
 }
 
 void MainWindow::on_selectHand_triggered(bool b)
 {
-    if(b)
+    if(b){
+        selectSelect->setChecked(false);
         emit sig_setSelectHand();
+    }
     else
         emit sig_setSelectSelect();
 }

@@ -93,6 +93,7 @@ void DockProperty::initTableContent()
     point_comboxType->addItem(QStringLiteral("装货点"));
     point_comboxType->addItem(QStringLiteral("卸货点"));
     point_comboxType->addItem(QStringLiteral("装卸货点"));
+    point_comboxType->addItem(QStringLiteral("开机原点"));
     connect(point_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
     point_itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
     point_itemKeyX->setTextAlignment(Qt::AlignCenter);

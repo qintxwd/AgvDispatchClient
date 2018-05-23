@@ -162,6 +162,9 @@ void MonitorScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             case T_STATION_LOAD_UNLOAD:
                 type = MapPoint::Map_Point_Type_LOAD_UNLOAD;
                 break;
+            case T_STATION_ORIGIN:
+                type = MapPoint::Map_Point_Type_ORIGIN;
+                break;
             default:
                 type = MapPoint::Map_Point_Type_HALT;
                 break;

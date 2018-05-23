@@ -59,6 +59,9 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     else if(point->getPointType() == MapPoint::Map_Point_Type_LOAD_UNLOAD){
         painter->drawImage(boundingRect(),*imgLoadUnload);
     }
+    else if(point->getPointType() == MapPoint::Map_Point_Type_ORIGIN){
+        painter->drawImage(boundingRect(),*imgLoadUnload);
+    }
 
     if(point->getMapChange()){
         painter->setBrush(oldBrush);

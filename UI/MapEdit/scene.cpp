@@ -162,6 +162,9 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             case T_STATION_LOAD_UNLOAD:
                 type = MapPoint::Map_Point_Type_LOAD_UNLOAD;
                 break;
+            case T_STATION_ORIGIN:
+                type = MapPoint::Map_Point_Type_ORIGIN;
+                break;
             default:
                 type = MapPoint::Map_Point_Type_HALT;
                 break;
@@ -567,9 +570,7 @@ void Scene::onSelectItemChanged()
                     //判断是否已经有线路了
                     foreach (auto l, iLines) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -578,9 +579,7 @@ void Scene::onSelectItemChanged()
                     }
                     foreach (auto l, iQbs) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -589,9 +588,7 @@ void Scene::onSelectItemChanged()
                     }
                     foreach (auto l, iCbs) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -627,9 +624,7 @@ void Scene::onSelectItemChanged()
                     //判断是否已经有线路了
                     foreach (auto l, iLines) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -638,9 +633,7 @@ void Scene::onSelectItemChanged()
                     }
                     foreach (auto l, iQbs) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -649,9 +642,7 @@ void Scene::onSelectItemChanged()
                     }
                     foreach (auto l, iCbs) {
                         if((l->getPath()->getStart() == oldSelectStation->getPoint()->getId()
-                            && l->getPath()->getEnd() == newStation->getPoint()->getId())||
-                                (l->getPath()->getEnd() == oldSelectStation->getPoint()->getId()
-                                 && l->getPath()->getStart() == newStation->getPoint()->getId()))
+                            && l->getPath()->getEnd() == newStation->getPoint()->getId()))
                         {
                             //两个站点之间已经有线路了
                             oldSelectStation = nullptr;
@@ -805,6 +796,7 @@ void Scene::onSelectItemChanged()
             MapItemBkg *sekectBkg = qgraphicsitem_cast<MapItemBkg*>(lastSelectItem);
             if(cur_tool == T_ERASER ){
                 removeItem(sekectBkg);
+                onemap->removeSpiritById(sekectBkg->getBkg()->getId());
                 floor->removeBkg();
                 update();
                 //TODO:

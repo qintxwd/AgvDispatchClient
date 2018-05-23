@@ -65,7 +65,8 @@ void MonitorDockView::slot_addBkg(int _bkg){
     auto floors = QList<MapFloor *>::fromStdList(oneMap->getFloors());
     if(kk<floors.length()){
         floors[kk]->setBkg(_bkg);
-        emit sig_propertyChangedFromProperty(floors[kk]);
+        emit sig_add_remove_spirit();
+        //emit sig_propertyChangedFromProperty(floors[kk]);
     }
 }
 
