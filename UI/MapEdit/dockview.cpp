@@ -66,7 +66,7 @@ void DockView::slot_addBkg(int _bkg){
     if(kk<floors.length()){
         floors[kk]->setBkg(_bkg);
         emit sig_add_remove_spirit();
-        //emit sig_propertyChangedFromProperty(floors[kk]);
+        emit sig_propertyChangedFromProperty(floors[kk]);
     }
 }
 

@@ -233,9 +233,9 @@ void MsgCenter::response_map_get(const Json::Value &response)
     //TODO:
     g_onemap.clear();
     //地图信息
-    for (int i = 0; i < response["stations"].size(); ++i)
+    for (int i = 0; i < response["points"].size(); ++i)
     {
-        Json::Value station = response["stations"][i];
+        Json::Value station = response["points"][i];
         int id = station["id"].asInt();
         std::string name = station["name"].asString();
         int station_type = station["point_type"].asInt();
@@ -252,9 +252,9 @@ void MsgCenter::response_map_get(const Json::Value &response)
     }
 
     //2.解析线路
-    for (int i = 0; i < response["lines"].size(); ++i)
+    for (int i = 0; i < response["paths"].size(); ++i)
     {
-        Json::Value line = response["lines"][i];
+        Json::Value line = response["paths"][i];
         int id = line["id"].asInt();
         std::string name = line["name"].asString();
         int type = line["type"].asInt();
@@ -301,14 +301,14 @@ void MsgCenter::response_map_get(const Json::Value &response)
         Json::Value points = floor["points"];
         Json::Value paths = floor["paths"];
         int bkg = floor["bkg"].asInt();
-        MapFloor *p = new MapFloor(id,name);
+        MapFloor *p = new MapFloor(id, name);
         p->setBkg(bkg);
-        for(int k=0;k<points.size();++k){
+        for (int k = 0; k < points.size(); ++k) {
             Json::Value point = points[k];
             p->addPoint(point.asInt());
         }
-        for(int k=0;k<paths.size();++k){
-            Json::Value path = points[k];
+        for (int k = 0; k < paths.size(); ++k) {
+            Json::Value path = paths[k];
             p->addPath(path.asInt());
         }
         g_onemap.addSpirit(p);
@@ -636,7 +636,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             for (auto p : points) {
                 ppv[kk++] = p;
             }
-            if(ppv.size()>0)
+            if(!ppv.isNull()>0)
                 pv["points"] = ppv;
 
             Json::Value ppv2;
@@ -645,7 +645,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             for (auto p : paths) {
                 ppv2[kk2++] = p;
             }
-            if (ppv2.size()>0)
+            if(!ppv2.isNull()>0)
                 pv["paths"] = ppv2;
 
             v_floors.append(pv);
@@ -662,7 +662,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             for (auto p : ps) {
                 ppv[kk++] = p;
             }
-            if(ppv.size()>0)
+            if(!ppv.isNull()>0)
                 pv["spirits"] = ppv;
 
             v_blocks.append(pv);
@@ -678,7 +678,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             for (auto p : ps) {
                 ppv[kk++] = p;
             }
-            if (ppv.size()>0)
+            if(!ppv.isNull()>0)
                 pv["spirits"] = ppv;
             Json::Value ppv2;
             auto pps = p->getAgvs();
@@ -686,7 +686,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             for (auto p : pps) {
                 ppv2[kk++] = p;
             }
-            if (ppv2.size()>0)
+            if(!ppv2.isNull()>0)
                 pv["agvs"] = ppv2;
             v_groups.append(pv);
         }
