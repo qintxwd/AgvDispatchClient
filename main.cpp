@@ -41,14 +41,14 @@ int main(int argc, char *argv[])
     if ( dialog->exec() == QDialog::Accepted ) {
 
         //载入地图，显示一个3秒的进度条，如果载入成功，显示主窗口。否则提示并退出
-        QProgressDialog pd(("load from server"),("cancel"),0,50000);
+        QProgressDialog pd(("load from server"),("cancel"),0,5000);
         pd.setWindowTitle(("loading"));
         pd.show();
         msgCenter.mapLoad();
-        for(int i = 0;i < 50000;++i)
+        for(int i = 0;i < 5000;++i)
         {
             pd.setValue(i);
-            QCoreApplication::processEvents();//避免界面冻结
+            QyhSleep(1);
             if(pd.wasCanceled()) break;
         }
         pd.setValue(50000);

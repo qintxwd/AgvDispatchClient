@@ -64,8 +64,8 @@ void MonitorMapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionG
     myPath.quadTo(P1, endStation->pos());//QPoint(endStation->pos().x()-startStation->pos().x(), endStation->pos().y()-startStation->pos().y()));
     painter->drawPath(myPath);
     if(option->state & QStyle::State_Selected||option->state & QStyle::State_MouseOver){
-        painter->drawLine(P1.x()-5,P1.y()-5,P1.x()+5,P1.y()+5);
-        painter->drawLine(P1.x()+5,P1.y()-5,P1.x()-5,P1.y()+5);
+//        painter->drawLine(P1.x()-5,P1.y()-5,P1.x()+5,P1.y()+5);
+//        painter->drawLine(P1.x()+5,P1.y()-5,P1.x()-5,P1.y()+5);
     }
 
     //画箭头

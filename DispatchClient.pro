@@ -152,16 +152,13 @@ RESOURCES += \
 
 
 
+unix{
+LIBS += -ljsoncpp
+}
 
-win32:CONFIG(release, debug|release): LIBS += -LD:/thirdparty/jsoncpp/lib/release/ -ljsoncpp_static
-else:win32:CONFIG(debug, debug|release): LIBS += -LD:/thirdparty/jsoncpp/lib/debug/ -ljsoncpp_static
-else:unix:!macx: LIBS += -LD:/thirdparty/jsoncpp/lib/ -ljsoncpp_static
-
-INCLUDEPATH += D:/thirdparty/jsoncpp/include
-DEPENDPATH += D:/thirdparty/jsoncpp/include
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/release/libjsoncpp_static.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/debug/libjsoncpp_static.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/release/jsoncpp_static.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/debug/jsoncpp_static.lib
-else:unix:!macx: PRE_TARGETDEPS += D:/thirdparty/jsoncpp/lib/libjsoncpp_static.a
+win32{
+win32:DEFINES += _CRT_SECURE_NO_WARNINGS
+win32:DEFINES += _WINSOCK_DEPRECATED_NO_WARNINGS
+INCLUDEPATH+=D:\thirdparty\jsoncpp\include
+LIBS+=D:\thirdparty\jsoncpp\lib\Debug\jsoncpp_static.lib
+}

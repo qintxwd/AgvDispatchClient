@@ -39,6 +39,11 @@ ServerConnection::ServerConnection(QObject *parent) : QObject(parent),
 ServerConnection::~ServerConnection()
 {
     quit = true;
+#ifdef WIN32
+                        closesocket(socketFd);
+#else
+                        close(socketFd);
+#endif
     condition.wakeAll();
     thread_read.join();
     thread_send.join();
