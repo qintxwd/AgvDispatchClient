@@ -55,6 +55,7 @@ public slots:
     void on_toolStationLoad_triggered(bool b);
     void on_toolStationUnload_triggered(bool b);
     void on_toolStationLoadUnload_triggered(bool b);
+    void on_toolStationOrigin_triggered(bool b);
     void on_toolLine_triggered(bool b);
     void on_toolQb_triggered(bool b);
     void on_toolCb_triggered(bool b);
@@ -96,6 +97,7 @@ private:
     QAction *toolStationLoad;
     QAction *toolStationUnload;
     QAction *toolStationLoadUnload;
+    QAction *toolStationOrigin;
     QAction *toolLine;
     QAction *toolQb;
     QAction *toolCb;

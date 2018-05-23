@@ -44,6 +44,9 @@ private slots:
 
     //floor edit
     void slot_FloorNameChanged(QString name);
+    void slot_FloorOriginXChanged(QString v);
+    void slot_FloorOriginYChanged(QString v);
+    void slot_FloorRateChanged(QString v);
 
     //bkg edit
     void slot_BkgNameChanged(QString name);
@@ -121,6 +124,12 @@ private:
     QTableWidgetItem *floor_itemValueId;
     QTableWidgetItem *floor_itemKeyName;
     QLineEdit *floor_nameInput;
+    QTableWidgetItem *floor_itemKeyOriginX;
+    QLineEdit *floor_xOriginInput;
+    QTableWidgetItem *floor_itemKeyOriginY;
+    QLineEdit *floor_yOriginInput;
+    QTableWidgetItem *floor_itemKeyRate;
+    QLineEdit *floor_rateInput;
 
     //bkg
     QTableWidgetItem *bkg_itemKeyId;

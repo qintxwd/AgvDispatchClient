@@ -19,7 +19,7 @@ void DockProperty::initTabTable()
 
     tableWidget_point = new QTableWidget(10,2);
     tableWidget_path = new QTableWidget(8,2);
-    tableWidget_floor = new QTableWidget(2,2);
+    tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
     tableWidget_block = new QTableWidget(2,2);
 
@@ -156,15 +156,15 @@ void DockProperty::initTableContent()
     path_comboxType->addItem(QStringLiteral("楼层间线路"));
     path_comboxType->setEnabled(false);
 
-//    path_itemKeyDirection = new QTableWidgetItem(QStringLiteral("方向"));
-//    path_itemKeyDirection->setTextAlignment(Qt::AlignCenter);
-//    path_itemKeyDirection->setFlags(path_itemKeyDirection->flags()&(~Qt::ItemIsEditable));
-//    path_comboxDirection = new QComboBox(); // 下拉选择框控件
-//    path_comboxDirection->addItem(QStringLiteral("双向"));
-//    path_comboxDirection->addItem(QStringLiteral("start-->end"));
-//    path_comboxDirection->addItem(QStringLiteral("end-->start"));
-//    path_comboxDirection->setEnabled(true);
-//    connect(path_comboxDirection,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathDirectionChanged(int)));
+    //    path_itemKeyDirection = new QTableWidgetItem(QStringLiteral("方向"));
+    //    path_itemKeyDirection->setTextAlignment(Qt::AlignCenter);
+    //    path_itemKeyDirection->setFlags(path_itemKeyDirection->flags()&(~Qt::ItemIsEditable));
+    //    path_comboxDirection = new QComboBox(); // 下拉选择框控件
+    //    path_comboxDirection->addItem(QStringLiteral("双向"));
+    //    path_comboxDirection->addItem(QStringLiteral("start-->end"));
+    //    path_comboxDirection->addItem(QStringLiteral("end-->start"));
+    //    path_comboxDirection->setEnabled(true);
+    //    connect(path_comboxDirection,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PathDirectionChanged(int)));
 
     path_itemKeyP1X = new QTableWidgetItem(QStringLiteral("P1X"));
     path_itemKeyP1X->setTextAlignment(Qt::AlignCenter);
@@ -204,6 +204,22 @@ void DockProperty::initTableContent()
     floor_itemKeyName->setFlags(floor_itemKeyName->flags()&(~Qt::ItemIsEditable));
     floor_nameInput  = new QLineEdit("");
     connect(floor_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyOriginX = new QTableWidgetItem("OriginX");
+    floor_itemKeyOriginX->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyOriginX->setFlags(floor_itemKeyOriginX->flags()&(~Qt::ItemIsEditable));
+    floor_xOriginInput  = new QLineEdit("");
+    connect(floor_xOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyOriginY = new QTableWidgetItem("OriginY");
+    floor_itemKeyOriginY->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyOriginY->setFlags(floor_itemKeyOriginY->flags()&(~Qt::ItemIsEditable));
+    floor_yOriginInput  = new QLineEdit("");
+    connect(floor_yOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyRate = new QTableWidgetItem("Rate");
+    floor_itemKeyRate->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyRate->setFlags(floor_itemKeyRate->flags()&(~Qt::ItemIsEditable));
+    floor_rateInput  = new QLineEdit("");
+    connect(floor_rateInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+
 
     ///////bkg
     bkg_itemKeyId = new QTableWidgetItem("ID");
@@ -279,8 +295,8 @@ void DockProperty::initTableContent()
     tableWidget_path->setCellWidget(1,1,path_nameInput);
     tableWidget_path->setItem(2, 0, path_itemKeyType);
     tableWidget_path->setCellWidget(2, 1, (QWidget*)path_comboxType);
-//    tableWidget_path->setItem(3, 0, path_itemKeyDirection);
-//    tableWidget_path->setCellWidget(3, 1, (QWidget*)path_comboxDirection);
+    //    tableWidget_path->setItem(3, 0, path_itemKeyDirection);
+    //    tableWidget_path->setCellWidget(3, 1, (QWidget*)path_comboxDirection);
     tableWidget_path->setItem(3, 0, path_itemKeyP1X);
     tableWidget_path->setCellWidget(3,1,path_xP1Input);
     tableWidget_path->setItem(4, 0, path_itemKeyP1Y);
@@ -296,6 +312,13 @@ void DockProperty::initTableContent()
     tableWidget_floor->setItem(0, 1, floor_itemValueId);
     tableWidget_floor->setItem(1, 0, floor_itemKeyName);
     tableWidget_floor->setCellWidget(1,1,floor_nameInput);
+
+    tableWidget_floor->setItem(2, 0, floor_itemKeyOriginX);
+    tableWidget_floor->setCellWidget(2,1,floor_xOriginInput);
+    tableWidget_floor->setItem(3, 0, floor_itemKeyOriginY);
+    tableWidget_floor->setCellWidget(3,1,floor_yOriginInput);
+    tableWidget_floor->setItem(4, 0, floor_itemKeyRate);
+    tableWidget_floor->setCellWidget(4,1,floor_rateInput);
 
     tableWidget_bkg->setItem(0, 0, bkg_itemKeyId);
     tableWidget_bkg->setItem(0, 1, bkg_itemValueId);
@@ -404,8 +427,8 @@ void DockProperty::showPath()
     path_nameInput->setText(QString::fromStdString(path->getName()));
     MapPath::Map_Path_Type type = path->getPathType();
     path_comboxType->setCurrentIndex((int)type);
-//    int direction = path->getDirection();
-//    path_comboxDirection->setCurrentIndex(direction);
+    //    int direction = path->getDirection();
+    //    path_comboxDirection->setCurrentIndex(direction);
     path_xP1Input->setText(QString("%1").arg(path->getP1x()));
     path_yP1Input->setText(QString("%1").arg(path->getP1y()));
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));
@@ -421,6 +444,9 @@ void DockProperty::showFloor()
     MapFloor *floor = static_cast<MapFloor *>(spirit);
     floor_itemValueId->setText(QString("%1").arg(floor->getId()));
     floor_nameInput->setText(QString::fromStdString(floor->getName()));
+    floor_xOriginInput->setText(QString("%1").arg(floor->getOriginX()));
+    floor_yOriginInput->setText(QString("%1").arg(floor->getOriginY()));
+    floor_rateInput->setText(QString("%1").arg(floor->getRate()));
     tableWidget_floor->update();
     tabwidget->setCurrentIndex(3);
 }
@@ -565,12 +591,33 @@ void DockProperty::slot_FloorNameChanged(QString name)
     emit sig_propertyChanged(spirit);
 }
 
+void DockProperty::slot_FloorOriginXChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapFloor *>(spirit))->setOriginX(v.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_FloorOriginYChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapFloor *>(spirit))->setOriginY(v.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_FloorRateChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    if(v.length()>0)
+        (static_cast<MapFloor *>(spirit))->setRate(v.toDouble());
+    //emit sig_propertyChanged(spirit);
+}
+
 void DockProperty::slot_BkgNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
     spirit->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
+
 void DockProperty::slot_BkgXChanged(QString x)
 {
     if(spirit == nullptr)return ;

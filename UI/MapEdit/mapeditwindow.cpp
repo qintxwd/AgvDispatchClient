@@ -311,6 +311,16 @@ void MapEditWindow::createActions()
     toolsToolBar->addAction(toolStationLoadUnload);
     toolsMenu->addAction(toolStationLoadUnload);
 
+    toolStationOrigin = new QAction(this);
+    toolStationOrigin->setText("Station Origin");
+    toolStationOrigin->setObjectName("toolStationOrigin");
+    QIcon iconStationOrigin;
+    iconStationOrigin.addFile(":/images/point/TransferStation.20x20.png",QSize(),QIcon::Normal,QIcon::Off);
+    toolStationOrigin->setIcon(iconStationOrigin);
+    toolStationOrigin->setCheckable(true);
+    toolsToolBar->addAction(toolStationOrigin);
+    toolsMenu->addAction(toolStationOrigin);
+
     toolLine = new QAction(this);
     toolLine->setText("Line");
     toolLine->setObjectName("toolLine");
@@ -403,6 +413,7 @@ void MapEditWindow::slot_cancelTool()
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -422,6 +433,7 @@ void MapEditWindow::on_toolErase_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -443,6 +455,7 @@ void MapEditWindow::on_toolStationDraw_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -464,6 +477,7 @@ void MapEditWindow::on_toolStationReport_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -485,6 +499,7 @@ void MapEditWindow::on_toolStationHalt_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -505,6 +520,7 @@ void MapEditWindow::on_toolStationCharge_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -525,6 +541,7 @@ void MapEditWindow::on_toolStationLoad_triggered(bool b)
     //toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -545,6 +562,7 @@ void MapEditWindow::on_toolStationUnload_triggered(bool b)
     toolStationLoad->setChecked(false);
     //toolStationUnload->setChecked(false);
     toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -566,6 +584,7 @@ void MapEditWindow::on_toolStationLoadUnload_triggered(bool b)
     toolStationLoad->setChecked(false);
     toolStationUnload->setChecked(false);
     //toolStationLoadUnload->setChecked(false);
+    toolStationOrigin->setChecked(false);
     toolLine->setChecked(false);
     toolQb->setChecked(false);
     toolCb->setChecked(false);
@@ -576,6 +595,29 @@ void MapEditWindow::on_toolStationLoadUnload_triggered(bool b)
         emit sig_setTool(Scene::T_NONE);
     }
 }
+
+void MapEditWindow::on_toolStationOrigin_triggered(bool b)
+{
+    toolErase->setChecked(false);
+    toolStationDraw->setChecked(false);
+    toolStationReport->setChecked(false);
+    toolStationHalt->setChecked(false);
+    toolStationCharge->setChecked(false);
+    toolStationLoad->setChecked(false);
+    toolStationUnload->setChecked(false);
+    toolStationLoadUnload->setChecked(false);
+    //toolStationOrigin->setChecked(false);
+    toolLine->setChecked(false);
+    toolQb->setChecked(false);
+    toolCb->setChecked(false);
+
+    if(b){
+        emit sig_setTool(Scene::T_STATION_ORIGIN);
+    }else{
+        emit sig_setTool(Scene::T_NONE);
+    }
+}
+
 void MapEditWindow::on_toolLine_triggered(bool b)
 {
     toolErase->setChecked(false);

@@ -19,7 +19,7 @@ void MonitorDockProperty::initTabTable()
 
     tableWidget_point = new QTableWidget(10,2);
     tableWidget_path = new QTableWidget(8,2);
-    tableWidget_floor = new QTableWidget(2,2);
+    tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
     tableWidget_block = new QTableWidget(2,2);
 
@@ -93,6 +93,7 @@ void MonitorDockProperty::initTableContent()
     point_comboxType->addItem(QStringLiteral("装货点"));
     point_comboxType->addItem(QStringLiteral("卸货点"));
     point_comboxType->addItem(QStringLiteral("装卸货点"));
+    point_comboxType->addItem(QStringLiteral("开机原点"));
     connect(point_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
     point_itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
     point_itemKeyX->setTextAlignment(Qt::AlignCenter);
@@ -203,6 +204,22 @@ void MonitorDockProperty::initTableContent()
     floor_itemKeyName->setFlags(floor_itemKeyName->flags()&(~Qt::ItemIsEditable));
     floor_nameInput  = new QLineEdit("");
     connect(floor_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyOriginX = new QTableWidgetItem("OriginX");
+    floor_itemKeyOriginX->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyOriginX->setFlags(floor_itemKeyOriginX->flags()&(~Qt::ItemIsEditable));
+    floor_xOriginInput  = new QLineEdit("");
+    connect(floor_xOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyOriginY = new QTableWidgetItem("OriginY");
+    floor_itemKeyOriginY->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyOriginY->setFlags(floor_itemKeyOriginY->flags()&(~Qt::ItemIsEditable));
+    floor_yOriginInput  = new QLineEdit("");
+    connect(floor_yOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    floor_itemKeyRate = new QTableWidgetItem("Rate");
+    floor_itemKeyRate->setTextAlignment(Qt::AlignCenter);
+    floor_itemKeyRate->setFlags(floor_itemKeyRate->flags()&(~Qt::ItemIsEditable));
+    floor_rateInput  = new QLineEdit("");
+    connect(floor_rateInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+
 
     ///////bkg
     bkg_itemKeyId = new QTableWidgetItem("ID");
@@ -295,6 +312,13 @@ void MonitorDockProperty::initTableContent()
     tableWidget_floor->setItem(0, 1, floor_itemValueId);
     tableWidget_floor->setItem(1, 0, floor_itemKeyName);
     tableWidget_floor->setCellWidget(1,1,floor_nameInput);
+
+    tableWidget_floor->setItem(2, 0, floor_itemKeyOriginX);
+    tableWidget_floor->setCellWidget(2,1,floor_xOriginInput);
+    tableWidget_floor->setItem(3, 0, floor_itemKeyOriginY);
+    tableWidget_floor->setCellWidget(3,1,floor_yOriginInput);
+    tableWidget_floor->setItem(4, 0, floor_itemKeyRate);
+    tableWidget_floor->setCellWidget(4,1,floor_rateInput);
 
     tableWidget_bkg->setItem(0, 0, bkg_itemKeyId);
     tableWidget_bkg->setItem(0, 1, bkg_itemValueId);
@@ -452,6 +476,9 @@ void MonitorDockProperty::showFloor()
     MapFloor *floor = static_cast<MapFloor *>(spirit);
     floor_itemValueId->setText(QString("%1").arg(floor->getId()));
     floor_nameInput->setText(QString::fromStdString(floor->getName()));
+    floor_xOriginInput->setText(QString("%1").arg(floor->getOriginX()));
+    floor_yOriginInput->setText(QString("%1").arg(floor->getOriginY()));
+    floor_rateInput->setText(QString("%1").arg(floor->getRate()));
     tableWidget_floor->update();
     tabwidget->setCurrentIndex(3);
 }
@@ -594,6 +621,26 @@ void MonitorDockProperty::slot_FloorNameChanged(QString name)
     if(spirit == nullptr)return ;
     (static_cast<MapFloor *>(spirit))->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
+}
+
+void MonitorDockProperty::slot_FloorOriginXChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapFloor *>(spirit))->setOriginX(v.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void MonitorDockProperty::slot_FloorOriginYChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapFloor *>(spirit))->setOriginY(v.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void MonitorDockProperty::slot_FloorRateChanged(QString v)
+{
+    if(spirit == nullptr)return ;
+    if(v.length()>0)
+        (static_cast<MapFloor *>(spirit))->setRate(v.toDouble());
+    //emit sig_propertyChanged(spirit);
 }
 
 void MonitorDockProperty::slot_BkgNameChanged(QString name)

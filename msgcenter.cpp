@@ -301,8 +301,14 @@ void MsgCenter::response_map_get(const Json::Value &response)
         Json::Value points = floor["points"];
         Json::Value paths = floor["paths"];
         int bkg = floor["bkg"].asInt();
+        int originX = floor["originX"].asInt();
+        int originY = floor["originY"].asInt();
+        double rate = floor["rate"].asDouble();
         MapFloor *p = new MapFloor(id, name);
         p->setBkg(bkg);
+        p->setOriginX(originX);
+        p->setOriginY(originY);
+        p->setRate(rate);
         for (int k = 0; k < points.size(); ++k) {
             Json::Value point = points[k];
             p->addPoint(point.asInt());
@@ -629,6 +635,9 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["id"] = p->getId();
             pv["name"] = p->getName();
             pv["bkg"] = p->getBkg();
+            pv["originX"] = p->getOriginX();
+            pv["originY"] = p->getOriginY();
+            pv["rate"] = p->getRate();
 
             Json::Value ppv;
             auto points = p->getPoints();
