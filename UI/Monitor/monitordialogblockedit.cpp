@@ -1,14 +1,14 @@
-﻿#include "dialogblockedit.h"
+﻿#include "monitordialogblockedit.h"
 #include <QtWidgets>
 
-DialogBlockEdit::DialogBlockEdit(OneMap *_onemap, MapBlock *_block, QWidget *parent) : QDialog(parent),
+MonitorDialogBlockEdit::MonitorDialogBlockEdit(OneMap *_onemap, MapBlock *_block, QWidget *parent) : QDialog(parent),
     onemap(_onemap),
     block(_block)
 {
     init();
 }
 
-void DialogBlockEdit::init()
+void MonitorDialogBlockEdit::init()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
@@ -47,7 +47,7 @@ void DialogBlockEdit::init()
     //set model
     foreach (auto id, selectedIds) {
         auto item = onemap->getSpiritById(id);
-        if(item==nullptr)continue;
+        if(item == nullptr)continue;
         QString type = "";
         if(item->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
             type = "PPATH";
@@ -61,6 +61,7 @@ void DialogBlockEdit::init()
     //set model
     foreach (auto id, unselectIds) {
         auto item = onemap->getSpiritById(id);
+        if(item == nullptr)continue;
         QString type = "";
         if(item->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
             type = "PPATH";
@@ -113,9 +114,13 @@ void DialogBlockEdit::init()
     connect(btn_cancel,SIGNAL(clicked(bool)),this,SLOT(slot_btn_cancel()));
     connect(selectBtn,SIGNAL(clicked(bool)),this,SLOT(slot_selectBtn_clicked()));
     connect(unselectBtn,SIGNAL(clicked(bool)),this,SLOT(slot_unselectBtn_clicked()));
+
+    selectBtn->setEnabled(false);
+    unselectBtn->setEnabled(false);
+    btn_ok->setEnabled(false);
 }
 
-void DialogBlockEdit::slot_btn_ok()
+void MonitorDialogBlockEdit::slot_btn_ok()
 {
     block->clear();
     foreach (auto s, selectedIds) {
@@ -126,12 +131,12 @@ void DialogBlockEdit::slot_btn_ok()
     accept();
 }
 
-void DialogBlockEdit::slot_btn_cancel()
+void MonitorDialogBlockEdit::slot_btn_cancel()
 {
     reject();
 }
 
-void DialogBlockEdit::slot_selectBtn_clicked()
+void MonitorDialogBlockEdit::slot_selectBtn_clicked()
 {
     int index = unselectedView->currentIndex().row();
     if(index < unselectIds.length() && index>=0){
@@ -146,7 +151,7 @@ void DialogBlockEdit::slot_selectBtn_clicked()
     }
 }
 
-void DialogBlockEdit::slot_unselectBtn_clicked()
+void MonitorDialogBlockEdit::slot_unselectBtn_clicked()
 {
     int index = selectedView->currentIndex().row();
     if(index < selectedIds.length() && index>=0){

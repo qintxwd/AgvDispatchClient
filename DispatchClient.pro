@@ -39,54 +39,48 @@ SOURCES += \
     UI/Agv/dockagvmanage.cpp \
     UI/Agv/dialogaddagv.cpp \
     UI/Agv/dialogmodifyagv.cpp \
-    UI/MapEdit/mapeditwindow.cpp \
-    UI/MapEdit/maptreeitem.cpp \
-    UI/MapEdit/maptreemodel.cpp \
-    UI/MapEdit/dockmaptree.cpp \
     data/mapspirit.cpp \
     data/mappoint.cpp \
     data/mapfloor.cpp \
     data/mappath.cpp \
     data/onemap.cpp \
+    data/mapblock.cpp \
+    data/mapgroup.cpp \
+    data/mapbackground.cpp \
+    UI/MapEdit/dockmaptree.cpp \
     UI/MapEdit/dockproperty.cpp \
     UI/MapEdit/dockview.cpp \
     UI/MapEdit/scene.cpp \
-    UI/MapEdit/scenepositionlabel.cpp \
-    UI/MapEdit/stationinputdialog.cpp \
-    data/mapbackground.cpp \
     UI/MapEdit/mapitemstation.cpp \
     UI/MapEdit/mapitemstationname.cpp \
     UI/MapEdit/mapitemquadraticbezier.cpp \
     UI/MapEdit/mapitemcubicbezier.cpp \
     UI/MapEdit/mapitembkg.cpp \
+    UI/MapEdit/mapeditwindow.cpp \
+    UI/MapEdit/maptreeitem.cpp \
+    UI/MapEdit/maptreemodel.cpp \
     UI/MapEdit/viewer.cpp \
     UI/MapEdit/dialogrootpath.cpp \
-    data/mapblock.cpp \
-    data/mapgroup.cpp \
     UI/MapEdit/dockblock.cpp \
     UI/MapEdit/dialogblockedit.cpp \
+    UI/MapEdit/mapitemline.cpp \
     base64.cpp \
     UI/UserLog/dockuserlog.cpp \
-    UI/MapEdit/mapitemline.cpp \
-    UI/Monitor/dialogblockedit.cpp \
-    UI/Monitor/dialogrootpath.cpp \
-    UI/Monitor/dockblock.cpp \
-    UI/Monitor/dockmaptree.cpp \
-    UI/Monitor/dockproperty.cpp \
-    UI/Monitor/dockview.cpp \
-    UI/Monitor/mapeditwindow.cpp \
-    UI/Monitor/mapitembkg.cpp \
-    UI/Monitor/mapitemcubicbezier.cpp \
-    UI/Monitor/mapitemline.cpp \
-    UI/Monitor/mapitemquadraticbezier.cpp \
-    UI/Monitor/mapitemstation.cpp \
-    UI/Monitor/mapitemstationname.cpp \
-    UI/Monitor/maptreeitem.cpp \
-    UI/Monitor/maptreemodel.cpp \
-    UI/Monitor/scene.cpp \
-    UI/Monitor/scenepositionlabel.cpp \
-    UI/Monitor/stationinputdialog.cpp \
-    UI/Monitor/viewer.cpp
+    UI/Monitor/monitormaptreeitem.cpp \
+    UI/Monitor/monitordialogblockedit.cpp \
+    UI/Monitor/monitordockblock.cpp \
+    UI/Monitor/monitordockmaptree.cpp \
+    UI/Monitor/monitordockproperty.cpp \
+    UI/Monitor/monitordockview.cpp \
+    UI/Monitor/monitormapitembkg.cpp \
+    UI/Monitor/monitormapitemcubicbezier.cpp \
+    UI/Monitor/monitormapitemline.cpp \
+    UI/Monitor/monitormapitemquadraticbezier.cpp \
+    UI/Monitor/monitormapitemstation.cpp \
+    UI/Monitor/monitormaptreemodel.cpp \
+    UI/Monitor/monitorscene.cpp \
+    UI/Monitor/monitorviewer.cpp \
+    UI/Monitor/monitormapitemstationname.cpp
 
 HEADERS += \
     global.h \
@@ -105,21 +99,17 @@ HEADERS += \
     UI/Agv/dockagvmanage.h \
     UI/Agv/dialogaddagv.h \
     UI/Agv/dialogmodifyagv.h \
-    UI/MapEdit/mapeditwindow.h \
-    UI/MapEdit/maptreeitem.h \
-    UI/MapEdit/maptreemodel.h \
-    UI/MapEdit/dockmaptree.h \
     data/mapspirit.h \
     data/mappoint.h \
     data/mapfloor.h \
     data/mappath.h \
     data/onemap.h \
+    data/mapblock.h \
+    data/mapgroup.h \
+    data/mapbackground.h \
     UI/MapEdit/dockproperty.h \
     UI/MapEdit/dockview.h \
     UI/MapEdit/scene.h \
-    UI/MapEdit/scenepositionlabel.h \
-    UI/MapEdit/stationinputdialog.h \
-    data/mapbackground.h \
     UI/MapEdit/mapitemstation.h \
     UI/MapEdit/mapitemstationname.h \
     UI/MapEdit/mapitemquadraticbezier.h \
@@ -127,31 +117,30 @@ HEADERS += \
     UI/MapEdit/mapitembkg.h \
     UI/MapEdit/viewer.h \
     UI/MapEdit/dialogrootpath.h \
-    data/mapblock.h \
-    data/mapgroup.h \
     UI/MapEdit/dockblock.h \
     UI/MapEdit/dialogblockedit.h \
+    UI/MapEdit/mapitemline.h \
+    UI/MapEdit/mapeditwindow.h \
+    UI/MapEdit/maptreeitem.h \
+    UI/MapEdit/maptreemodel.h \
+    UI/MapEdit/dockmaptree.h \
     base64.h \
     UI/UserLog/dockuserlog.h \
-    UI/MapEdit/mapitemline.h \
-    UI/Monitor/dockblock.h \
-    UI/Monitor/dockmaptree.h \
-    UI/Monitor/dockproperty.h \
-    UI/Monitor/dockview.h \
-    UI/Monitor/mapeditwindow.h \
-    UI/Monitor/mapitembkg.h \
-    UI/Monitor/mapitemcubicbezier.h \
-    UI/Monitor/mapitemline.h \
-    UI/Monitor/mapitemquadraticbezier.h \
-    UI/Monitor/mapitemstation.h \
-    UI/Monitor/mapitemstationname.h \
-    UI/Monitor/maptreeitem.h \
-    UI/Monitor/maptreemodel.h \
-    UI/Monitor/scene.h \
-    UI/Monitor/scenepositionlabel.h \
-    UI/Monitor/stationinputdialog.h \
-    UI/Monitor/viewer.h \
-    UI/Monitor/dialogblockedit.h
+    UI/Monitor/monitormaptreeitem.h \
+    UI/Monitor/monitordialogblockedit.h \
+    UI/Monitor/monitordockblock.h \
+    UI/Monitor/monitordockmaptree.h \
+    UI/Monitor/monitordockproperty.h \
+    UI/Monitor/monitordockview.h \
+    UI/Monitor/monitormapitembkg.h \
+    UI/Monitor/monitormapitemcubicbezier.h \
+    UI/Monitor/monitormapitemline.h \
+    UI/Monitor/monitormapitemquadraticbezier.h \
+    UI/Monitor/monitormapitemstation.h \
+    UI/Monitor/monitormaptreemodel.h \
+    UI/Monitor/monitorscene.h \
+    UI/Monitor/monitorviewer.h \
+    UI/Monitor/monitormapitemstationname.h
 
 FORMS +=
 

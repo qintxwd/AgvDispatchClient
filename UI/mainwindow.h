@@ -9,10 +9,10 @@
 #include "UserLog/dockuserlog.h"
 
 class MapEditWindow;
-class DockView;
-class DockMapTree;
-class DockProperty;
-class DockBlock;
+class MonitorDockView;
+class MonitorDockMapTree;
+class MonitorDockProperty;
+class MonitorDockBlock;
 
 class MainWindow : public QMainWindow
 {
@@ -21,7 +21,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     void init();
 signals:
-
+    void sig_setSelectSelect();
+    void sig_setSelectHand();
 public slots:
 
     void about();
@@ -41,6 +42,9 @@ public slots:
     void onMapEdit();
 
     void onMapLoad();
+
+    void on_selectSelect_triggered(bool b);
+    void on_selectHand_triggered(bool b);
 private:
 
     void createActions();
@@ -66,10 +70,10 @@ private:
 
     //TODO 新增加
     OneMap *oneMap;
-    DockMapTree *dockMapTree;
-    DockProperty *dockProperty;
-    DockView *dockView;
-    DockBlock *blockView;
+    MonitorDockMapTree *dockMapTree;
+    MonitorDockProperty *dockProperty;
+    MonitorDockView *dockView;
+    MonitorDockBlock *blockView;
     QAction *selectSelect;
     QAction *selectHand;
 };

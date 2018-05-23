@@ -3,10 +3,10 @@
 #include "global.h"
 
 #include "MapEdit/mapeditwindow.h"
-#include "Monitor/dockblock.h"
-#include "Monitor/dockmaptree.h"
-#include "Monitor/dockproperty.h"
-#include "Monitor/dockview.h"
+#include "Monitor/monitordockblock.h"
+#include "Monitor/monitordockmaptree.h"
+#include "Monitor/monitordockproperty.h"
+#include "Monitor/monitordockview.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dock_user_manage(nullptr),
@@ -35,6 +35,30 @@ void MainWindow::init()
     connect(&msgCenter,SIGNAL(sendNewRequest()),this,SLOT(onNewRequest()));
     connect(&msgCenter,SIGNAL(loginSuccess(int)),this,SLOT(updateCurrentUserInfo()));
     connect(&msgCenter,SIGNAL(mapGetSuccess()),this,SLOT(onMapLoad()));
+
+    //connect(dockMapTree,SIGNAL(sig_addFloor(MapFloor*)),dockView,SLOT(slot_addFloor(MapFloor*)));
+    connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
+    connect(dockMapTree,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
+
+    //connect(dockView,SIGNAL(sig_currentMousePos(QPointF)),this,SLOT(slot_currentMousePos(QPointF)));
+    //connect(dockView,SIGNAL(sig_cancelTool()),this,SLOT(slot_cancelTool()));
+    //connect(this,SIGNAL(sig_setTool(int)),dockView,SIGNAL(sig_setTool(int)));
+
+    //connect(dockView,SIGNAL(sig_add_remove_spirit()),dockMapTree,SLOT(refresh()));
+    //connect(dockView,SIGNAL(sig_add_remove_spirit()),dockProperty,SLOT(slot_shownull()));
+    connect(dockView,SIGNAL(sig_chooseChanged(MapSpirit*)),dockMapTree,SLOT(slot_chooseChanged(MapSpirit*)));
+    connect(dockView,SIGNAL(sig_chooseChanged(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit*)));
+    //connect(dockView,SIGNAL(sig_propertyChanged(MapSpirit*)),dockProperty,SLOT(slot_propertyChanged(MapSpirit*)));
+
+    //属性窗口 修改 到 地图窗口的信号
+    //    connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockView,SIGNAL(sig_propertyChangedFromProperty(MapSpirit*)));
+    //    connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockMapTree,SLOT(refresh()));
+
+    connect(blockView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
+
+    connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
+    connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
+    //connect(this,SIGNAL(sig_addBkg(int)),dockView,SLOT(slot_addBkg(int)));
 }
 
 void MainWindow::onServerConnect()
@@ -176,14 +200,14 @@ void MainWindow::createActions()
 
     //////////////////////////////////新增加
 
-    dockMapTree = new DockMapTree(oneMap);
-    dockProperty = new DockProperty(oneMap);
-    dockView = new DockView(oneMap);
-    blockView = new DockBlock(oneMap);
+    dockMapTree = new MonitorDockMapTree(oneMap);
+    dockProperty = new MonitorDockProperty(oneMap);
+    dockView = new MonitorDockView(oneMap);
+    blockView = new MonitorDockBlock(oneMap);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
     addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
-//    addDockWidget(Qt::RightDockWidgetArea,dockView);
+    //    addDockWidget(Qt::RightDockWidgetArea,dockView);
     tabifyDockWidget(dockMapTree,blockView);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
@@ -261,4 +285,18 @@ void MainWindow::onMapLoad()
 {
     oneMap = g_onemap.clone();
     //TODO:重新载入
+}
+
+
+void MainWindow::on_selectSelect_triggered(bool b)
+{
+    emit sig_setSelectSelect();
+}
+
+void MainWindow::on_selectHand_triggered(bool b)
+{
+    if(b)
+        emit sig_setSelectHand();
+    else
+        emit sig_setSelectSelect();
 }

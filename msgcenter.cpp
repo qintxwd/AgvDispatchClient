@@ -563,7 +563,7 @@ void MsgCenter::mapSave(OneMap *onemap)
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_SET_MAP;
 
-    std::list<MapSpirit *> allspirit = onemap->getAllElement();
+    std::list<MapSpirit *> allspirit = g_onemap.getAllElement();
 
     Json::Value v_points;
     Json::Value v_paths;
@@ -571,9 +571,9 @@ void MsgCenter::mapSave(OneMap *onemap)
     Json::Value v_bkgs;
     Json::Value v_blocks;
     Json::Value v_groups;
-    for(auto spirit:allspirit)
+    for (auto spirit : allspirit)
     {
-        if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+        if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Point) {
             MapPoint *p = static_cast<MapPoint *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
@@ -589,7 +589,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["locked"] = p->getLocked();
             v_points.append(pv);
         }
-        else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
+        else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path) {
             MapPath *p = static_cast<MapPath *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
@@ -605,28 +605,15 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["locked"] = p->getLocked();
             v_paths.append(pv);
         }
-        else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background){
+        else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background) {
             MapBackground *p = static_cast<MapBackground *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
             pv["name"] = p->getName();
-//            QByteArray qba(p->getImgData(),p->getImgDataLen());
-//            qDebug()<<"before";
-//            qDebug()<<qba.length();
-//            qDebug()<<ByteArrayToHexString(qba.left(10));
-//            qDebug()<<ByteArrayToHexString(qba.right(10));
-
             int lenlen = Base64encode_len(p->getImgDataLen());
             char *ss = new char[lenlen];
-            Base64encode(ss,p->getImgData(),p->getImgDataLen());
-
-//            qDebug()<<"after";
-//            QString after = QString(ss);
-//            qDebug()<<after.length();
-//            qDebug()<<after.left(10);
-//            qDebug()<<after.right(10);
-
-            pv["data"] = std::string(ss);
+            Base64encode(ss, p->getImgData(), p->getImgDataLen());
+            pv["data"] = std::string(ss, lenlen);
             delete ss;
             pv["data_len"] = p->getImgDataLen();
             pv["width"] = p->getWidth();
@@ -636,7 +623,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["filename"] = p->getFileName();
             v_bkgs.append(pv);
         }
-        else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
+        else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor) {
             MapFloor *p = static_cast<MapFloor *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
@@ -646,21 +633,24 @@ void MsgCenter::mapSave(OneMap *onemap)
             Json::Value ppv;
             auto points = p->getPoints();
             int kk = 0;
-            for(auto p:points){
+            for (auto p : points) {
                 ppv[kk++] = p;
             }
-            pv["points"] = ppv;
+            if(ppv.size()>0)
+                pv["points"] = ppv;
 
             Json::Value ppv2;
             auto paths = p->getPaths();
             int kk2 = 0;
-            for(auto p:paths){
+            for (auto p : paths) {
                 ppv2[kk2++] = p;
             }
-            pv["paths"] = ppv2;
+            if (ppv2.size()>0)
+                pv["paths"] = ppv2;
+
             v_floors.append(pv);
         }
-        else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Block){
+        else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Block) {
             MapBlock *p = static_cast<MapBlock *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
@@ -669,13 +659,15 @@ void MsgCenter::mapSave(OneMap *onemap)
             Json::Value ppv;
             auto ps = p->getSpirits();
             int kk = 0;
-            for(auto p:ps){
+            for (auto p : ps) {
                 ppv[kk++] = p;
             }
-            pv["spirits"] = ppv;
+            if(ppv.size()>0)
+                pv["spirits"] = ppv;
+
             v_blocks.append(pv);
         }
-        else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Group){
+        else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Group) {
             MapGroup *p = static_cast<MapGroup *>(spirit);
             Json::Value pv;
             pv["id"] = p->getId();
@@ -683,27 +675,37 @@ void MsgCenter::mapSave(OneMap *onemap)
             Json::Value ppv;
             auto ps = p->getSpirits();
             int kk = 0;
-            for(auto p:ps){
+            for (auto p : ps) {
                 ppv[kk++] = p;
             }
-            pv["spirits"] = ppv;
+            if (ppv.size()>0)
+                pv["spirits"] = ppv;
             Json::Value ppv2;
             auto pps = p->getAgvs();
             kk = 0;
-            for(auto p:pps){
+            for (auto p : pps) {
                 ppv2[kk++] = p;
             }
-            pv["agvs"] = ppv2;
+            if (ppv2.size()>0)
+                pv["agvs"] = ppv2;
             v_groups.append(pv);
         }
     }
-    request["points"] = v_points;
-    request["paths"] = v_paths;
-    request["floors"] = v_floors;
-    request["bkgs"] = v_bkgs;
-    request["blocks"] = v_blocks;
-    request["groups"] = v_groups;
-    request["maxId"] = onemap->getMaxId();
+
+    if (v_points.size() > 0)
+        request["points"] = v_points;
+    if (v_paths.size() > 0)
+        request["paths"] = v_paths;
+    if (v_floors.size() > 0)
+        request["floors"] = v_floors;
+    if (v_bkgs.size() > 0)
+        request["bkgs"] = v_bkgs;
+    if (v_blocks.size() > 0)
+        request["blocks"] = v_blocks;
+    if (v_groups.size() > 0)
+        request["groups"] = v_groups;
+    request["maxId"] = g_onemap.getMaxId();
+
     requestWaitResponse(request);
 }
 

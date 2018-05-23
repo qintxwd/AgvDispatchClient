@@ -81,7 +81,7 @@ void DialogRootPath::on_okbtn_clicked(bool b)
 {
     if(fromComboboxA->currentIndex()!=toComboboxA->currentIndex()){
         if(fromComboboxB->currentIndex()>=0 && fromComboboxB->count()>0
-        &&toComboboxB->currentIndex()>=0 && toComboboxB->count()>0 ){
+                &&toComboboxB->currentIndex()>=0 && toComboboxB->count()>0 ){
             int fromIndexA = fromComboboxA->currentIndex();
             int fromIndexB = fromComboboxB->currentIndex();
             int toIndexA = toComboboxA->currentIndex();
@@ -97,7 +97,7 @@ void DialogRootPath::on_okbtn_clicked(bool b)
             auto points =  QList<int>::fromStdList(floorFrom->getPoints());
             foreach (auto p, points) {
                 MapPoint *ppp = static_cast<MapPoint *>(onemap->getSpiritById(p));
-
+                if(ppp==nullptr)continue;
                 if(ppp->getMapChange()){
                     if(fromIndexB == 0){
                         from = ppp;
@@ -111,6 +111,7 @@ void DialogRootPath::on_okbtn_clicked(bool b)
             points =  QList<int>::fromStdList(floorTo->getPoints());
             foreach (auto p, points) {
                 MapPoint *ppp = static_cast<MapPoint *>(onemap->getSpiritById(p));
+                if(ppp==nullptr)continue;
                 if(ppp->getMapChange()){
                     if(toIndexB == 0){
                         to = ppp;

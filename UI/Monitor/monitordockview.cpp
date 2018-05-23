@@ -1,8 +1,8 @@
-﻿#include "dockview.h"
-#include "scene.h"
-#include "viewer.h"
+﻿#include "monitordockview.h"
+#include "monitorscene.h"
+#include "monitorviewer.h"
 
-DockView::DockView(OneMap *_oneMap, QWidget *parent) : QDockWidget(parent),
+MonitorDockView::MonitorDockView(OneMap *_oneMap, QWidget *parent) : QDockWidget(parent),
     oneMap(_oneMap)
 {
     setWindowTitle(QStringLiteral("显示地图"));
@@ -10,15 +10,15 @@ DockView::DockView(OneMap *_oneMap, QWidget *parent) : QDockWidget(parent),
     init();
 }
 
-void DockView::init()
+void MonitorDockView::init()
 {
     tabWidget = new QTabWidget;
 
     auto floors = oneMap->getFloors();
 
     foreach (auto floor, floors) {
-        Scene *scene = new Scene(oneMap,floor);
-        Viewer *view = new Viewer();
+        MonitorScene *scene = new MonitorScene(oneMap,floor);
+        MonitorViewer *view = new MonitorViewer();
         view->setScene(scene);
 
         connect(scene,SIGNAL(sig_currentMousePos(QPointF)),this,SIGNAL(sig_currentMousePos(QPointF)));
@@ -26,7 +26,7 @@ void DockView::init()
         connect(this,SIGNAL(sig_setTool(int)),scene,SLOT(slot_setCurTool(int)));
         connect(scene,SIGNAL(sig_add_remove_spirit()),this,SIGNAL(sig_add_remove_spirit()));
         connect(scene,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-        connect(scene,SIGNAL(sig_chooseChanged(MapSpirit*)),this,SIGNAL(sig_chooseChanged(MapSpirit*)));
+        connect(scene,SIGNAL(sig_chooseChanged(MapSpirit*)),this,SLOT(slot_chooseChanged(MapSpirit*)));
         connect(this,SIGNAL(sig_selectHand()),view,SLOT(toggleDragMode()));
         connect(this,SIGNAL(sig_selectSelect()),view,SLOT(toggleSelectMode()));
         connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),scene,SLOT(propertyChanged(MapSpirit *)));
@@ -39,10 +39,10 @@ void DockView::init()
     setWidget(tabWidget);
 }
 
-void DockView::slot_addFloor(MapFloor *floor)
+void MonitorDockView::slot_addFloor(MapFloor *floor)
 {
-    Scene *scene = new Scene(oneMap,floor);
-    Viewer *view = new Viewer();
+    MonitorScene *scene = new MonitorScene(oneMap,floor);
+    MonitorViewer *view = new MonitorViewer();
     view->setScene(scene);
 
     connect(scene,SIGNAL(sig_currentMousePos(QPointF)),this,SIGNAL(sig_currentMousePos(QPointF)));
@@ -60,7 +60,7 @@ void DockView::slot_addFloor(MapFloor *floor)
     scenes.append(scene);
 }
 
-void DockView::slot_addBkg(int _bkg){
+void MonitorDockView::slot_addBkg(int _bkg){
     int kk = tabWidget->currentIndex();
     auto floors = QList<MapFloor *>::fromStdList(oneMap->getFloors());
     if(kk<floors.length()){
@@ -69,7 +69,7 @@ void DockView::slot_addBkg(int _bkg){
     }
 }
 
-void DockView::slot_selectChanged(MapSpirit *spirit)
+void MonitorDockView::slot_selectChanged(MapSpirit *spirit)
 {
     if(spirit == nullptr) return ;
     if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
@@ -86,7 +86,7 @@ void DockView::slot_selectChanged(MapSpirit *spirit)
     }
 }
 
-void DockView::slot_propertyChangedFromProperty(MapSpirit *_spirit)
+void MonitorDockView::slot_propertyChangedFromProperty(MapSpirit *_spirit)
 {
     //如果是floor的话，修改tab的名字
     if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Floor){
@@ -104,6 +104,3 @@ void DockView::slot_propertyChangedFromProperty(MapSpirit *_spirit)
         }
     }
 }
-
-
-

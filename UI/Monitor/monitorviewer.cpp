@@ -1,4 +1,5 @@
-﻿#include "viewer.h"
+﻿
+#include "monitorviewer.h"
 
 #include <QWheelEvent>
 #include <QDebug>
@@ -10,10 +11,10 @@
 #include <QProgressDialog>
 #include <QCoreApplication>
 #include <QColorDialog>
-#include "scene.h"
+#include "monitorscene.h"
 #include "global.h"
 
-Viewer::Viewer(QWidget *parent) :  QGraphicsView(parent)
+MonitorViewer::MonitorViewer(QWidget *parent) :  QGraphicsView(parent)
 {
     setRenderHint(QPainter::Antialiasing, false);
     setDragMode(QGraphicsView::RubberBandDrag);
@@ -25,19 +26,19 @@ Viewer::Viewer(QWidget *parent) :  QGraphicsView(parent)
     setFrameStyle(QFrame::NoFrame);
 }
 
-void Viewer::toggleSelectMode()
+void MonitorViewer::toggleSelectMode()
 {
     setDragMode( QGraphicsView::RubberBandDrag);
     setInteractive(true);
 }
 
-void Viewer::toggleDragMode()
+void MonitorViewer::toggleDragMode()
 {
     setDragMode(QGraphicsView::ScrollHandDrag);
     setInteractive(false);
 }
 
-void Viewer::wheelEvent(QWheelEvent *event)
+void MonitorViewer::wheelEvent(QWheelEvent *event)
 {
     static int kk = 0;
     double scaleFactor = 1.10;

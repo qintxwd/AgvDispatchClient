@@ -1,21 +1,21 @@
-﻿#ifndef SCENE_H
-#define SCENE_H
+﻿#ifndef MONITORSCENE_H
+#define MONITORSCENE_H
 
 #include <QGraphicsScene>
 #include "../../data/onemap.h"
-#include "mapitemline.h"
-#include "mapitemstation.h"
-#include "mapitemcubicbezier.h"
-#include "mapitemstationname.h"
-#include "mapitemquadraticbezier.h"
-#include "mapitembkg.h"
+#include "monitormapitemline.h"
+#include "monitormapitemstation.h"
+#include "monitormapitemcubicbezier.h"
+#include "monitormapitemstationname.h"
+#include "monitormapitemquadraticbezier.h"
+#include "monitormapitembkg.h"
 
-class Scene : public QGraphicsScene
+class MonitorScene: public QGraphicsScene
 {
     Q_OBJECT
 public:
-    Scene(OneMap *_onemap,MapFloor *_floor,QObject *parent = nullptr);
-    ~Scene();
+    MonitorScene(OneMap *_onemap,MapFloor *_floor,QObject *parent = nullptr);
+    ~MonitorScene();
 
     enum Tool
     {
@@ -78,24 +78,24 @@ private:
 
     Tool cur_tool;
 
-    MapItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
+    MonitorMapItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
 
 private:
 
-    QList<MapItemStation *> iStations;//记录所有的站点
+    QList<MonitorMapItemStation *> iStations;//记录所有的站点
 
-    QList<MapItemStationName *> iStationNames;//记录所有的站点的名字
+    QList<MonitorMapItemStationName *> iStationNames;//记录所有的站点的名字
 
-    QList<MapItemLine *> iLines;//记录所有的直线
+    QList<MonitorMapItemLine *> iLines;//记录所有的直线
 
-    QList<MapItemQuadraticBezier *> iQbs;
+    QList<MonitorMapItemQuadraticBezier *> iQbs;
 
-    QList<MapItemCubicBezier *> iCbs;
+    QList<MonitorMapItemCubicBezier *> iCbs;
 
-    MapItemBkg *bkg;
+    MonitorMapItemBkg *bkg;
 private:
     OneMap *onemap;
     MapFloor *floor;
 };
 
-#endif // SCENE_H
+#endif // MONITORSCENE_H
