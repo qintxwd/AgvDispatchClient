@@ -80,7 +80,8 @@ SOURCES += \
     UI/Monitor/monitormaptreemodel.cpp \
     UI/Monitor/monitorscene.cpp \
     UI/Monitor/monitorviewer.cpp \
-    UI/Monitor/monitormapitemstationname.cpp
+    UI/Monitor/monitormapitemstationname.cpp \
+    UI/Task/docktask.cpp
 
 HEADERS += \
     global.h \
@@ -140,7 +141,8 @@ HEADERS += \
     UI/Monitor/monitormaptreemodel.h \
     UI/Monitor/monitorscene.h \
     UI/Monitor/monitorviewer.h \
-    UI/Monitor/monitormapitemstationname.h
+    UI/Monitor/monitormapitemstationname.h \
+    UI/Task/docktask.h
 
 FORMS +=
 

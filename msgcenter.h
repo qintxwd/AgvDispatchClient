@@ -106,17 +106,10 @@ public:
     QList<USER_LOG> getLogListModel(){return loginfos;}
 
     /////////////////////////任务部分
-    void taskAgvGoB(int agvId,int stationId);
-    void taskGoB(int stationId);
-    void taskAgvPassAGoB(int agvId,int stationAId,int stationBId);
-    void taskPassAGoB(int stationAId,int stationBId);
-    void taskAgvPassAGoBCircle(int agvId,int stationAId,int stationBId);
-
+    void taskAdd(int getStation,int putStation,int agv = 0);
     void taskCancel(int taskId);
 
-    bool getIsMapLoaded(){return isMapLoaded;}
-
-signals:
+    bool getIsMapLoaded(){return isMapLoaded;}signals:
     //连接状态改变
     void sig_connection_connected();
     void sig_connection_disconnected();
@@ -201,9 +194,6 @@ private:
 
     void parseOneMsg(const Json::Value &response);
 
-
-
-
     void iniRequsttMsg(Json::Value &request);
 
     void requestWaitResponse(const Json::Value &request);
@@ -218,15 +208,9 @@ private:
 
     QList<AGV_POSITION_INFO> agvpositioninfos;
 
-//    QList<STATION_INFO> mapStations;
-
-//    QList<AGV_LINE> mapLines;
-
     QList<USER_LOG> loginfos;
 
     QList<TASK_INFO> agvtasknodes;
-
-    //AgvTaskBriefInfo detailTaskinfo;
 
     ServerConnection tcpClient;
 

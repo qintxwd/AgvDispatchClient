@@ -245,9 +245,9 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int realY = station["realY"].asInt();
         int labelXoffset = station["labelXoffset"].asInt();
         int labelYoffset = station["labelYoffset"].asInt();
-        bool mapchanged = station["mapchanged"].asBool();
+        bool mapchange = station["mapChange"].asBool();
         bool locked = station["locked"].asBool();
-        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchanged,locked);
+        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchange,locked);
         g_onemap.addSpirit(p);
     }
 
@@ -547,6 +547,30 @@ void MsgCenter::cancelSubUserLog()
     request["todo"] = MSG_TODO_CANCEL_SUB_LOG;
     requestWaitResponse(request);
 }
+
+void MsgCenter::taskAdd(int getStation,int putStation,int agv)
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_TASK_CREATE;
+    request["type"] = "getput";
+    request["get"] = getStation;
+    request["put"] = putStation;
+    if(agv>0){
+        request["agv"] = agv;
+    }
+    requestWaitResponse(request);
+}
+
+void MsgCenter::taskCancel(int taskId)
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_TASK_CANCEL;
+    request["id"] = taskId;
+    requestWaitResponse(request);
+}
+
 
 QString ByteArrayToHexString(QByteArray data){
     QString ret(data.toHex().toUpper());

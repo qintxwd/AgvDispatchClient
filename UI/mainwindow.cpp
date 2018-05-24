@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dock_agv_manage(nullptr),
     dock_user_log(nullptr),
     editWindow(nullptr),
+    dock_task(nullptr),
     oneMap(g_onemap.clone())
 {
     setWindowTitle("agv dispatch client");
@@ -183,6 +184,10 @@ void MainWindow::createActions()
     addDockWidget(Qt::RightDockWidgetArea,dock_user_log);
     viewsMenu->addAction(dock_user_log->toggleViewAction());
     viewsToolBar->addAction(dock_user_log->toggleViewAction());
+    dock_task = new DockTask();
+    addDockWidget(Qt::LeftDockWidgetArea,dock_task);
+    viewsMenu->addAction(dock_task->toggleViewAction());
+    viewsToolBar->addAction(dock_task->toggleViewAction());
 
     action_map_edit = new QAction("Map Edit");
     action_map_edit->setCheckable(false);

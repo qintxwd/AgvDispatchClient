@@ -7,6 +7,7 @@
 #include "User/dockusermanage.h"
 #include "Agv/dockagvmanage.h"
 #include "UserLog/dockuserlog.h"
+#include "Task/docktask.h"
 
 class MapEditWindow;
 class MonitorDockView;
@@ -56,6 +57,7 @@ private:
     DockUserManage *dock_user_manage;
     DockAgvManage *dock_agv_manage;
     DockUserLog *dock_user_log;
+    DockTask *dock_task;
 
     QLabel *usernamelabel;
     QLabel *userrolelabel;
