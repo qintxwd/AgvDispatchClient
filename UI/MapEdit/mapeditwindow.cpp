@@ -117,7 +117,7 @@ void MapEditWindow::slot_set_map_success()
 void MapEditWindow::createStatusBar()
 {
     QStatusBar *statusbar = new QStatusBar(this);
-    QLabel *usernamelabel = new QLabel(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
+    QLabel *usernamelabel = new QLabel(QStringLiteral("当前用户:")+current_user_info.username);
     QString role_name = "";
     switch (current_user_info.role) {
     case USER_ROLE_VISITOR:

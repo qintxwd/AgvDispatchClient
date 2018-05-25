@@ -2,6 +2,8 @@
 #define MSGCENTER_H
 
 #include <QObject>
+#include <QMap>
+#include <QString>
 #include "common.h"
 #include "protocol.h"
 #include "serverconnection.h"
@@ -11,8 +13,8 @@ typedef struct _USER_INFO
 {
     int id;//id号
     int role;//角色
-    std::string username;//用户名
-    std::string password;//密码
+    QString username;//用户名
+    QString password;//密码
     int status;//登录状态
 }USER_INFO;
 
@@ -20,8 +22,8 @@ typedef struct _USER_INFO
 typedef struct _AGV_BASE_INFO
 {
     int id;
-    std::string name;
-    std::string ip;
+    QString name;
+    QString ip;
     int port;
 }AGV_BASE_INFO;
 
@@ -34,15 +36,31 @@ typedef struct _AGV_POSITION_INFO
     int rotation;
 }AGV_POSITION_INFO;
 
+//nodes
+struct TaskNode{
+    int stationid;
+    int dowhat;
+    QStringList params;
+};
+
 
 typedef struct _TASK_INFO
 {
     int id;
-    std::string produceTime;
-    std::string doTime;
-    std::string doneTime;
     int excuteAgv;
+    int priority;
     int status;
+    QString produceTime;
+    QString doTime;
+    QString doneTime;
+    QString cancelTime;
+    int doingIndex;
+    QString errorTime;
+    QString errorCode;
+    QString errorInfo;
+    bool isCancel;
+    QMap<QString,QString> extraParams;
+    QList<TaskNode> nodes;
 }TASK_INFO;
 
 
@@ -98,18 +116,19 @@ public:
     void mapLoad();
 
     ////////////////////////////////////日志
-
     void subUserLog();
-
     void cancelSubUserLog();
 
     QList<USER_LOG> getLogListModel(){return loginfos;}
 
     /////////////////////////任务部分
-    void taskAdd(int getStation,int putStation,int agv = 0);
-    void taskCancel(int taskId);
-
-    bool getIsMapLoaded(){return isMapLoaded;}signals:
+    QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}
+    void addTask(int priority,int agv,QMap<QString,QString> params,QList<TaskNode> nodes);
+    void cancelTask(int taskId);
+    bool getIsMapLoaded(){return isMapLoaded;}
+    void subTask();
+    void cancelSubTask();
+signals:
     //连接状态改变
     void sig_connection_connected();
     void sig_connection_disconnected();
@@ -157,13 +176,22 @@ public:
     void queryLogSuccess();
     void pubOneLog(USER_LOG log);
 
-    ////////////////////////地图信息
-    void mapStationsSuccess();
-    void mapLinesSuccess();
-    void changeBkgImg(QString);
-
-    //任务
+    //////////////////////////任务
     void taskDetailSuccess();
+    void onSubTask();
+
+    //添加任务成功
+    void addTaskSuccess();
+
+    //取消任务成功
+    void cancelTaskSuccess();
+
+    //订阅任务状态成功
+    void subTaskSuccess();
+
+    //取消任务订阅状态成功
+    void cancelSubTaskSuccess();
+
 public slots:
     void push(Json::Value response);
 private:
@@ -185,6 +213,13 @@ private:
     void response_agv_add(const Json::Value &response);
     void response_agv_delete(const Json::Value &response);
     void response_agv_modify(const Json::Value &response);
+
+    //任务部分
+    void response_task_add(const Json::Value &response);
+    void response_task_cancel(const Json::Value &response);
+    void response_task_sub(const Json::Value &response);
+    void response_task_cancel_sub(const Json::Value &response);
+    void pub_agv_task(const Json::Value &response);
 
     //日志部分
     void pub_agv_log(const Json::Value &response);
@@ -210,7 +245,7 @@ private:
 
     QList<USER_LOG> loginfos;
 
-    QList<TASK_INFO> agvtasknodes;
+    QList<TASK_INFO> agvtaskinfos;
 
     ServerConnection tcpClient;
 

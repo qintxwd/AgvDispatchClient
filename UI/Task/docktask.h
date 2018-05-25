@@ -6,6 +6,7 @@
 #include "../widgetwaiting.h"
 #include "../../protocol.h"
 #include "../../msgcenter.h"
+#include "tasktablewidget.h"
 
 class DockTask : public QDockWidget
 {
@@ -17,11 +18,8 @@ signals:
 
 public slots:
     void onVisibilityChanged(bool v);
-    void updateTable();
     void addTask();
     void cancelTask();
-//    void deleteSuccess();
-//    void modifySuccess();
 private:
     //显示载入中
     void showWaiting();
@@ -33,9 +31,7 @@ private:
     WidgetWaiting *waiting;
     QWidget *content;
 
-    QTableWidget *tableWidget;
-
-    //QList<USER_INFO> userinfos;
+    TaskTableWidget *tableWidget;
 };
 
 #endif // DOCKTASK_H

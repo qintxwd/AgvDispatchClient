@@ -86,7 +86,7 @@ void DockAgvManage::modifyAgv()
         return ;
     }
     AGV_BASE_INFO u = agvinfos.at(tableWidget->currentRow());
-    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,QString::fromStdString(u.name),QString::fromStdString(u.ip),u.port,this);
+    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,u.name,u.ip,u.port,this);
     if(modifyAgvDlg->exec() == QDialog::Accepted){
         msgCenter.agvList();
     }
@@ -127,10 +127,10 @@ void DockAgvManage::updateTable()
         QTableWidgetItem *itemId = new QTableWidgetItem(tr("%1").arg(u.id));
         itemId->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 0, itemId);
-        QTableWidgetItem *itemAgvname = new QTableWidgetItem(QString::fromStdString(std::string(u.name)));
+        QTableWidgetItem *itemAgvname = new QTableWidgetItem(u.name);
         itemAgvname->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 1, itemAgvname);
-        QTableWidgetItem *itemIp = new QTableWidgetItem(QString::fromStdString(std::string(u.ip)));
+        QTableWidgetItem *itemIp = new QTableWidgetItem(u.ip);
         itemIp->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 2, itemIp);
         QTableWidgetItem *itemport = new QTableWidgetItem(QString("%1").arg(u.port));

@@ -103,7 +103,7 @@ void MainWindow::onNewRequest()
 
 void MainWindow::updateCurrentUserInfo()
 {
-    usernamelabel->setText(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
+    usernamelabel->setText(QStringLiteral("当前用户:")+current_user_info.username);
     QString role_name = "";
     switch (current_user_info.role) {
     case USER_ROLE_VISITOR:
@@ -131,7 +131,7 @@ void MainWindow::updateCurrentUserInfo()
 void MainWindow::createStatusBar()
 {
     statusbar = new QStatusBar(this);
-    usernamelabel = new QLabel(QStringLiteral("当前用户:")+QString::fromStdString(std::string(current_user_info.username)));
+    usernamelabel = new QLabel(QStringLiteral("当前用户:")+current_user_info.username);
     QString role_name = "";
     switch (current_user_info.role) {
     case USER_ROLE_VISITOR:

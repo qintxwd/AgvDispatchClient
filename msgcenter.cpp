@@ -99,11 +99,12 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
         return ;
     }
 
+
     //是否和发送请求的queuenumber序号相同，相同标记 得到响应
     if(response["queuenumber"].asInt() == queueNumber)getResponse = true;
-    //qDebug()<<"send response:"<<" req->"<<response["todo"].asString().c_str()<<" queue->"<<response["queuenumber"].asString().c_str();
+
     //错误判断和显示
-    if(response["result"].asInt() == RETURN_MSG_RESULT_FAIL)
+    if(!response["result"].isNull() &&  response["result"].asInt() == RETURN_MSG_RESULT_FAIL)
     {
         //报告错误！
         emit err(response["error_code"].asInt(),QString(response["error_info"].asString().c_str()));
@@ -132,9 +133,9 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_AGV_MANAGE_ADD,std::bind(&MsgCenter::response_agv_add,this,std::placeholders::_1) },
     { MSG_TODO_AGV_MANAGE_DELETE,std::bind(&MsgCenter::response_agv_delete,this,std::placeholders::_1) },
     { MSG_TODO_AGV_MANAGE_MODIFY,std::bind(&MsgCenter::response_agv_modify,this,std::placeholders::_1) },
-    { MSG_TODO_TASK_CREATE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_TASK_CREATE,std::bind(&MsgCenter::response_task_add,this,std::placeholders::_1) },
     { MSG_TODO_TASK_QUERY_STATUS,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_TASK_CANCEL,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_TASK_CANCEL,std::bind(&MsgCenter::response_task_cancel,this,std::placeholders::_1) },
     { MSG_TODO_TASK_LIST_UNDO,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TASK_LIST_DOING,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TASK_LIST_DONE_TODAY,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
@@ -146,8 +147,8 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_CANCEL_SUB_AGV_STATSU,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_SUB_LOG,std::bind(&MsgCenter::response_subUserLog,this,std::placeholders::_1) },
     { MSG_TODO_CANCEL_SUB_LOG,std::bind(&MsgCenter::response_cancelSubUserLog,this,std::placeholders::_1) },
-    { MSG_TODO_SUB_TASK,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_CANCEL_SUB_TASK,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_SUB_TASK,std::bind(&MsgCenter::response_task_sub,this,std::placeholders::_1) },
+    { MSG_TODO_CANCEL_SUB_TASK,std::bind(&MsgCenter::response_task_cancel_sub,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_CONTROL_STATION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_CONTROL_LINE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_RELEASE_STATION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
@@ -155,7 +156,7 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_PUB_AGV_POSITION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_PUB_AGV_STATUS,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_PUB_LOG,std::bind(&MsgCenter::pub_agv_log,this,std::placeholders::_1) },
-    { MSG_TODO_PUB_TASK,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_PUB_TASK,std::bind(&MsgCenter::pub_agv_task,this,std::placeholders::_1) },
 };
 
     table[response["todo"].asInt()].f(response);
@@ -168,15 +169,19 @@ void MsgCenter::response_user_login(const Json::Value &response)
     current_user_info.id = response["id"].asInt();
     current_user_info.role = response["role"].asInt();
     current_user_info.status = response["status"].asInt();
-    current_user_info.username = response["username"].asString();
-    current_user_info.password = response["password"].asString();
+    current_user_info.username = QString::fromStdString( response["username"].asString() );
+    current_user_info.password = QString::fromStdString( response["password"].asString() );
 
     emit loginSuccess(current_user_info.role);
 }
 
 void MsgCenter::response_user_logout(const Json::Value &response)
 {
-    memset(&current_user_info,0,sizeof(USER_INFO));
+    current_user_info.id = 0;
+    current_user_info.password = "";
+    current_user_info.username = "";
+    current_user_info.role = 0;
+    current_user_info.status = 0;
 }
 
 void MsgCenter::response_user_changePassword(const Json::Value &response)
@@ -197,8 +202,8 @@ void MsgCenter::response_user_list(const Json::Value &response)
         user_info.id = oneUser["id"].asInt();
         user_info.role = oneUser["role"].asInt();
         user_info.status = oneUser["status"].asInt();
-        user_info.username = oneUser["username"].asString();
-        user_info.password = oneUser["password"].asString();
+        user_info.username = QString::fromStdString(oneUser["username"].asString());
+        user_info.password = QString::fromStdString(oneUser["password"].asString());
         userinfos.push_back(user_info);
     }
 
@@ -369,8 +374,8 @@ void MsgCenter::response_agv_list(const Json::Value &response)
         Json::Value agv = agvs[i];
         AGV_BASE_INFO temp;
         temp.id = agv["id"].asInt();
-        temp.ip = agv["ip"].asString();
-        temp.name = agv["name"].asString();
+        temp.ip = QString::fromStdString(agv["ip"].asString());
+        temp.name = QString::fromStdString(agv["name"].asString());
         temp.port = agv["port"].asInt();
         agvbaseinfos.push_back(temp);
     }
@@ -390,6 +395,32 @@ void MsgCenter::response_agv_delete(const Json::Value &response)
 void MsgCenter::response_agv_modify(const Json::Value &response)
 {
     emit modifyAgvSuccess();
+}
+
+void MsgCenter::response_task_add(const Json::Value &response)
+{
+    emit addTaskSuccess();
+}
+
+void MsgCenter::response_task_cancel(const Json::Value &response)
+{
+    emit cancelTaskSuccess();
+}
+
+void MsgCenter::response_task_sub(const Json::Value &response)
+{
+    emit subTaskSuccess();
+}
+
+void MsgCenter::response_task_cancel_sub(const Json::Value &response)
+{
+    emit cancelSubTaskSuccess();
+}
+
+void MsgCenter::pub_agv_task(const Json::Value &response)
+{
+    //TODO:
+
 }
 
 void MsgCenter::response_subUserLog(const Json::Value &response)
@@ -548,21 +579,41 @@ void MsgCenter::cancelSubUserLog()
     requestWaitResponse(request);
 }
 
-void MsgCenter::taskAdd(int getStation,int putStation,int agv)
+void MsgCenter::addTask(int priority, int agv, QMap<QString, QString> params,QList<TaskNode> nodes)
 {
     Json::Value request;
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_TASK_CREATE;
-    request["type"] = "getput";
-    request["get"] = getStation;
-    request["put"] = putStation;
-    if(agv>0){
-        request["agv"] = agv;
+    request["priority"] = priority;
+    request["agv"] = agv;
+    Json::Value v_params;
+    for(auto itr = params.begin();itr!=params.end();++itr){
+        v_params[itr.key().toStdString()] = itr.value().toStdString();
     }
+
+    if(!v_params.isNull()){
+        request["params"] = v_params;
+    }
+
+    Json::Value v_nodes;
+
+    for(auto node:nodes){
+        Json::Value v_node;
+        v_node["station"] = node.stationid;
+        v_node["dowaht"] = node.dowhat;
+        std::stringstream ss;
+        foreach (auto p, node.params) {
+            ss<<p.toStdString()<<";";
+        }
+        v_node["params"] = ss.str();
+        v_nodes.append(v_node);
+    }
+
+    request["nodes"] = v_nodes;
     requestWaitResponse(request);
 }
 
-void MsgCenter::taskCancel(int taskId)
+void MsgCenter::cancelTask(int taskId)
 {
     Json::Value request;
     iniRequsttMsg(request);
@@ -571,14 +622,27 @@ void MsgCenter::taskCancel(int taskId)
     requestWaitResponse(request);
 }
 
+void MsgCenter::subTask()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_SUB_TASK;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::cancelSubTask()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_CANCEL_SUB_TASK;
+    requestWaitResponse(request);
+}
 
 QString ByteArrayToHexString(QByteArray data){
     QString ret(data.toHex().toUpper());
     int len = ret.length()/2;
-    //qDebug()<<len;
     for(int i=1;i<len;i++)
     {
-        //qDebug()<<i;
         ret.insert(2*i+i-1," ");
     }
 
