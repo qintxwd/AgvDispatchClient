@@ -86,7 +86,7 @@ Qt::ItemFlags MonitorMapTreeModel::flags(const QModelIndex &index) const
 }
 
 QVariant MonitorMapTreeModel::headerData(int section, Qt::Orientation orientation,
-                               int role) const
+                                         int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
         return rootItem->data(section);
@@ -172,9 +172,10 @@ void MonitorMapTreeModel::setupModelData(MonitorMapTreeItem *root)
         }
         if(floor->getBkg()!=0){
             MapBackground *bkg = static_cast<MapBackground*>(onemap->getSpiritById(floor->getBkg()));
-            if(bkg==nullptr)continue;
-            MonitorMapTreeItem *itemBkg = new MonitorMapTreeItem(bkg,item_floor,QString::fromStdString(bkg->getName()));
-            item_floor->appendChild(itemBkg);
+            if(bkg!=nullptr){
+                MonitorMapTreeItem *itemBkg = new MonitorMapTreeItem(bkg,item_floor,QString::fromStdString(bkg->getName()));
+                item_floor->appendChild(itemBkg);
+            }
         }
 
         root->appendChild(item_floor);

@@ -26,7 +26,7 @@ void MonitorDockView::init()
         connect(this,SIGNAL(sig_setTool(int)),scene,SLOT(slot_setCurTool(int)));
         connect(scene,SIGNAL(sig_add_remove_spirit()),this,SIGNAL(sig_add_remove_spirit()));
         connect(scene,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
-        connect(scene,SIGNAL(sig_chooseChanged(MapSpirit*)),this,SLOT(slot_chooseChanged(MapSpirit*)));
+        connect(scene,SIGNAL(sig_chooseChanged(MapSpirit*)),this,SIGNAL(sig_chooseChanged(MapSpirit*)));
         connect(this,SIGNAL(sig_selectHand()),view,SLOT(toggleDragMode()));
         connect(this,SIGNAL(sig_selectSelect()),view,SLOT(toggleSelectMode()));
         connect(this,SIGNAL(sig_propertyChangedFromProperty(MapSpirit *)),scene,SLOT(propertyChanged(MapSpirit *)));

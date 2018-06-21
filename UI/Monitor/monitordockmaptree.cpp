@@ -13,31 +13,31 @@ void MonitorDockMapTree::initUi()
 {
     view = new QTreeView;
     view->setModel(model);
-    //支持右键菜单
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
+//    //支持右键菜单
+//    view->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    addFloor = new QAction(QStringLiteral("添加楼层"),this);
-    addPathToRoot = new QAction(QStringLiteral("添加线路"),this);
+//    addFloor = new QAction(QStringLiteral("添加楼层"),this);
+//    addPathToRoot = new QAction(QStringLiteral("添加线路"),this);
 
-    connect(addFloor,SIGNAL(triggered(bool)),this,SLOT(slot_addFloor()));
-    connect(addPathToRoot,SIGNAL(triggered(bool)),this,SLOT(slot_addRootPath()));
+//    connect(addFloor,SIGNAL(triggered(bool)),this,SLOT(slot_addFloor()));
+//    connect(addPathToRoot,SIGNAL(triggered(bool)),this,SLOT(slot_addRootPath()));
 
-    //右键菜单
-    rootRighMenu = new QMenu(this);
-    rootRighMenu->addAction(addFloor);
-    rootRighMenu->addAction(addPathToRoot);
+//    //右键菜单
+//    rootRighMenu = new QMenu(this);
+//    rootRighMenu->addAction(addFloor);
+//    rootRighMenu->addAction(addPathToRoot);
 
-    connect(view, SIGNAL(customContextMenuRequested(const QPoint& )), this, SLOT(ShowContextMenu(const QPoint&)));
+//    connect(view, SIGNAL(customContextMenuRequested(const QPoint& )), this, SLOT(ShowContextMenu(const QPoint&)));
     connect(view,SIGNAL(clicked(QModelIndex)),this,SLOT(slot_selectChanged(QModelIndex)));
     view->header()->hide();
     setWidget(view);
     view->expandAll();
 
-    setMaximumWidth(300);
+//    setMaximumWidth(300);
     setWindowTitle(QStringLiteral("地图结点"));
 
-    addFloor->setEnabled(false);
-    addPathToRoot->setEnabled(false);
+//    addFloor->setEnabled(false);
+//    addPathToRoot->setEnabled(false);
 }
 
 void MonitorDockMapTree::slot_selectChanged(QModelIndex index)
