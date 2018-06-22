@@ -252,7 +252,12 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int labelYoffset = station["labelYoffset"].asInt();
         bool mapchange = station["mapChange"].asBool();
         bool locked = station["locked"].asBool();
-        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchange,locked);
+        std::string ip = station["ip"].asString();
+        int port = station["port"].asInt();
+        int agvType = station["agvType"].asInt();
+        std::string lineId = station["lineId"].asString();
+
+        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
         g_onemap.addSpirit(p);
     }
 
@@ -681,6 +686,10 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["labelYoffset"] = p->getLabelYoffset();
             pv["mapChange"] = p->getMapChange();
             pv["locked"] = p->getLocked();
+            pv["ip"] = p->getIp();
+            pv["port"] = p->getPort();
+            pv["agvType"] = p->getAgvType();
+            pv["lineId"] = p->getLineId();
             v_points.append(pv);
         }
         else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Path) {
