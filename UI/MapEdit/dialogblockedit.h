@@ -35,7 +35,7 @@ private:
 
     QStringList selectQsl;
     QStringList unselectQsl;
-
+    QPointF pp;
 };
 
 #endif // DIALOGBLOCKEDIT_H

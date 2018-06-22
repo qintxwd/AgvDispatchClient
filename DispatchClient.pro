@@ -83,7 +83,8 @@ SOURCES += \
     UI/Monitor/monitormapitemstationname.cpp \
     UI/Task/docktask.cpp \
     UI/Task/dialogaddtask.cpp \
-    UI/Task/tasktablewidget.cpp
+    UI/Task/tasktablewidget.cpp \
+    UI/Monitor/monitormapitemagv.cpp
 
 HEADERS += \
     global.h \
@@ -146,7 +147,8 @@ HEADERS += \
     UI/Monitor/monitormapitemstationname.h \
     UI/Task/docktask.h \
     UI/Task/dialogaddtask.h \
-    UI/Task/tasktablewidget.h
+    UI/Task/tasktablewidget.h \
+    UI/Monitor/monitormapitemagv.h
 
 FORMS +=
 

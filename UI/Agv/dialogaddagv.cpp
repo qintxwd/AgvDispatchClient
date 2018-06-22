@@ -2,6 +2,8 @@
 
 #include "global.h"
 
+#include <QtWidgets>
+
 DialogAddAgv::DialogAddAgv(QWidget *parent) : QDialog(parent)
 {
     agvnameLabel = new QLabel(QStringLiteral("名称:"));
@@ -17,6 +19,19 @@ DialogAddAgv::DialogAddAgv(QWidget *parent) : QDialog(parent)
 
     okBtn = new QPushButton(QStringLiteral("添加"));
     cancelBtn = new QPushButton(QStringLiteral("取消"));
+
+    stationLabel = new QLabel(QStringLiteral("位置:"));;
+    stationCbox = new QComboBox();
+
+    auto ae = g_onemap.getAllElement();
+
+    for(auto e:ae){
+        if(e->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+            stationCbox->addItem(QString::fromStdString(e->getName()));
+            stationIds.append(e->getId());
+        }
+    }
+
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->addWidget(agvnameLabel,0,0);
     gridLayout->addWidget(agvnameInput,0,1);
@@ -24,6 +39,9 @@ DialogAddAgv::DialogAddAgv(QWidget *parent) : QDialog(parent)
     gridLayout->addWidget(ipInput,1,1);
     gridLayout->addWidget(portLabel,2,0);
     gridLayout->addWidget(portInput,2,1);
+    gridLayout->addWidget(stationLabel,3,0);
+    gridLayout->addWidget(stationCbox,3,1);
+
 
     QHBoxLayout *hboxLayout = new QHBoxLayout;
     hboxLayout->addWidget(okBtn);
@@ -59,5 +77,11 @@ void DialogAddAgv::onOkBtn()
         return ;
     }
 
-    msgCenter.addagv(agvnameInput->text().trimmed(),ipInput->text().trimmed(),portInput->text().toInt());
+    if(stationCbox->currentIndex()<0){
+        QMessageBox::warning(this,QStringLiteral("选择站点"),QStringLiteral("请选择站点"));
+        return ;
+    }
+    int stationId = stationIds[stationCbox->currentIndex()];
+
+    msgCenter.addagv(agvnameInput->text().trimmed(),ipInput->text().trimmed(),portInput->text().toInt(),stationId);
 }

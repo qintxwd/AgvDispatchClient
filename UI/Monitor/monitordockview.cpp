@@ -1,6 +1,7 @@
 ﻿#include "monitordockview.h"
 #include "monitorscene.h"
 #include "monitorviewer.h"
+#include "global.h"
 
 MonitorDockView::MonitorDockView(OneMap *_oneMap, QWidget *parent) : QDockWidget(parent),
     oneMap(_oneMap)
@@ -35,7 +36,7 @@ void MonitorDockView::init()
         tabWidget->addTab(view,QString::fromStdString(floor->getName()));
         scenes.append(scene);
     }
-
+    connect(this,SIGNAL(visibilityChanged(bool)),this,SLOT(onVisibilityChanged(bool)));
     setWidget(tabWidget);
 }
 
@@ -103,5 +104,14 @@ void MonitorDockView::slot_propertyChangedFromProperty(MapSpirit *_spirit)
         if(tabIndex>=0){
             tabWidget->setTabText(tabIndex,QString::fromStdString(_spirit->getName()));
         }
+    }
+}
+
+void MonitorDockView::onVisibilityChanged(bool b)
+{
+    if(b){
+        msgCenter.subAgvPosition();
+    }else{
+        msgCenter.cancelSubAgvPosition();
     }
 }

@@ -44,6 +44,8 @@ public slots:
     void slot_propertyChangedFromProperty(MapSpirit *_spirit);
 
     void slot_addBkg(int _bkg);
+
+    void onVisibilityChanged(bool b);
 private:
     OneMap *oneMap;
 

@@ -153,7 +153,7 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_TRAFFIC_CONTROL_LINE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_RELEASE_STATION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_RELEASE_LINE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_PUB_AGV_POSITION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_PUB_AGV_POSITION,std::bind(&MsgCenter::pub_agv_position,this,std::placeholders::_1) },
     { MSG_TODO_PUB_AGV_STATUS,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_PUB_LOG,std::bind(&MsgCenter::pub_agv_log,this,std::placeholders::_1) },
     { MSG_TODO_PUB_TASK,std::bind(&MsgCenter::pub_agv_task,this,std::placeholders::_1) },
@@ -397,6 +397,20 @@ void MsgCenter::response_agv_modify(const Json::Value &response)
     emit modifyAgvSuccess();
 }
 
+void MsgCenter::pub_agv_position(const Json::Value &response)
+{
+    Json::Value json_agvs = response["agvs"];
+    for(int i=0;json_agvs.size();++i){
+        Json::Value json_one_agv = json_agvs[i];
+        int id = json_one_agv["id"].asInt();
+        QString name = QString::fromStdString(json_one_agv["name"].asString());
+        double x = json_one_agv["x"].asDouble();
+        double y = json_one_agv["y"].asDouble();
+        double theta = json_one_agv["theta"].asDouble();
+        emit sig_pub_agv_position(id,name,x,y,theta);
+    }
+}
+
 void MsgCenter::response_task_add(const Json::Value &response)
 {
     emit addTaskSuccess();
@@ -420,6 +434,8 @@ void MsgCenter::response_task_cancel_sub(const Json::Value &response)
 void MsgCenter::pub_agv_task(const Json::Value &response)
 {
     //TODO:
+    //更新任务列表
+
 
 }
 
@@ -538,7 +554,7 @@ void MsgCenter::deleteAgv(int id)
 }
 
 
-void MsgCenter::addagv(QString name,QString ip,int port)
+void MsgCenter::addagv(QString name,QString ip,int port,int station)
 {
     Json::Value request;
     iniRequsttMsg(request);
@@ -546,6 +562,8 @@ void MsgCenter::addagv(QString name,QString ip,int port)
     request["name"] = name.toStdString();
     request["ip"] = ip.toStdString();
     request["port"] = port;
+    request["agv_type"] = "virtual";
+    request["station"] = station;
     requestWaitResponse(request);
 }
 
@@ -559,6 +577,22 @@ void MsgCenter::modifyagv(int id,QString name,QString ip,int port)
     request["name"] = name.toStdString();
     request["ip"] = ip.toStdString();
     request["port"] = port;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::subAgvPosition()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_SUB_AGV_POSITION;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::cancelSubAgvPosition()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_CANCEL_SUB_AGV_POSITION;
     requestWaitResponse(request);
 }
 
@@ -592,7 +626,7 @@ void MsgCenter::addTask(int priority, int agv, QMap<QString, QString> params,QLi
     }
 
     if(!v_params.isNull()){
-        request["params"] = v_params;
+        request["extra_params"] = v_params;
     }
 
     Json::Value v_nodes;
@@ -600,7 +634,7 @@ void MsgCenter::addTask(int priority, int agv, QMap<QString, QString> params,QLi
     for(auto node:nodes){
         Json::Value v_node;
         v_node["station"] = node.stationid;
-        v_node["dowaht"] = node.dowhat;
+        v_node["dowhat"] = node.dowhat;
         std::stringstream ss;
         foreach (auto p, node.params) {
             ss<<p.toStdString()<<";";

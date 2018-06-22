@@ -60,3 +60,11 @@ QString getErrorString(int error_code)
     }
     return ss;
 }
+
+int getRandom(int maxRandom)
+{
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    if(maxRandom>0)
+        return qrand()%maxRandom;
+    return qrand();
+}

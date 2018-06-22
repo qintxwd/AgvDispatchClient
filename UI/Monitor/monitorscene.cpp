@@ -1,6 +1,7 @@
 ﻿#include <assert.h>
 
 #include "monitorscene.h"
+#include "monitormapitemagv.h"
 #include "global.h"
 #include <QtWidgets>
 
@@ -116,6 +117,8 @@ void MonitorScene::build()
     update();
 
     connect(this,SIGNAL(selectionChanged()),this,SLOT(onSelectItemChanged()));
+    //connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),this,SIGNAL(sig_pub_agv_postion(int,QString,double,double,double)));
+    connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),this,SLOT(slot_pub_agv_postion(int,QString,double,double,double)));
 }
 
 void MonitorScene::slot_setCurTool(int t)
@@ -125,6 +128,18 @@ void MonitorScene::slot_setCurTool(int t)
     //        cur_tool = static_cast<Tool>(t);
     //        oldSelectStation = nullptr;
     //    }
+}
+
+void MonitorScene::slot_pub_agv_postion(int id,QString name,double x,double y,double theta)
+{
+    if(!agvIds.contains(id)){
+        agvIds<<id;
+        MonitorMapItemAgv *itemAgv = new MonitorMapItemAgv(id,name);
+        itemAgv->setPos(x,y);
+        itemAgv->setRotation(-1*theta);
+        connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),itemAgv,SLOT(slot_update_pos(int,QString,double,double,double)));
+        addItem(itemAgv);
+    }
 }
 
 void MonitorScene::mousePressEvent(QGraphicsSceneMouseEvent *event)

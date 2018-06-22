@@ -103,9 +103,12 @@ public:
 
     void deleteAgv(int id);
 
-    void addagv(QString name,QString ip,int port);
+    void addagv(QString name, QString ip, int port, int station);
 
     void modifyagv(int id,QString name,QString ip,int port);
+
+    void subAgvPosition();
+    void cancelSubAgvPosition();
 
     //查询历史日志
     void queryLog(QString from,QString to,bool trace = true,bool debug = true,bool info = true,bool warn = true,bool error = true,bool fatal = true);
@@ -192,6 +195,8 @@ signals:
     //取消任务订阅状态成功
     void cancelSubTaskSuccess();
 
+    //获取到一个agv位置信息
+    void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
 public slots:
     void push(Json::Value response);
 private:
@@ -213,6 +218,8 @@ private:
     void response_agv_add(const Json::Value &response);
     void response_agv_delete(const Json::Value &response);
     void response_agv_modify(const Json::Value &response);
+
+    void pub_agv_position(const Json::Value &response);
 
     //任务部分
     void response_task_add(const Json::Value &response);

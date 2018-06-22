@@ -19,4 +19,7 @@ extern OneMap g_onemap;
 void QyhSleep(int msec);
 
 QString getErrorString(int error_code);
+
+int getRandom(int maxRandom);
+
 #endif // GLOBAL_H

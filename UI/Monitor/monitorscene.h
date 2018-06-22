@@ -55,6 +55,7 @@ signals:
 
     void sig_currentMousePos(QPointF pos);
 
+    void sig_pub_agv_postion(int id,QString name,double x,double y,double theta);
 public slots:
 
 //    //菜单触动,修改背景
@@ -75,6 +76,7 @@ public slots:
 
     void slot_setCurTool(int t);
 
+    void slot_pub_agv_postion(int id,QString name,double x,double y,double theta);
 private:
 
     Tool cur_tool;
@@ -97,6 +99,8 @@ private:
 private:
     OneMap *onemap;
     MapFloor *floor;
+
+    QList<int> agvIds;
 };
 
 #endif // MONITORSCENE_H

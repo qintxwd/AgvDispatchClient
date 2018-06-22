@@ -155,7 +155,7 @@ void DialogAddTask::onOkBtn()
         if(stationCombobox->currentIndex()==0){
             node.stationid = -1;
         }else{
-            node.stationid = this->stations[stationCombobox->currentIndex()]->getId();
+            node.stationid = this->stations[stationCombobox->currentIndex()-1]->getId();
         }
 
         node.dowhat = dowhatCombobox->currentIndex();
@@ -164,6 +164,7 @@ void DialogAddTask::onOkBtn()
         if(paramstr.trimmed().length()>0){
             node.params = paramstr.trimmed().split(";");
         }
+        nodes<<node;
     }
 
     //TODO
@@ -183,9 +184,9 @@ void DialogAddTask::addNode()
     }
 
     QComboBox *doWhatSelect = new QComboBox;
-    doWhatSelect->addItem("pick");
-    doWhatSelect->addItem("put");
-    doWhatSelect->addItem("go charge");
+    doWhatSelect->addItem("pick");//0
+    doWhatSelect->addItem("put");//1
+    doWhatSelect->addItem("go charge");//2
 
     QLineEdit *paramInput = new QLineEdit;
     paramInput->setPlaceholderText(QStringLiteral("参数列表以;区分"));

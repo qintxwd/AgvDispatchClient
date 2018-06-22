@@ -10,6 +10,7 @@ class QComboBox;
 class QRadioButton;
 class QButtonGroup;
 class QHBoxLayout;
+class QComboBox;
 
 class DialogAddAgv : public QDialog
 {
@@ -34,6 +35,10 @@ private:
 
     QPushButton *okBtn;
     QPushButton *cancelBtn;
+
+    QLabel *stationLabel;
+    QComboBox *stationCbox;
+    QList<int> stationIds;
 };
 
 #endif // DIALOGADDAGV_H
