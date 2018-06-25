@@ -125,7 +125,9 @@ void MapItemCubicBezier::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //判断坐标位置
         if(sqrt(pow(event->pos().x()-P1.x(),2)+pow(event->pos().y()-P1.y(),2))<10){
             isDragingP1 = true;
+            isDragingP2 = false;
         }else if(sqrt(pow(event->pos().x()-P2.x(),2)+pow(event->pos().y()-P2.y(),2))<10){
+            isDragingP1 = false;
             isDragingP2 = true;
         }
     }
@@ -142,8 +144,8 @@ void MapItemCubicBezier::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         emit sig_propertyChanged(path);
     }else if(isDragingP2){
         P2 = event->pos();
-        path->setP1x(P2.x());
-        path->setP1y(P2.y());
+        path->setP2x(P2.x());
+        path->setP2y(P2.y());
         update();
         emit sig_propertyChanged(path);
     }

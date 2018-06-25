@@ -405,7 +405,7 @@ void MsgCenter::response_agv_modify(const Json::Value &response)
 void MsgCenter::pub_agv_position(const Json::Value &response)
 {
     Json::Value json_agvs = response["agvs"];
-    for(int i=0;json_agvs.size();++i){
+    for(int i=0;i<json_agvs.size();++i){
         Json::Value json_one_agv = json_agvs[i];
         int id = json_one_agv["id"].asInt();
         QString name = QString::fromStdString(json_one_agv["name"].asString());
@@ -440,6 +440,47 @@ void MsgCenter::pub_agv_task(const Json::Value &response)
 {
     //TODO:
     //更新任务列表
+    Json::Value json_tasks = response["tasks"];
+    agvtaskinfos.clear();
+    for(int i=0;i<json_tasks.size();++i){
+        Json::Value json_one_task = json_tasks[i];
+        TASK_INFO ti;
+        ti.excuteAgv = json_one_task["agv"].asInt();
+        if(ti.excuteAgv<=0)ti.excuteAgv = 0;
+        ti.priority = json_one_task["priority"].asInt();
+        ti.status = json_one_task["status"].asInt();
+        ti.produceTime = QString::fromStdString(json_one_task["produceTime"].asString());
+        ti.cancelTime = QString::fromStdString(json_one_task["cancelTime"].asString());
+        ti.doTime = QString::fromStdString(json_one_task["doTime"].asString());
+        ti.doneTime = QString::fromStdString(json_one_task["doneTime"].asString());
+        ti.errorTime = QString::fromStdString(json_one_task["errorTime"].asString());
+        ti.doingIndex = json_one_task["doingIndex"].asInt();
+        ti.errorCode = json_one_task["errorCode"].asInt();
+        ti.errorInfo = QString::fromStdString(json_one_task["errorInfo"].asString());
+        ti.id = json_one_task["id"].asInt();
+        ti.isCancel = json_one_task["isCancel"].asBool();
+
+        Json::Value json_nodes = json_one_task["nodes"];
+        for(int j=0;j<json_nodes.size();++j){
+            Json::Value json_one_node = json_nodes[j];
+            TaskNode node;
+            node.stationid = json_one_node["station"].asInt();
+            //ti.nodes.push_back();
+
+        }
+
+
+
+
+
+
+    }
+
+
+
+
+
+
 
 
 }

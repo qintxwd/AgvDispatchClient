@@ -5,6 +5,15 @@
 TaskTableWidget::TaskTableWidget(QWidget *parent) : QTableWidget(0,5,parent)
 {
     tipWidget = new QWidget;
+
+    //tip widget 固定内容:
+//    ID/优先级/agv/producetime/cancelTime/doTime/DoingInde/doneTime/errorCode/errorInfo/errorTime/isCancel/status
+//            node列表
+
+
+
+
+
     tipWidget->setMinimumSize(50,50);
     timer = new QTimer;
     timer->setInterval(1500);

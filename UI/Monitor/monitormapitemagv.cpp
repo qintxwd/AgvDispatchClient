@@ -56,7 +56,7 @@ void MonitorMapItemAgv::my_update()
 void MonitorMapItemAgv::slot_update_pos(int id,QString name,double x,double y,double angle)
 {
     if(id!=agv_id)return ;
-//    setPos(x,y);
-//    setRotation(-1*angle);
-//    my_update();
+    setPos(x,y);
+    setRotation(angle);
+    my_update();
 }
