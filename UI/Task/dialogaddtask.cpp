@@ -109,9 +109,9 @@ DialogAddTask::DialogAddTask(QWidget *parent) : QDialog(parent)
     //TODO:
     connect(&msgCenter,SIGNAL(tip(QString)),tipLabel,SLOT(setText(QString)));
     connect(&msgCenter,SIGNAL(addTaskSuccess()),this,SLOT(accept()));
-    connect(&msgCenter,SIGNAL(listAgvSuccess()),this,SLOT(agvsUpdate()));
     connect(&msgCenter,SIGNAL(mapGetSuccess()),this,SLOT(stationsUpdate()));
 
+    agvsUpdate();
     stationsUpdate();
 }
 
@@ -169,6 +169,8 @@ void DialogAddTask::onOkBtn()
 
     //TODO
     msgCenter.addTask(priority,agv,params,nodes);
+
+    accept();
 }
 
 void DialogAddTask::addNode()
@@ -197,11 +199,16 @@ void DialogAddTask::addNode()
 
 void DialogAddTask::removeNode()
 {
-    int kk = nodeTable->currentRow();
-    if(kk>=0){
-        nodeTable->removeRow(kk );
-    }else{
-        QMessageBox::warning(this,QStringLiteral("未选择行"),QStringLiteral("未选择行"));
+    //    int kk = nodeTable->currentRow();
+    //    QTableWidgetItem *tt = nodeTable->currentItem();
+    //    if(kk>=0){
+    //        nodeTable->removeRow(kk );
+    //    }else{
+    //        QMessageBox::warning(this,QStringLiteral("未选择行"),QStringLiteral("未选择行"));
+    //    }
+
+    if(nodeTable->rowCount()>0){
+        nodeTable->removeRow(0);
     }
 }
 
@@ -234,6 +241,7 @@ void DialogAddTask::agvsUpdate()
     int currentIndex = agvCombobox->currentIndex();
     agvinfos = msgCenter.getAgvListModel();
     agvCombobox->clear();
+    agvCombobox->addItem(QStringLiteral("不指定"));
     for(auto agvinfo:agvinfos){
         agvCombobox->addItem(agvinfo.name);
     }

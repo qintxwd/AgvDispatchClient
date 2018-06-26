@@ -465,24 +465,17 @@ void MsgCenter::pub_agv_task(const Json::Value &response)
             Json::Value json_one_node = json_nodes[j];
             TaskNode node;
             node.stationid = json_one_node["station"].asInt();
-            //ti.nodes.push_back();
-
+            Json::Value json_things = json_one_node["things"];
+            for(int k=0;k<json_things.size();++k){
+                Json::Value json_one_thing = json_things[k];
+                node.dowhat = json_one_thing["id"].asInt();
+                //node.params =
+            }
+            ti.nodes.append(node);
         }
-
-
-
-
-
-
+        agvtaskinfos.append(ti);
     }
-
-
-
-
-
-
-
-
+    emit onSubTask();
 }
 
 void MsgCenter::response_subUserLog(const Json::Value &response)
