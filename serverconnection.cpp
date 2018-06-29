@@ -174,12 +174,18 @@ void ServerConnection::init(QString ip, int _port)
             m_queue.pop_front();
             sendQueueMtx.unlock();
 
+            char headLeng[MSG_JSON_PREFIX_LENGTH];
+            headLeng[0] = MSG_MSG_HEAD;
             int length = write_one_msg.toStyledString().length();
-            char *send_buffer = new char[length + 6];
-            send_buffer[0] = MSG_MSG_HEAD;
-            snprintf(send_buffer + 1, 4, (char *)&length, sizeof(length));
-            snprintf(send_buffer +5, length + 1, "%s", write_one_msg.toStyledString().c_str());
-            ::send(socketFd,send_buffer,length+5,0);
+            //send head and length
+            snprintf(headLeng+1,4, (char *)&length,sizeof(length));
+            //qDebug()<<"send json with length = "<<length<<" :"<<write_one_msg.toStyledString().c_str();
+            qDebug() << "SEND! len=" << length << " json=\n" << write_one_msg.toStyledString().c_str();
+            if (::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0)!=MSG_JSON_PREFIX_LENGTH)
+            {
+                continue ;
+            }
+            ::send(socketFd,write_one_msg.toStyledString().c_str(),write_one_msg.toStyledString().length(),0);
         }
     });
 }
