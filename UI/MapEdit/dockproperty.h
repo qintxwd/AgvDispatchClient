@@ -41,6 +41,7 @@ private slots:
     void slot_PathP2XChanged(QString p2x);
     void slot_PathP2YChanged(QString p2y);
     void slot_LengthChanged(QString length);
+    void slot_SpeedChanged(QString speed);
 
     //floor edit
     void slot_FloorNameChanged(QString name);
@@ -118,6 +119,8 @@ private:
     QLineEdit *path_yP2Input;
     QTableWidgetItem *path_itemKeyLength;
     QLineEdit *path_lengthInput;
+    QTableWidgetItem *path_itemKeySpeed;
+    QLineEdit *path_speedInput;
 
     //floor
     QTableWidgetItem *floor_itemKeyId;

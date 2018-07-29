@@ -7,6 +7,7 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include "protocol.h"
+#include "qyhbuffer.h"
 class ServerConnection : public QObject
 {
     Q_OBJECT
@@ -27,6 +28,13 @@ signals:
 public slots:
 
 private:
+
+    int json_len = 0;
+
+    QyhBuffer buffer;
+
+    void packageProcess(const char *data,int len);
+
     enum{
         QYH_TCP_CLIENT_RECV_BUF_LEN = 1500,
     };

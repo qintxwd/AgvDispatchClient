@@ -8,6 +8,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++11
+CONFIG += c++14
 TARGET = DispatchClient
 TEMPLATE = app
 
@@ -84,7 +85,8 @@ SOURCES += \
     UI/Task/docktask.cpp \
     UI/Task/dialogaddtask.cpp \
     UI/Task/tasktablewidget.cpp \
-    UI/Monitor/monitormapitemagv.cpp
+    UI/Monitor/monitormapitemagv.cpp \
+    qyhbuffer.cpp
 
 HEADERS += \
     global.h \
@@ -148,7 +150,8 @@ HEADERS += \
     UI/Task/docktask.h \
     UI/Task/dialogaddtask.h \
     UI/Task/tasktablewidget.h \
-    UI/Monitor/monitormapitemagv.h
+    UI/Monitor/monitormapitemagv.h \
+    qyhbuffer.h
 
 FORMS +=
 
@@ -168,5 +171,5 @@ win32{
 win32:DEFINES += _CRT_SECURE_NO_WARNINGS
 win32:DEFINES += _WINSOCK_DEPRECATED_NO_WARNINGS
 INCLUDEPATH+=D:\thirdparty\jsoncpp\include
-LIBS+=D:\thirdparty\jsoncpp\lib\Debug\jsoncpp_static.lib
+LIBS+=D:\thirdparty\jsoncpp\lib\x64\Debug\jsoncpp.lib
 }

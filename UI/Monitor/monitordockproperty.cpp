@@ -18,7 +18,7 @@ void MonitorDockProperty::initTabTable()
     tableWidget_blank = new QTableWidget(0,2);
 
     tableWidget_point = new QTableWidget(10,2);
-    tableWidget_path = new QTableWidget(8,2);
+    tableWidget_path = new QTableWidget(9,2);
     tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
     tableWidget_block = new QTableWidget(2,2);
@@ -191,6 +191,11 @@ void MonitorDockProperty::initTableContent()
     path_itemKeyLength->setFlags(path_itemKeyLength->flags()&(~Qt::ItemIsEditable));
     path_lengthInput  = new QLineEdit(QString(""));
     connect(path_lengthInput,SIGNAL(textEdited(QString)),this,SLOT(slot_LengthChanged(QString)));
+    path_itemKeySpeed = new QTableWidgetItem(QStringLiteral("Speed"));
+    path_itemKeySpeed->setTextAlignment(Qt::AlignCenter);
+    path_itemKeySpeed->setFlags(path_itemKeySpeed->flags()&(~Qt::ItemIsEditable));
+    path_speedInput  = new QLineEdit(QString(""));
+    connect(path_speedInput,SIGNAL(textEdited(QString)),this,SLOT(slot_SpeedChanged(QString)));
 
     ///////floor
     floor_itemKeyId = new QTableWidgetItem("ID");
@@ -307,6 +312,8 @@ void MonitorDockProperty::initTableContent()
     tableWidget_path->setCellWidget(6,1,path_yP2Input);
     tableWidget_path->setItem(7, 0, path_itemKeyLength);
     tableWidget_path->setCellWidget(7,1,path_lengthInput);
+    tableWidget_path->setItem(8, 0, path_itemKeySpeed);
+    tableWidget_path->setCellWidget(8,1,path_speedInput);
 
     tableWidget_floor->setItem(0, 0, floor_itemKeyId);
     tableWidget_floor->setItem(0, 1, floor_itemValueId);
@@ -466,6 +473,7 @@ void MonitorDockProperty::showPath()
     path_xP2Input->setText(QString("%1").arg(path->getP2x()));
     path_yP2Input->setText(QString("%1").arg(path->getP2y()));
     path_lengthInput->setText(QString("%1").arg(path->getLength()));
+    path_speedInput->setText(QString("%1").arg(path->getSpeed()));
     tableWidget_path->update();
     tabwidget->setCurrentIndex(2);
 }
@@ -615,6 +623,14 @@ void MonitorDockProperty::slot_LengthChanged(QString length)
     (static_cast<MapPath *>(spirit))->setLength(length.toInt());
     emit sig_propertyChanged(spirit);
 }
+
+void MonitorDockProperty::slot_SpeedChanged(QString speed)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapPath *>(spirit))->setSpeed(speed.toDouble());
+    emit sig_propertyChanged(spirit);
+}
+
 
 void MonitorDockProperty::slot_FloorNameChanged(QString name)
 {

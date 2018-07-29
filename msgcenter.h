@@ -129,8 +129,12 @@ public:
     void addTask(int priority,int agv,QMap<QString,QString> params,QList<TaskNode> nodes);
     void cancelTask(int taskId);
     bool getIsMapLoaded(){return isMapLoaded;}
+
     void subTask();
     void cancelSubTask();
+
+    void subAgvStatus();
+    void cancelSubAgvStatus();
 signals:
     //连接状态改变
     void sig_connection_connected();
@@ -189,14 +193,20 @@ signals:
     //取消任务成功
     void cancelTaskSuccess();
 
-    //订阅任务状态成功
+    //获取到一个agv位置信息
+    void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
+
+    //订阅成功
+    void subUserLogSuccess();
+    void cancelSubUserLogSuccess();
     void subTaskSuccess();
 
     //取消任务订阅状态成功
     void cancelSubTaskSuccess();
-
-    //获取到一个agv位置信息
-    void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
+    void subAgvPositionSuccess();
+    void cancelSubAgvPositionSuccess();
+    void subAgvStatusSuccess();
+    void cancelSubStatusSuccess();
 public slots:
     void push(Json::Value response);
 private:
@@ -232,6 +242,14 @@ private:
     void pub_agv_log(const Json::Value &response);
     void response_subUserLog(const Json::Value &response);
     void response_cancelSubUserLog(const Json::Value &response);
+
+    void response_subAgvPosition(const Json::Value &response);
+    void response_subAgvStatus(const Json::Value &response);
+    void response_subTask(const Json::Value &response);
+
+    void response_cancelSubAgvPosition(const Json::Value &response);
+    void response_cancelSubAgvStatus(const Json::Value &response);
+    void response_cancelSubTask(const Json::Value &response);
 
 
     void parseOneMsg(const Json::Value &response);

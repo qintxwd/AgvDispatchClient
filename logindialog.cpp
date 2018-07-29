@@ -21,6 +21,7 @@ void LoginDialog::initUi(){
     nameInput->setObjectName("nameInput");
     passwordInputLabel= new QLabel(QStringLiteral("密  码:"));
     pwdInput= new QLineEdit(QStringLiteral(""));
+    pwdInput->setEchoMode(QLineEdit::Password);
     pwdInput->setObjectName("pwdInput");
     tipLabel= new QLabel(QStringLiteral(""));
     configBtn = new QPushButton(QStringLiteral("配置"));
@@ -169,6 +170,11 @@ void LoginDialog::on_loginBtn_clicked()
     //TODO:
     onTip(QStringLiteral("正在登录"));
     msgCenter.login(nameInput->text(),pwdInput->text());
+//    QyhSleep(5000);
+//    msgCenter.login(nameInput->text(),pwdInput->text());
+//    QyhSleep(10000);
+//    msgCenter.mapLoad();
+//    QyhSleep(10000);
 }
 
 void LoginDialog::on_okBtn_clicked()

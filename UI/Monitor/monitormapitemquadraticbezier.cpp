@@ -31,8 +31,8 @@ void MonitorMapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionG
     Q_UNUSED(widget)
 
 
-    const int polygonLength = 30;
-    const int polygonAngle = 20;
+    const int polygonLength = 10;
+    const int polygonAngle = 10;
     double angle;
 
     triangle_end[0] = endStation->pos();

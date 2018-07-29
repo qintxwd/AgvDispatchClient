@@ -28,6 +28,8 @@
 #pragma comment(lib,"ws2_32.lib")
 #endif
 
+#include "common.h"
+
 ServerConnection::ServerConnection(QObject *parent) : QObject(parent),
     need_reconnect(true),
     socketFd(0),
@@ -49,14 +51,62 @@ ServerConnection::~ServerConnection()
     thread_send.join();
 }
 
+void ServerConnection::packageProcess(const char *data,int len)
+{
+    buffer.append(data,len);
+    if(buffer.size()<=json_len){
+        return ;
+    }
+
+    while(true)
+    {
+        if(buffer.length()<=0)break;
+        //寻找包头
+        int pack_head = buffer.find(MSG_MSG_HEAD);
+        if(pack_head>=0){
+            //丢弃前面的无用数据
+            buffer.removeFront(pack_head);
+            //json长度
+            json_len = buffer.getInt32(1);
+            if(json_len==0){
+                //空包,清除包头和长度信息。
+                buffer.removeFront(1+sizeof(int32_t));
+            }else if(json_len>0){
+                if(json_len <= buffer.length()-1-sizeof(int32_t))
+                {
+                    //包完整
+                    //处理包数据
+                    Json::Reader reader;
+                    Json::Value root;
+                    std::string sss = std::string(buffer.data(1+sizeof(int32_t)),json_len);
+                    if (reader.parse(sss, root))
+                    {
+                        qDebug() << "RECV! len=" << json_len << " json=\n" << sss.c_str();
+                        emit onRead(root);
+                    }
+                    //清除报数据
+                    buffer.removeFront(1+sizeof(int32_t)+json_len);
+                    json_len = 0;
+                }else{
+                    //包不完整，继续接收
+                    break;
+                }
+            }
+        }else{
+            //未找到包头
+            buffer.clear();
+            break;
+        }
+    }
+}
+
 void ServerConnection::init(QString ip, int _port)
 {
     serverip = (ip.toStdString());
     port = (_port);
 
     thread_read = std::thread([&](){
-        char head_length[5];
-        int json_length;
+        char perBuffer[MSG_READ_BUFFER_LENGTH];//每次接收的缓存区
         while(!quit)
         {
             if(!need_reconnect){
@@ -74,12 +124,12 @@ void ServerConnection::init(QString ip, int _port)
                 continue;
             }
 
+            json_len = 0;
+
             emit onConnect();
-
-            while(!quit && socketFd>0){
-                int recvLen = 0;
-                recvLen = ::recv(socketFd,head_length, 5, 0);
-
+            while(!quit && socketFd>0)
+            {
+                int recvLen = ::recv(socketFd,perBuffer, MSG_READ_BUFFER_LENGTH, 0);
                 if (recvLen <= 0)
                 {
                     if (errno == 0 || errno == EINTR || errno == EAGAIN)
@@ -88,67 +138,19 @@ void ServerConnection::init(QString ip, int _port)
                     }
                     else
                     {
+                        qDebug()<<"recvLen="<<recvLen<<" errno="<<errno<<" msg="<<strerror(errno) <<" socket="<<socket;
 #ifdef WIN32
                         closesocket(socketFd);
 #else
                         close(socketFd);
 #endif
                         socketFd = 0;
+                        buffer.clear();
                         emit onDisconnect();
                         continue;
                     }
-                }
-
-                if(recvLen<5)continue;
-
-
-                if((head_length[0] & 0xFF) == MSG_MSG_HEAD)
-                {
-                    snprintf((char *)&json_length,sizeof(json_length),head_length+1,sizeof(head_length)-1);
-                    if(json_length>0){
-                        //                        qDebug()<<"json_length="<<json_length;
-                        char *buffer = new char[json_length+1];
-                        int read_pos = 0;
-                        recvLen = 0;
-                        while(true){
-                            recvLen += ::recv(socketFd,buffer+read_pos,json_length-recvLen,0);
-                            if (recvLen <= 0)
-                            {
-                                if (errno == EINTR || errno == EAGAIN)
-                                {
-                                }
-                                else
-                                {
-#ifdef WIN32
-                                    closesocket(socketFd);
-#else
-                                    close(socketFd);
-#endif
-                                    socketFd = 0;
-                                    emit onDisconnect();
-                                    break;
-                                }
-                            }else if(recvLen>=json_length){
-                                break;
-                            }else{
-                                read_pos += recvLen;
-                            }
-                        }
-                        if(socketFd == 0)break;
-                        if(recvLen>=0)
-                            buffer[recvLen] = '\0';
-
-                        if(recvLen>=json_length){
-                            Json::Reader reader;
-                            Json::Value root;
-                            if (reader.parse(std::string(buffer,json_length), root))
-                            {
-                                qDebug() << "RECV! len=" << json_length << " json=\n" << std::string(buffer,json_length).c_str();
-                                emit onRead(root);
-                            }
-                        }
-                        delete []buffer;
-                    }
+                }else{
+                    packageProcess(perBuffer,recvLen);
                 }
             }
         }
@@ -173,19 +175,50 @@ void ServerConnection::init(QString ip, int _port)
             Json::Value write_one_msg = m_queue.front();
             m_queue.pop_front();
             sendQueueMtx.unlock();
+            //std::string json_str = write_one_msg.toStyledString();
+            std::string msg = write_one_msg.toStyledString();
+            int length = msg.length();
 
-            char headLeng[MSG_JSON_PREFIX_LENGTH];
-            headLeng[0] = MSG_MSG_HEAD;
-            int length = write_one_msg.toStyledString().length();
-            //send head and length
-            snprintf(headLeng+1,4, (char *)&length,sizeof(length));
-            //qDebug()<<"send json with length = "<<length<<" :"<<write_one_msg.toStyledString().c_str();
-            qDebug() << "SEND! len=" << length << " json=\n" << write_one_msg.toStyledString().c_str();
-            if (::send(socketFd,headLeng,MSG_JSON_PREFIX_LENGTH,0)!=MSG_JSON_PREFIX_LENGTH)
-            {
-                continue ;
+            char *send_buffer = new char[length + 6];
+            memset(send_buffer, 0, length + 6);
+            send_buffer[0] = MSG_MSG_HEAD;
+            memcpy_s(send_buffer + 1, length+5, (char *)&length, sizeof(length));
+            memcpy_s(send_buffer +5, length + 1, msg.c_str(),msg.length());
+
+            int per_send_length = MSG_READ_BUFFER_LENGTH;
+
+            if(length+5<per_send_length){
+                if(length+5 != ::send(socketFd,send_buffer,length+5,0))
+                {
+                    qDebug()<<("send error ") ;
+                }
+            }else{
+                int packindex = 0;
+                char *per_send_buffer = new char[per_send_length];
+                int resendTime = 3;
+                while(true){
+                    int this_time_send_length = (length +5) - packindex * per_send_length;
+                    if(this_time_send_length<=0)break;
+                    if(this_time_send_length > per_send_length)this_time_send_length = per_send_length;
+
+                    memcpy(per_send_buffer,send_buffer+packindex*per_send_length,this_time_send_length);
+                    bool sendRet = false;
+                    for(int i=0;i<resendTime;++i){
+                        if(this_time_send_length == ::send(socketFd,per_send_buffer,this_time_send_length,0)){
+                            sendRet = true;
+                            break;
+                        }
+                    }
+
+                    if(!sendRet){
+                        qDebug() << ("send error ") ;
+                        break;
+                    }
+
+                    ++packindex;
+                }
+
             }
-            ::send(socketFd,write_one_msg.toStyledString().c_str(),write_one_msg.toStyledString().length(),0);
         }
     });
 }
@@ -271,16 +304,16 @@ bool ServerConnection::initConnect()
         return false;
     }
 
-    //设置接收超时为1000ms
-    int nTimeout=1000;
-#ifdef WIN32
-    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
-#else
-    if( 0 == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
-#endif
-    {
-        printf("Set SO_RCVTIMEO error !\n" );
-    }
+//    //设置接收超时为1000ms
+//    int nTimeout=10000;
+//#ifdef WIN32
+//    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+//#else
+//    if( 0 == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+//#endif
+//    {
+//        printf("Set SO_RCVTIMEO error !\n" );
+//    }
 
 
     struct sockaddr_in stServer;

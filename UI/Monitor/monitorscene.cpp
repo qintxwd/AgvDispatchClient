@@ -110,7 +110,7 @@ void MonitorScene::build()
     MapBackground *_bkg =static_cast<MapBackground *>( onemap->getSpiritById( floor->getBkg()));
     if(_bkg != nullptr){
         bkg = new MonitorMapItemBkg(_bkg);
-        connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
+        //connect(bkg,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
         addItem(bkg);
     }
 

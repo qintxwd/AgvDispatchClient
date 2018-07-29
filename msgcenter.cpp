@@ -76,7 +76,7 @@ void MsgCenter::requestWaitResponse(const Json::Value &request)
         emit sendRequestFail();
         return ;
     }
-    int kk = 100;
+    int kk = 200;
     while(!getResponse&&--kk>0)
     {
         QyhSleep(10);
@@ -141,10 +141,10 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_TASK_LIST_DONE_TODAY,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TASK_LIST_DURING,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_LOG_LIST_DURING,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_SUB_AGV_POSITION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_CANCEL_SUB_AGV_POSITION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_SUB_AGV_STATSU,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
-    { MSG_TODO_CANCEL_SUB_AGV_STATSU,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_SUB_AGV_POSITION,std::bind(&MsgCenter::response_subAgvPosition,this,std::placeholders::_1) },
+    { MSG_TODO_CANCEL_SUB_AGV_POSITION,std::bind(&MsgCenter::response_cancelSubAgvPosition,this,std::placeholders::_1) },
+    { MSG_TODO_SUB_AGV_STATSU,std::bind(&MsgCenter::response_subAgvStatus,this,std::placeholders::_1) },
+    { MSG_TODO_CANCEL_SUB_AGV_STATSU,std::bind(&MsgCenter::response_cancelSubAgvStatus,this,std::placeholders::_1) },
     { MSG_TODO_SUB_LOG,std::bind(&MsgCenter::response_subUserLog,this,std::placeholders::_1) },
     { MSG_TODO_CANCEL_SUB_LOG,std::bind(&MsgCenter::response_cancelSubUserLog,this,std::placeholders::_1) },
     { MSG_TODO_SUB_TASK,std::bind(&MsgCenter::response_task_sub,this,std::placeholders::_1) },
@@ -236,6 +236,7 @@ void MsgCenter::response_map_set(const Json::Value &response)
 void MsgCenter::response_map_get(const Json::Value &response)
 {
     //TODO:
+    qDebug()<<"get map json length = "<<response.toStyledString().length();
     g_onemap.clear();
     //地图信息
     for (int i = 0; i < response["points"].size(); ++i)
@@ -276,7 +277,8 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int p2y = line["p2y"].asInt();
         int length = line["length"].asInt();
         bool locked = line["locked"].asBool();
-        MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)type,length,p1x,p1y,p2x,p2y,locked);
+        double speed = line["speed"].asDouble();
+        MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)type,length,p1x,p1y,p2x,p2y,locked,speed);
         g_onemap.addSpirit(p);
     }
 
@@ -480,12 +482,42 @@ void MsgCenter::pub_agv_task(const Json::Value &response)
 
 void MsgCenter::response_subUserLog(const Json::Value &response)
 {
-
+    emit subUserLogSuccess();
 }
 
 void MsgCenter::response_cancelSubUserLog(const Json::Value &response)
 {
+    emit cancelSubUserLogSuccess();
+}
 
+void MsgCenter::response_subAgvPosition(const Json::Value &response)
+{
+    emit subAgvPositionSuccess();
+}
+
+void MsgCenter::response_subAgvStatus(const Json::Value &response)
+{
+    emit subAgvStatusSuccess();
+}
+
+void MsgCenter::response_subTask(const Json::Value &response)
+{
+    emit subTaskSuccess();
+}
+
+void MsgCenter::response_cancelSubAgvPosition(const Json::Value &response)
+{
+    emit cancelSubAgvPositionSuccess();
+}
+
+void MsgCenter::response_cancelSubAgvStatus(const Json::Value &response)
+{
+    emit cancelSubStatusSuccess();
+}
+
+void MsgCenter::response_cancelSubTask(const Json::Value &response)
+{
+    emit cancelSubTaskSuccess();
 }
 
 void MsgCenter::pub_agv_log(const Json::Value &response)
@@ -635,6 +667,21 @@ void MsgCenter::cancelSubAgvPosition()
     requestWaitResponse(request);
 }
 
+void MsgCenter::subAgvStatus()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_SUB_AGV_STATSU;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::cancelSubAgvStatus()
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_CANCEL_SUB_AGV_STATSU;
+    requestWaitResponse(request);
+}
 
 void MsgCenter::subUserLog()
 {
@@ -774,6 +821,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["p2y"] = p->getP2y();
             pv["length"] = p->getLength();
             pv["locked"] = p->getLocked();
+            pv["speed"] = p->getSpeed();
             v_paths.append(pv);
         }
         else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background) {
