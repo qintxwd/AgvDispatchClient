@@ -173,6 +173,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             int id = onemap->getNextId();
             QString name = QString("station %1").arg(id);
             MapPoint *p = new MapPoint(id,name.toStdString(),type,event->scenePos().x(),event->scenePos().y());
+            p->setRealX(p->getX());
+            p->setRealY(p->getY());
             onemap->addSpirit(p);
             floor->addPoint(p->getId());
 

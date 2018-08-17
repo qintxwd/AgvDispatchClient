@@ -1,4 +1,4 @@
-﻿#ifndef DIALOGADDTASK_H
+#ifndef DIALOGADDTASK_H
 #define DIALOGADDTASK_H
 
 #include <QDialog>
@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QSpinBox>
 #include "../../msgcenter.h"
 
 class DialogAddTask : public QDialog
@@ -21,6 +22,7 @@ public slots:
     void onOkBtn();
     void addNode();
     void removeNode();
+    void addNodeFromFile();
     void addParam();
     void removeParam();
 
@@ -32,6 +34,9 @@ private:
 
     QLabel *priorityLabel;
     QComboBox *priorityCombobox;
+
+    QLabel *runtimeLabel;
+    QSpinBox *runtimeInput;
 
     QTableWidget *extraTable;
     QTableWidget *nodeTable;

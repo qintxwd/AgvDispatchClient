@@ -12,6 +12,8 @@ public:
     explicit TaskTableWidget(QWidget *parent = nullptr);
 
     int currentSelectTaskId();
+    QList<TASK_INFO> taskinfos;
+
 signals:
     //void show_tip_row(int row);
     //void show_tip_close();
@@ -26,7 +28,6 @@ private:
     QTimer *timer;
     int lastRow;
     QWidget *tipWidget;
-    QList<TASK_INFO> taskinfos;
 };
 
 #endif // TASKTABLEWIDGET_H

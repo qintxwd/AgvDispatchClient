@@ -249,6 +249,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int y = station["y"].asInt();
         int realX = station["realX"].asInt();
         int realY = station["realY"].asInt();
+        int realA = station["realA"].asInt();
         int labelXoffset = station["labelXoffset"].asInt();
         int labelYoffset = station["labelYoffset"].asInt();
         bool mapchange = station["mapChange"].asBool();
@@ -258,7 +259,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int agvType = station["agvType"].asInt();
         std::string lineId = station["lineId"].asString();
 
-        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
+        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,realA,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
         g_onemap.addSpirit(p);
     }
 
@@ -359,11 +360,6 @@ void MsgCenter::response_map_get(const Json::Value &response)
             Json::Value spirit = spirits[k];
             p->addSpirit(spirit.asInt());
         }
-        Json::Value agvs = group["agvs"];
-        for(int k=0;k<agvs.size();++k){
-            Json::Value agv = agvs[k];
-            p->addAgv(agv.asInt());
-        }
         g_onemap.addSpirit(p);
     }
 
@@ -414,8 +410,14 @@ void MsgCenter::pub_agv_position(const Json::Value &response)
         double x = json_one_agv["x"].asDouble();
         double y = json_one_agv["y"].asDouble();
         double theta = json_one_agv["theta"].asDouble();
-        emit sig_pub_agv_position(id,name,x,y,theta);
+        QString occurs = QString::fromStdString(json_one_agv["occurs"].asString());
+        QStringList ocs = occurs.split(";");
+
+        emit sig_pub_agv_position(id,name,x,y,theta,ocs);
     }
+
+    //更新道路占用颜色
+    emit sig_pub_agv_occus();
 }
 
 void MsgCenter::response_task_add(const Json::Value &response)
@@ -461,6 +463,7 @@ void MsgCenter::pub_agv_task(const Json::Value &response)
         ti.errorInfo = QString::fromStdString(json_one_task["errorInfo"].asString());
         ti.id = json_one_task["id"].asInt();
         ti.isCancel = json_one_task["isCancel"].asBool();
+        ti.describe = QString::fromStdString(json_one_task["describe"].asString());
 
         Json::Value json_nodes = json_one_task["nodes"];
         for(int j=0;j<json_nodes.size();++j){
@@ -699,13 +702,14 @@ void MsgCenter::cancelSubUserLog()
     requestWaitResponse(request);
 }
 
-void MsgCenter::addTask(int priority, int agv, QMap<QString, QString> params,QList<TaskNode> nodes)
+void MsgCenter::addTask(int priority, int agv,int runTimes, QMap<QString, QString> params,QList<TaskNode> nodes)
 {
     Json::Value request;
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_TASK_CREATE;
     request["priority"] = priority;
     request["agv"] = agv;
+    request["runTimes"] = runTimes;
     Json::Value v_params;
     for(auto itr = params.begin();itr!=params.end();++itr){
         v_params[itr.key().toStdString()] = itr.value().toStdString();
@@ -797,6 +801,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["y"] = p->getY();
             pv["realX"] = p->getRealX();
             pv["realY"] = p->getRealY();
+            pv["realA"] = p->getRealA();
             pv["labelXoffset"] = p->getLabelXoffset();
             pv["labelYoffset"] = p->getLabelYoffset();
             pv["mapChange"] = p->getMapChange();
@@ -902,14 +907,6 @@ void MsgCenter::mapSave(OneMap *onemap)
             }
             if(!ppv.isNull()>0)
                 pv["spirits"] = ppv;
-            Json::Value ppv2;
-            auto pps = p->getAgvs();
-            kk = 0;
-            for (auto p : pps) {
-                ppv2[kk++] = p;
-            }
-            if(!ppv2.isNull()>0)
-                pv["agvs"] = ppv2;
             v_groups.append(pv);
         }
     }

@@ -7,6 +7,7 @@
 MonitorMapItemStation::MonitorMapItemStation(MapPoint *_point, QGraphicsItem *parent) : QGraphicsObject(parent),
     point(_point)
 {
+    color = Qt::black;
     setZValue(4);
     setFlags(ItemIsSelectable/*|ItemIsMovable*/| QGraphicsItem::ItemIsFocusable);
     setAcceptHoverEvents(true);
@@ -27,20 +28,15 @@ void MonitorMapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsI
 {
     Q_UNUSED(widget);
 
-    QColor _color = Qt::gray;
-    int width = 1;
-
-    if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
-    if (option->state & QStyle::State_Selected)width = 1;
+    painter->setRenderHint(QPainter::Antialiasing,true);
 
     QPen oldPen = painter->pen();
     QBrush oldBrush = painter->brush();
-    QPen pen(_color);
+    QPen pen(color);
 
-    pen.setWidth(width);
+    pen.setWidth(1);
     painter->setPen(pen);
-    painter->setBrush(QBrush(_color));
+    painter->setBrush(QBrush(color));
     painter->drawRect(boundingRect());
     if(point->getPointType() == MapPoint::Map_Point_Type_Draw){
         painter->drawImage(boundingRect(),*imgDraw);
@@ -67,7 +63,7 @@ void MonitorMapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsI
         painter->setBrush(oldBrush);
         painter->setPen(oldPen);
         QPen tpen(Qt::red);
-        tpen.setWidth(width);
+        tpen.setWidth(1);
         painter->setPen(tpen);
         painter->drawEllipse(boundingRect().center(),10,10);
     }

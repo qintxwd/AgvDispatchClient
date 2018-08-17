@@ -49,12 +49,11 @@ int main(int argc, char *argv[])
         {
             pd.setValue(i);
             QyhSleep(1);
-            if(pd.wasCanceled()) return 0;
+            if(pd.wasCanceled()) break;
         }
         pd.setValue(20000);
         if(pd.wasCanceled())return 0;
-        bool bb = msgCenter.getIsMapLoaded();
-        if(bb){
+        if(msgCenter.getIsMapLoaded()){
             MainWindow *mainWindow = new MainWindow();
             mainWindow->showMaximized();
         }else{

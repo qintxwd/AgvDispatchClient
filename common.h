@@ -32,7 +32,7 @@ std::string getTimeStrTomorrow();
 
 std::string toHexString(char *data, int len);
 std::string intToString(int i);
-
+std::vector<std::string> split(std::string src,std::string sp);
 
 
 #ifndef WIN32

@@ -27,20 +27,6 @@ void MonitorMapItemStationName::my_update()
     update();
 }
 
-void MonitorMapItemStationName::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
-{
-    setDefaultTextColor(Qt::blue);
-    update();
-    QGraphicsTextItem::hoverEnterEvent(event);
-}
-
-void MonitorMapItemStationName::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
-{
-    setDefaultTextColor(Qt::black);
-    update();
-    QGraphicsTextItem::hoverEnterEvent(event);
-}
-
 QVariant MonitorMapItemStationName::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange)

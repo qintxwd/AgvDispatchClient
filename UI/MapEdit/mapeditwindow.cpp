@@ -6,6 +6,7 @@
 #include "./dockmaptree.h"
 #include "./dockproperty.h"
 #include "./dockblock.h"
+#include "./dockgroup.h"
 
 MapEditWindow::MapEditWindow(OneMap *_oneMap, QWidget *parent) : QMainWindow(parent),
     oneMap(_oneMap)
@@ -57,6 +58,7 @@ void MapEditWindow::init()
     connect(dockProperty,SIGNAL(sig_propertyChanged(MapSpirit *)),dockMapTree,SLOT(refresh()));
 
     connect(blockView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
+    connect(groupView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
 
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
@@ -165,11 +167,13 @@ void MapEditWindow::createActions()
     dockProperty = new DockProperty(oneMap);
     dockView = new DockView(oneMap);
     blockView = new DockBlock(oneMap);
+    groupView = new DockGroup(oneMap);
 
     addDockWidget(Qt::LeftDockWidgetArea,dockMapTree);
     addDockWidget(Qt::LeftDockWidgetArea,dockProperty);
     addDockWidget(Qt::RightDockWidgetArea,dockView);
     tabifyDockWidget(dockMapTree,blockView);
+    tabifyDockWidget(blockView,groupView);
 
 
     QMenu *mapMenu = menuBar()->addMenu(tr("Maps"));
@@ -191,10 +195,10 @@ void MapEditWindow::createActions()
     viewsToolBar->addAction(dockView->toggleViewAction());
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
-    QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MapEditWindow::about);
+    QAction *aboutAct = helpMenu->addAction(tr("&About"));
     aboutAct->setStatusTip(tr("Show the application's About box"));
 
-    QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"), this, &MapEditWindow::aboutHrg);
+    QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"));
     aboutQtAct->setStatusTip(tr("Show the HRG's About box"));
 
     toolSave = new QAction(this);

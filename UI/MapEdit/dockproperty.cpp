@@ -17,7 +17,7 @@ void DockProperty::initTabTable()
     tabwidget->tabBar()->hide();
     tableWidget_blank = new QTableWidget(0,2);
 
-    tableWidget_point = new QTableWidget(10,2);
+    tableWidget_point = new QTableWidget(11,2);
     tableWidget_path = new QTableWidget(9,2);
     tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
@@ -115,6 +115,11 @@ void DockProperty::initTableContent()
     point_itemKeyRealY->setFlags(point_itemKeyRealY->flags()&(~Qt::ItemIsEditable));
     point_yRealInput  = new QLineEdit(QString(""));
     connect(point_yRealInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointRealYChanged(QString)));
+    point_itemKeyRealA = new QTableWidgetItem(QStringLiteral("RealA"));
+    point_itemKeyRealA->setTextAlignment(Qt::AlignCenter);
+    point_itemKeyRealA->setFlags(point_itemKeyRealA->flags()&(~Qt::ItemIsEditable));
+    point_aRealInput  = new QLineEdit(QString(""));
+    connect(point_aRealInput,SIGNAL(textEdited(QString)),this,SLOT(slot_PointRealAChanged(QString)));
     point_itemKeyLabelX = new QTableWidgetItem(QStringLiteral("labelXoffset"));
     point_itemKeyLabelX->setTextAlignment(Qt::AlignCenter);
     point_itemKeyLabelX->setFlags(point_itemKeyLabelX->flags()&(~Qt::ItemIsEditable));
@@ -213,17 +218,17 @@ void DockProperty::initTableContent()
     floor_itemKeyOriginX->setTextAlignment(Qt::AlignCenter);
     floor_itemKeyOriginX->setFlags(floor_itemKeyOriginX->flags()&(~Qt::ItemIsEditable));
     floor_xOriginInput  = new QLineEdit("");
-    connect(floor_xOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    connect(floor_xOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorOriginXChanged(QString)));
     floor_itemKeyOriginY = new QTableWidgetItem("OriginY");
     floor_itemKeyOriginY->setTextAlignment(Qt::AlignCenter);
     floor_itemKeyOriginY->setFlags(floor_itemKeyOriginY->flags()&(~Qt::ItemIsEditable));
     floor_yOriginInput  = new QLineEdit("");
-    connect(floor_yOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    connect(floor_yOriginInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorOriginYChanged(QString)));
     floor_itemKeyRate = new QTableWidgetItem("Rate");
     floor_itemKeyRate->setTextAlignment(Qt::AlignCenter);
     floor_itemKeyRate->setFlags(floor_itemKeyRate->flags()&(~Qt::ItemIsEditable));
     floor_rateInput  = new QLineEdit("");
-    connect(floor_rateInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorNameChanged(QString)));
+    connect(floor_rateInput,SIGNAL(textEdited(QString)),this,SLOT(slot_FloorRateChanged(QString)));
 
 
     ///////bkg
@@ -287,12 +292,14 @@ void DockProperty::initTableContent()
     tableWidget_point->setCellWidget(5,1,point_xRealInput);
     tableWidget_point->setItem(6, 0, point_itemKeyRealY);
     tableWidget_point->setCellWidget(6,1,point_yRealInput);
-    tableWidget_point->setItem(7, 0, point_itemKeyLabelX);
-    tableWidget_point->setCellWidget(7,1,point_xLabelInput);
-    tableWidget_point->setItem(8, 0, point_itemKeyLabelY);
-    tableWidget_point->setCellWidget(8,1,point_yLabelInput);
-    tableWidget_point->setItem(9, 0, point_itemKeyMapChange);
-    tableWidget_point->setCellWidget(9, 1, (QWidget*)point_comboxMapChange);
+    tableWidget_point->setItem(7, 0, point_itemKeyRealA);
+    tableWidget_point->setCellWidget(7,1,point_aRealInput);
+    tableWidget_point->setItem(8, 0, point_itemKeyLabelX);
+    tableWidget_point->setCellWidget(8,1,point_xLabelInput);
+    tableWidget_point->setItem(9, 0, point_itemKeyLabelY);
+    tableWidget_point->setCellWidget(9,1,point_yLabelInput);
+    tableWidget_point->setItem(10, 0, point_itemKeyMapChange);
+    tableWidget_point->setCellWidget(10, 1, (QWidget*)point_comboxMapChange);
 
     tableWidget_path->setItem(0, 0, path_itemKeyId);
     tableWidget_path->setItem(0, 1, path_itemValueId);
@@ -413,6 +420,7 @@ void DockProperty::showPoint()
     point_yInput->setText(QString("%1").arg(point->getY()));
     point_xRealInput->setText(QString("%1").arg(point->getRealX()));
     point_yRealInput->setText(QString("%1").arg(point->getRealY()));
+    point_aRealInput->setText(QString("%1").arg(point->getRealA()));
     point_xLabelInput->setText(QString("%1").arg(point->getLabelXoffset()));
     point_yLabelInput->setText(QString("%1").arg(point->getLabelYoffset()));
     if(point->getMapChange()){
@@ -520,6 +528,12 @@ void DockProperty::slot_PointRealYChanged(QString realy)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setRealY(realy.toInt());
+    emit sig_propertyChanged(spirit);
+}
+void DockProperty::slot_PointRealAChanged(QString reala)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapPoint *>(spirit))->setRealA(reala.toInt());
     emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointLabelXoffsetChanged(QString labelXoffset)

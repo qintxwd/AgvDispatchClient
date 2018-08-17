@@ -81,3 +81,27 @@ void memcpy_s(void *__restrict __dest, size_t __m,const void *__restrict __src, 
 }
 
 #endif
+
+std::vector<std::string> split(std::string src,std::string sp)
+{
+    std::vector<std::string> result;
+    if (src.length() == 0)return result;
+    if(sp.length()==0){
+        result.push_back(src);
+        return result;
+    }
+
+    size_t pos;
+    while(true){
+        pos = src.find_first_of(sp);
+        if(pos == std::string::npos){
+            break;
+        }
+        if(pos!=0)
+            result.push_back(src.substr(0,pos));
+        src = src.substr(pos+sp.length());
+    }
+    if(src.length()>0)
+        result.push_back(src);
+    return result;
+}

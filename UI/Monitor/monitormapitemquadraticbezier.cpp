@@ -9,6 +9,7 @@ MonitorMapItemQuadraticBezier::MonitorMapItemQuadraticBezier(MonitorMapItemStati
     path(_path),
     isDragingP1(false)
 {
+    color = Qt::black;
     P1 = QPointF(path->getP1x(),path->getP1y());
     setZValue(3);
     setFlags(ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -30,6 +31,7 @@ void MonitorMapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionG
 {
     Q_UNUSED(widget)
 
+    painter->setRenderHint(QPainter::Antialiasing,true);
 
     const int polygonLength = 10;
     const int polygonAngle = 10;
@@ -52,11 +54,7 @@ void MonitorMapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionG
     QPen oldPen  = painter->pen();
     QBrush oldBrush  = painter->brush();
 
-    QColor _color = Qt::gray;
-    if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
-
-    QPen share_pen(_color);
+    QPen share_pen(color);
     share_pen.setWidth(1);
     painter->setPen(share_pen);
     QPainterPath myPath;
@@ -69,7 +67,7 @@ void MonitorMapItemQuadraticBezier::paint(QPainter *painter, const QStyleOptionG
     }
 
     //画箭头
-    QBrush share_brush(_color);
+    QBrush share_brush(color);
     painter->setBrush(share_brush);
     //    if(path->getDirection() == 0 || path->getDirection() == 1){
     painter->drawPolygon(triangle_end,3,Qt::WindingFill);

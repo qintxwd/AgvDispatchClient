@@ -3,8 +3,8 @@
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QMessageBox>
-
 #include "global.h"
+#include "common.h"
 
 DialogAddTask::DialogAddTask(QWidget *parent) : QDialog(parent)
 {
@@ -20,6 +20,11 @@ DialogAddTask::DialogAddTask(QWidget *parent) : QDialog(parent)
     priorityCombobox->addItem(QStringLiteral("较高"));
     priorityCombobox->addItem(QStringLiteral("最高"));
     priorityCombobox->setCurrentIndex(2);
+
+    runtimeLabel = new QLabel(QStringLiteral("循环次数:"));
+    runtimeInput = new QSpinBox;
+    runtimeInput->setRange(1,100);
+    runtimeInput->setValue(1);
 
     baseGroupbox = new QGroupBox("base");
 
@@ -76,14 +81,17 @@ DialogAddTask::DialogAddTask(QWidget *parent) : QDialog(parent)
     nodeGroupbox = new QGroupBox("nodes");
     QPushButton *addNodeBtn = new QPushButton("add node");
     QPushButton *removeNodeBtn = new QPushButton("remove node");
+    QPushButton *addNodeFromFileBtn = new QPushButton("add from file");
     QHBoxLayout *nodebtnLayout = new QHBoxLayout;
     nodebtnLayout->addWidget(addNodeBtn);
     nodebtnLayout->addWidget(removeNodeBtn);
+    nodebtnLayout->addWidget(addNodeFromFileBtn);
     QVBoxLayout *nodeGroupLayout = new QVBoxLayout;
     nodeGroupLayout->addItem(nodebtnLayout);
     nodeGroupLayout->addWidget(nodeTable);
     connect(addNodeBtn,SIGNAL(clicked(bool)),this,SLOT(addNode()));
     connect(removeNodeBtn,SIGNAL(clicked(bool)),this,SLOT(removeNode()));
+    connect(addNodeFromFileBtn,SIGNAL(clicked(bool)),this,SLOT(addNodeFromFile()));
     nodeGroupbox->setLayout(nodeGroupLayout);
 
     tipLabel = new QLabel("");
@@ -131,15 +139,13 @@ void DialogAddTask::onOkBtn()
         agv = this->agvinfos[agvCombobox->currentIndex() - 1].id;
     }
 
+    int runTimes = runtimeInput->value();
+
     //params
     QMap<QString,QString> params;
     for(int row=0;row<extraTable->rowCount();++row){
-        QWidget * keywidget=extraTable->cellWidget(row,0);
-        QWidget * valuewidget=extraTable->cellWidget(row,1);
-        QLineEdit *keylineedit=(QLineEdit*)keywidget;
-        if(keylineedit->text().trimmed().length()<=0)continue;
-        QLineEdit *valuelineedit=(QLineEdit*)valuewidget;
-        params.insert(keylineedit->text().trimmed(),valuelineedit->text().trimmed());
+        if(extraTable->item(row,0)->text().trimmed().length()<=0)continue;
+        params.insert(extraTable->item(row,0)->text().trimmed(),extraTable->item(row,1)->text().trimmed());
     }
 
     QList<TaskNode> nodes;
@@ -168,7 +174,7 @@ void DialogAddTask::onOkBtn()
     }
 
     //TODO
-    msgCenter.addTask(priority,agv,params,nodes);
+    msgCenter.addTask(priority,agv,runTimes,params,nodes);
 
     accept();
 }
@@ -189,12 +195,58 @@ void DialogAddTask::addNode()
     doWhatSelect->addItem("pick");//0
     doWhatSelect->addItem("put");//1
     doWhatSelect->addItem("go charge");//2
+    doWhatSelect->addItem("move");//3
 
     QLineEdit *paramInput = new QLineEdit;
     paramInput->setPlaceholderText(QStringLiteral("参数列表以;区分"));
     nodeTable->setCellWidget(nodeTable->rowCount()-1,0,stationSelect);
     nodeTable->setCellWidget(nodeTable->rowCount()-1,1,doWhatSelect);
     nodeTable->setCellWidget(nodeTable->rowCount()-1,2,paramInput);
+}
+
+void DialogAddTask::addNodeFromFile()
+{
+    QFile taskfile("task.txt");
+    if (!taskfile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+        return;
+    }
+    QTextStream txtInput(&taskfile);
+    while(!txtInput.atEnd())
+    {
+        QStringList task_line = txtInput.readLine().split(" ");
+        if(task_line.size() < 2)
+            continue;
+        nodeTable->insertRow(nodeTable->rowCount());
+
+        //添加三个
+        QComboBox *stationSelect = new QComboBox;
+        stationSelect->addItem(QStringLiteral("无"));
+
+        for(auto station:stations){
+            stationSelect->addItem(QString::fromStdString(station->getName()));
+        }
+
+        stationSelect->setCurrentText(task_line.at(1));
+
+        QComboBox *doWhatSelect = new QComboBox;
+        doWhatSelect->addItem("pick");//0
+        doWhatSelect->addItem("put");//1
+        doWhatSelect->addItem("go charge");//2
+        doWhatSelect->addItem("move");//3
+        doWhatSelect->setCurrentText(task_line.at(0));
+
+        QLineEdit *paramInput = new QLineEdit;
+        paramInput->setPlaceholderText(QStringLiteral("参数列表以;区分"));
+        if(task_line.size() > 2)
+        {
+            paramInput->setText(task_line.at(2));
+        }
+        nodeTable->setCellWidget(nodeTable->rowCount()-1,0,stationSelect);
+        nodeTable->setCellWidget(nodeTable->rowCount()-1,1,doWhatSelect);
+        nodeTable->setCellWidget(nodeTable->rowCount()-1,2,paramInput);
+    }
+    taskfile.close();
+
 }
 
 void DialogAddTask::removeNode()

@@ -3,14 +3,25 @@
 #include "global.h"
 #include <QtWidgets>
 
+static struct
+{
+    int id;
+    QColor color;
+} COMMON_COLOR_TABLE[] =
+{
+{0,Qt::red},
+{1,Qt::green},
+{2,Qt::blue},
+{3,Qt::cyan},
+{4,Qt::magenta},
+{5,Qt::yellow},
+};
+
 MonitorMapItemAgv::MonitorMapItemAgv(int _id, QString _name, QGraphicsItem *parent) : QGraphicsObject(parent),
     agv_id(_id),
     name(_name)
 {
-    int r = getRandom(255);
-    int g = getRandom(255);
-    int b = getRandom(255);
-    color = QColor(r,g,b);
+    color = COMMON_COLOR_TABLE[agv_id%6].color;
 
     setZValue(10);
     setFlags(ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -26,6 +37,7 @@ QRectF MonitorMapItemAgv::boundingRect() const
 void MonitorMapItemAgv::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget)
+    painter->setRenderHint(QPainter::Antialiasing,true);
 
     QPen oldPen  = painter->pen();
     QBrush oldBrush  = painter->brush();
@@ -41,7 +53,13 @@ void MonitorMapItemAgv::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->drawLine(6,5,6,-5);
     painter->drawEllipse(QPointF(8,2.5),1.8,1.8);
     painter->drawEllipse(QPointF(8,-2.5),1.8,1.8);
-    painter->drawText(QRectF(-10,-5,16,10),name);
+
+    QFont font;
+    font.setPointSize(5);
+    font.setFamily("Microsoft YaHei");
+    painter->setFont(font);
+
+    painter->drawText(QRectF(-10,-5,20,10),name);
 
     painter->setPen(oldPen);
     painter->setBrush(oldBrush);
@@ -53,7 +71,7 @@ void MonitorMapItemAgv::my_update()
     update();
 }
 
-void MonitorMapItemAgv::slot_update_pos(int id,QString name,double x,double y,double angle)
+void MonitorMapItemAgv::slot_update_pos(int id, QString name, double x, double y, double angle, QStringList occs)
 {
     if(id!=agv_id)return ;
     setPos(x,y);

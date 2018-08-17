@@ -22,7 +22,7 @@ enum {
     PRIORITY_LENGTH = 5,
 };
 
-TaskTableWidget::TaskTableWidget(QWidget *parent) : QTableWidget(0,5,parent)
+TaskTableWidget::TaskTableWidget(QWidget *parent) : QTableWidget(0,6,parent)
 {
     tipWidget = new QWidget;
 
@@ -39,7 +39,8 @@ TaskTableWidget::TaskTableWidget(QWidget *parent) : QTableWidget(0,5,parent)
            << QStringLiteral("AGV")
            << QStringLiteral("Priority")
            << QStringLiteral("status")
-           << QStringLiteral("produce time");
+           << QStringLiteral("produce time")
+           << QStringLiteral("task describe");
 
     setHorizontalHeaderLabels(labels);
     verticalHeader()->hide();
@@ -164,6 +165,10 @@ void TaskTableWidget::updateTable()
         QTableWidgetItem *itemProduceTime = new QTableWidgetItem(tr("%1").arg(u.produceTime));
         itemProduceTime->setTextAlignment(Qt::AlignCenter);
         setItem(i, 4, itemProduceTime);
+
+        QTableWidgetItem *itemDescribe = new QTableWidgetItem(tr("%1").arg(u.describe));
+        itemProduceTime->setTextAlignment(Qt::AlignCenter);
+        setItem(i, 5, itemDescribe);
     }
 
 }

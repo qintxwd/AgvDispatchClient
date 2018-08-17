@@ -21,23 +21,22 @@ MonitorScene::~MonitorScene()
 
 void MonitorScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
+    //    QPen oldpen = painter->pen();
+    //    //    QBrush oldbrush = painter->brush();
+    //    //添加原点
+    //    QPen pen(Qt::blue);
+    //    pen.setWidth(1);
+    //    painter->setPen(pen);
+    //    painter->drawEllipse(QPoint(0,0),5,5);
 
-    QPen oldpen = painter->pen();
-    //    QBrush oldbrush = painter->brush();
-    //添加原点
-    QPen pen(Qt::blue);
-    pen.setWidth(1);
-    painter->setPen(pen);
-    painter->drawEllipse(QPoint(0,0),5,5);
+    //    //添加x轴
+    //    QPen pen2(Qt::magenta);
+    //    painter->setPen(pen2);
 
-    //添加x轴
-    QPen pen2(Qt::magenta);
-    painter->setPen(pen2);
+    //    painter->drawLine(QPoint(-100000,0),QPoint(100000,0));
 
-    painter->drawLine(QPoint(-100000,0),QPoint(100000,0));
-
-    //添加y轴
-    painter->drawLine(QPoint(0,-100000),QPoint(0,100000));
+    //    //添加y轴
+    //    painter->drawLine(QPoint(0,-100000),QPoint(0,100000));
 }
 
 
@@ -118,7 +117,8 @@ void MonitorScene::build()
 
     connect(this,SIGNAL(selectionChanged()),this,SLOT(onSelectItemChanged()));
     //connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),this,SIGNAL(sig_pub_agv_postion(int,QString,double,double,double)));
-    connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),this,SLOT(slot_pub_agv_postion(int,QString,double,double,double)));
+    connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double,QStringList)),this,SLOT(slot_pub_agv_postion(int,QString,double,double,double,QStringList)));
+    connect(&msgCenter,SIGNAL(sig_pub_agv_occus()),this,SLOT(slot_agv_occus_set_color()));
 }
 
 void MonitorScene::slot_setCurTool(int t)
@@ -130,16 +130,112 @@ void MonitorScene::slot_setCurTool(int t)
     //    }
 }
 
-void MonitorScene::slot_pub_agv_postion(int id,QString name,double x,double y,double theta)
+void MonitorScene::slot_agv_occus_set_color()
+{
+    foreach (auto s, iStations) {
+        int id = s->getPoint()->getId();
+        bool setColor = false;
+
+        foreach (auto agv, agvs) {
+            auto dd = agvOccus[agv->getId()];
+            if(dd.contains(QString("%1").arg(id))){
+                setColor = true;
+                s->setColor(agv->getColor());
+                break;
+            }
+        }
+
+        if(!setColor){
+            s->setColor(Qt::black);
+        }
+    }
+
+    foreach (auto s, iStationNames) {
+        int id = s->getPoint()->getId();
+        bool setColor = false;
+
+        foreach (auto agv, agvs) {
+            auto dd = agvOccus[agv->getId()];
+            if(dd.contains(QString("%1").arg(id))){
+                setColor = true;
+                s->setColor(agv->getColor());
+                break;
+            }
+        }
+
+        if(!setColor){
+            s->setColor(Qt::black);
+        }
+    }
+
+    foreach (auto s, iLines) {
+        int id = s->getPath()->getId();
+        bool setColor = false;
+
+        foreach (auto agv, agvs) {
+            auto dd = agvOccus[agv->getId()];
+            if(dd.contains(QString("%1").arg(id))){
+                setColor = true;
+                s->setColor(agv->getColor());
+                break;
+            }
+        }
+
+        if(!setColor){
+            s->setColor(Qt::black);
+        }
+    }
+
+    foreach (auto s, iQbs) {
+        int id = s->getPath()->getId();
+        bool setColor = false;
+
+        foreach (auto agv, agvs) {
+            auto dd = agvOccus[agv->getId()];
+            if(dd.contains(QString("%1").arg(id))){
+                setColor = true;
+                s->setColor(agv->getColor());
+                break;
+            }
+        }
+
+        if(!setColor){
+            s->setColor(Qt::black);
+        }
+    }
+
+    foreach (auto s, iCbs) {
+        int id = s->getPath()->getId();
+        bool setColor = false;
+
+        foreach (auto agv, agvs) {
+            auto dd = agvOccus[agv->getId()];
+            if(dd.contains(QString("%1").arg(id))){
+                setColor = true;
+                s->setColor(agv->getColor());
+                break;
+            }
+        }
+
+        if(!setColor){
+            s->setColor(Qt::black);
+        }
+    }
+
+}
+
+void MonitorScene::slot_pub_agv_postion(int id, QString name, double x, double y, double theta, QStringList qsl)
 {
     if(!agvIds.contains(id)){
         agvIds<<id;
         MonitorMapItemAgv *itemAgv = new MonitorMapItemAgv(id,name);
         itemAgv->setPos(x,y);
         itemAgv->setRotation(-1*theta);
-        connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),itemAgv,SLOT(slot_update_pos(int,QString,double,double,double)));
+        connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double,QStringList)),itemAgv,SLOT(slot_update_pos(int,QString,double,double,double,QStringList)));
         addItem(itemAgv);
+        agvs.push_back(itemAgv);
     }
+    agvOccus[id] = qsl;
 }
 
 void MonitorScene::mousePressEvent(QGraphicsSceneMouseEvent *event)

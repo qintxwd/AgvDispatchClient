@@ -28,6 +28,7 @@ private slots:
     void slot_PointYChanged(QString y);
     void slot_PointRealXChanged(QString realx);
     void slot_PointRealYChanged(QString realy);
+    void slot_PointRealAChanged(QString reala);
     void slot_PointLabelXoffsetChanged(QString labelXoffset);
     void slot_PointLabelYoffsetChanged(QString labelYoffset);
     void slot_PointMapChangeChanged(int mapchange);
@@ -93,6 +94,8 @@ private:
     QLineEdit *point_xRealInput;
     QTableWidgetItem *point_itemKeyRealY;
     QLineEdit *point_yRealInput;
+    QTableWidgetItem *point_itemKeyRealA;
+    QLineEdit *point_aRealInput;
     QTableWidgetItem *point_itemKeyLabelX;
     QLineEdit *point_xLabelInput;
     QTableWidgetItem *point_itemKeyLabelY;

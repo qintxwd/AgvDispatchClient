@@ -16,6 +16,10 @@ public:
         return Type;
     }
 
+    int getId(){return agv_id;}
+
+    QColor getColor(){return color;}
+
     QRectF boundingRect() const override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -24,7 +28,7 @@ public:
 signals:
 
 public slots:
-    void slot_update_pos(int id, QString name, double x, double y, double angle);
+    void slot_update_pos(int id, QString name, double x, double y, double angle, QStringList occs);
 private:
     QColor color;
     int agv_id;

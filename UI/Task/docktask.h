@@ -20,6 +20,8 @@ public slots:
     void onVisibilityChanged(bool v);
     void addTask();
     void cancelTask();
+    void cancelAllTask();
+
 private:
     //显示载入中
     void showWaiting();

@@ -9,6 +9,7 @@
 #include "monitormapitemstationname.h"
 #include "monitormapitemquadraticbezier.h"
 #include "monitormapitembkg.h"
+#include "monitormapitemagv.h"
 
 class MonitorScene: public QGraphicsScene
 {
@@ -76,13 +77,16 @@ public slots:
 
     void slot_setCurTool(int t);
 
-    void slot_pub_agv_postion(int id,QString name,double x,double y,double theta);
+    void slot_pub_agv_postion(int id,QString name,double x,double y,double theta,QStringList qsl);
+
+    void slot_agv_occus_set_color();
 private:
 
     Tool cur_tool;
 
     MonitorMapItemStation *oldSelectStation;//用于绘制线路，这个是选择的一个起点
 
+    QMap<int,QStringList> agvOccus;
 private:
 
     QList<MonitorMapItemStation *> iStations;//记录所有的站点
@@ -94,6 +98,8 @@ private:
     QList<MonitorMapItemQuadraticBezier *> iQbs;
 
     QList<MonitorMapItemCubicBezier *> iCbs;
+
+    QList<MonitorMapItemAgv *> agvs;
 
     MonitorMapItemBkg *bkg;
 private:

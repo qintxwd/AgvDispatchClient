@@ -11,6 +11,7 @@ MonitorMapItemCubicBezier::MonitorMapItemCubicBezier(MonitorMapItemStation *_sta
     isDragingP1(false),
     isDragingP2(false)
 {
+    color = Qt::black;
     P1 = QPointF(path->getP1x(),path->getP1y());
     P2 = QPointF(path->getP2x(),path->getP2y());
     setZValue(3);
@@ -32,6 +33,8 @@ QRectF MonitorMapItemCubicBezier::boundingRect() const
 void MonitorMapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget)
+
+    painter->setRenderHint(QPainter::Antialiasing,true);
 
     const int polygonLength = 10;
     const int polygonAngle = 10;
@@ -55,26 +58,16 @@ void MonitorMapItemCubicBezier::paint(QPainter *painter, const QStyleOptionGraph
     QPen oldPen  = painter->pen();
     QBrush oldBrush  = painter->brush();
 
-    QColor _color = Qt::gray;
-    if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
-
-    QPen share_pen(_color);
+    QPen share_pen(color);
     share_pen.setWidth(1);
     painter->setPen(share_pen);
     QPainterPath myPath;
     myPath.moveTo(startStation->pos());//start
     myPath.cubicTo(P1,P2, endStation->pos());//QPoint(endStation->pos().x()-startStation->pos().x(), endStation->pos().y()-startStation->pos().y()));
     painter->drawPath(myPath);
-    if(option->state & QStyle::State_Selected||option->state & QStyle::State_MouseOver){
-//        painter->drawLine(P1.x()-5,P1.y()-5,P1.x()+5,P1.y()+5);
-//        painter->drawLine(P1.x()+5,P1.y()-5,P1.x()-5,P1.y()+5);
-//        painter->drawLine(P2.x()-5,P2.y()-5,P2.x()+5,P2.y()+5);
-//        painter->drawLine(P2.x()+5,P2.y()-5,P2.x()-5,P2.y()+5);
-    }
 
     //画箭头
-    QBrush share_brush(_color);
+    QBrush share_brush(color);
     painter->setBrush(share_brush);
     //if(path->getDirection() == 0 || path->getDirection() == 1){
     painter->drawPolygon(triangle_end,3,Qt::WindingFill);

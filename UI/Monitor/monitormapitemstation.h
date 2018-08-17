@@ -22,6 +22,8 @@ public:
         return Type;
     }
 
+    void setColor(QColor _color){color = _color;update();}
+
     QRectF boundingRect() const override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -61,6 +63,8 @@ private:
     QImage *imgLoad;
     QImage *imgUnload;
     QImage *imgLoadUnload;
+
+    QColor color;
 };
 
 #endif // MONITORMAPITEMSTATION_H

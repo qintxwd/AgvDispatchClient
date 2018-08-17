@@ -27,6 +27,8 @@ void MapItemStation::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 {
     Q_UNUSED(widget);
 
+    painter->setRenderHint(QPainter::Antialiasing,true);
+
     QColor _color = Qt::gray;
     int width = 1;
 

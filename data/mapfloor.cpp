@@ -24,6 +24,8 @@ MapSpirit *MapFloor::clone()
         f->addPath(p);
     }
     f->setBkg(bkg);
+    f->setOriginX(originX);
+    f->setOriginY(originY);
 
     return f;
 }

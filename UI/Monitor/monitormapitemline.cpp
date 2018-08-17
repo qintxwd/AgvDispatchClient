@@ -8,6 +8,7 @@ MonitorMapItemLine::MonitorMapItemLine(MonitorMapItemStation *_startStation, Mon
     endStation(_endStation),
     path(_path)
 {
+    color = Qt::black;
     setZValue(2);
     setFlags(ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setAcceptHoverEvents(true);
@@ -28,6 +29,8 @@ QRectF MonitorMapItemLine::boundingRect() const
 void MonitorMapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget)
+
+    painter->setRenderHint(QPainter::Antialiasing,true);
 
     const int polygonLength = 10;
     const int polygonAngle = 10;
@@ -50,11 +53,7 @@ void MonitorMapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem
     QPen oldPen  = painter->pen();
     QBrush oldBrush  = painter->brush();
 
-    QColor _color = Qt::gray;
-    if(option->state & QStyle::State_Selected)_color = Qt::blue;
-    if (option->state & QStyle::State_MouseOver)_color = Qt::blue;
-
-    QPen share_pen(_color);
+    QPen share_pen(color);
     share_pen.setWidth(1);
     painter->setPen(share_pen);
     QPainterPath myPath;
@@ -63,7 +62,7 @@ void MonitorMapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem
     painter->drawPath(myPath);
 
     //画箭头
-    QBrush share_brush(_color);
+    QBrush share_brush(color);
     painter->setBrush(share_brush);
     //if(path->getDirection() == 0 || path->getDirection() == 1){
     painter->drawPolygon(triangle_end,3,Qt::WindingFill);

@@ -9,6 +9,7 @@ class DockView;
 class DockMapTree;
 class DockProperty;
 class DockBlock;
+class DockGroup;
 
 class MapEditWindow : public QMainWindow
 {
@@ -85,6 +86,7 @@ private:
     DockProperty *dockProperty;
     DockView *dockView;
     DockBlock *blockView;
+    DockGroup *groupView;
 
     QAction *selectSelect;
     QAction *selectHand;

@@ -86,7 +86,9 @@ SOURCES += \
     UI/Task/dialogaddtask.cpp \
     UI/Task/tasktablewidget.cpp \
     UI/Monitor/monitormapitemagv.cpp \
-    qyhbuffer.cpp
+    qyhbuffer.cpp \
+    UI/MapEdit/dialoggroupedit.cpp \
+    UI/MapEdit/dockgroup.cpp
 
 HEADERS += \
     global.h \
@@ -151,7 +153,9 @@ HEADERS += \
     UI/Task/dialogaddtask.h \
     UI/Task/tasktablewidget.h \
     UI/Monitor/monitormapitemagv.h \
-    qyhbuffer.h
+    qyhbuffer.h \
+    UI/MapEdit/dialoggroupedit.h \
+    UI/MapEdit/dockgroup.h
 
 FORMS +=
 

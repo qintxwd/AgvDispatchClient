@@ -7,6 +7,7 @@
 #include "Monitor/monitordockmaptree.h"
 #include "Monitor/monitordockproperty.h"
 #include "Monitor/monitordockview.h"
+#include <QAction>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     dock_user_manage(nullptr),
@@ -189,7 +190,7 @@ void MainWindow::createActions()
     viewsMenu->addAction(dock_task->toggleViewAction());
     viewsToolBar->addAction(dock_task->toggleViewAction());
 
-    action_map_edit = new QAction("Map Edit");
+    action_map_edit = new QAction("Map Edit", this);
     action_map_edit->setCheckable(false);
     viewsMenu->addAction(action_map_edit);
     viewsToolBar->addAction(action_map_edit);
@@ -197,10 +198,10 @@ void MainWindow::createActions()
     connect(action_map_edit,SIGNAL(triggered(bool)),this,SLOT(onMapEdit()));
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
-    QAction *aboutAct = helpMenu->addAction(tr("&About"), this, &MainWindow::about);
+    QAction *aboutAct = helpMenu->addAction(tr("&About"));
     aboutAct->setStatusTip(tr("Show the application's About box"));
 
-    QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"), this, &MainWindow::aboutHrg);
+    QAction *aboutQtAct = helpMenu->addAction(tr("About &HRG"));
     aboutQtAct->setStatusTip(tr("Show the HRG's About box"));
 
     //////////////////////////////////新增加

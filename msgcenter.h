@@ -61,6 +61,7 @@ typedef struct _TASK_INFO
     bool isCancel;
     QMap<QString,QString> extraParams;
     QList<TaskNode> nodes;
+    QString describe;
 }TASK_INFO;
 
 
@@ -126,7 +127,7 @@ public:
 
     /////////////////////////任务部分
     QList<TASK_INFO> getTaskInfoModel(){return agvtaskinfos;}
-    void addTask(int priority,int agv,QMap<QString,QString> params,QList<TaskNode> nodes);
+    void addTask(int priority, int agv, int runTimes, QMap<QString,QString> params, QList<TaskNode> nodes);
     void cancelTask(int taskId);
     bool getIsMapLoaded(){return isMapLoaded;}
 
@@ -194,8 +195,9 @@ signals:
     void cancelTaskSuccess();
 
     //获取到一个agv位置信息
-    void sig_pub_agv_position(int id,QString name,double x,double y,double theta);
+    void sig_pub_agv_position(int id,QString name,double x,double y,double theta,QStringList occus);
 
+    void sig_pub_agv_occus();
     //订阅成功
     void subUserLogSuccess();
     void cancelSubUserLogSuccess();
