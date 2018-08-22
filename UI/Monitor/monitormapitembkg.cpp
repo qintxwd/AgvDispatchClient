@@ -14,12 +14,12 @@ MonitorMapItemBkg::MonitorMapItemBkg(MapBackground *_bkg, QGraphicsItem *parent)
 //外接区域
 QRectF MonitorMapItemBkg::boundingRect() const
 {
-    return QRectF(bkg->getX(), bkg->getY(), bkg->getWidth(), bkg->getHeight());
+    return QRectF(0, 0, bkg->getWidth(), bkg->getHeight());
 }
 
 void MonitorMapItemBkg::my_update()
 {
-    //setPos(bkg->getX(),bkg->getY());
+    setPos(bkg->getX(),bkg->getY());
     prepareGeometryChange();
     update();
 }

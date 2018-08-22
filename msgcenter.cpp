@@ -259,7 +259,8 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int agvType = station["agvType"].asInt();
         std::string lineId = station["lineId"].asString();
 
-        MapPoint *p = new MapPoint(id,name,(MapPoint::Map_Point_Type)station_type,x,y,realX,realY,realA,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
+        MapPoint::Map_Point_Type t = static_cast<MapPoint::Map_Point_Type>(station_type);
+        MapPoint *p = new MapPoint(id,name,t,x,y,realX,realY,realA,labelXoffset,labelYoffset,mapchange,locked,ip,port,agvType,lineId);
         g_onemap.addSpirit(p);
     }
 
@@ -279,7 +280,9 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int length = line["length"].asInt();
         bool locked = line["locked"].asBool();
         double speed = line["speed"].asDouble();
-        MapPath *p = new MapPath(id,name,start,end,(MapPath::Map_Path_Type)type,length,p1x,p1y,p2x,p2y,locked,speed);
+
+        MapPath::Map_Path_Type t = static_cast<MapPath::Map_Path_Type>(type);
+        MapPath *p = new MapPath(id,name,start,end,t,length,p1x,p1y,p2x,p2y,locked,speed);
         g_onemap.addSpirit(p);
     }
 
