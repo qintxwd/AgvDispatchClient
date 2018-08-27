@@ -24,6 +24,8 @@ MonitorViewer::MonitorViewer(QWidget *parent) :  QGraphicsView(parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setMouseTracking(true);
     setFrameStyle(QFrame::NoFrame);
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    setInteractive(false);
 }
 
 void MonitorViewer::toggleSelectMode()
