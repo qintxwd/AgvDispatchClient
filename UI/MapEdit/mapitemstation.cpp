@@ -110,6 +110,8 @@ QVariant MapItemStation::itemChange(GraphicsItemChange change, const QVariant &v
         QPointF newPos = value.toPointF();
         point->setX(newPos.x());
         point->setY(newPos.y());
+        point->setRealX(newPos.x());
+        point->setRealY(newPos.y());
         //更新位置的同时，更新连线的起止点
         foreach (auto item, lines) {
             item->my_update();

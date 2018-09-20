@@ -175,6 +175,7 @@ void ServerConnection::init(QString ip, int _port)
             Json::Value write_one_msg = m_queue.front();
             m_queue.pop_front();
             sendQueueMtx.unlock();
+            if(quit)break;
             //std::string json_str = write_one_msg.toStyledString();
             std::string msg = write_one_msg.toStyledString();
             int length = msg.length();
@@ -196,7 +197,7 @@ void ServerConnection::init(QString ip, int _port)
                 int packindex = 0;
                 char *per_send_buffer = new char[per_send_length];
                 int resendTime = 3;
-                while(true){
+                while(!quit){
                     int this_time_send_length = (length +5) - packindex * per_send_length;
                     if(this_time_send_length<=0)break;
                     if(this_time_send_length > per_send_length)this_time_send_length = per_send_length;

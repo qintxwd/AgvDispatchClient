@@ -46,7 +46,7 @@ TaskTableWidget::TaskTableWidget(QWidget *parent) : QTableWidget(0,6,parent)
     verticalHeader()->hide();
     setShowGrid(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);    //x先自适应宽度
+//    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);    //x先自适应宽度
     setSelectionBehavior(QAbstractItemView::SelectRows);//选中就是选中这一行
     setSelectionMode(QAbstractItemView::SingleSelection);//只能选中一行
     setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑

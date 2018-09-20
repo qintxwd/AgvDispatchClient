@@ -1,8 +1,10 @@
 ﻿#include "dialogmodifyagv.h"
 #include "global.h"
-DialogModifyAgv::DialogModifyAgv(int id, QString name, QString ip, int port, QWidget *parent) : QDialog(parent),
+#include <QComboBox>
+DialogModifyAgv::DialogModifyAgv(int id, QString name, QString ip, int port, int station, QWidget *parent) : QDialog(parent),
     m_id(id)
 {
+    stationsUpdate();
     nameLabel = new QLabel(QStringLiteral("名称:"));
     nameInput = new QLineEdit;
     nameInput->setText(name);
@@ -15,6 +17,15 @@ DialogModifyAgv::DialogModifyAgv(int id, QString name, QString ip, int port, QWi
     portInput = new QLineEdit;
     portInput->setText(QString("%1").arg(port));
 
+    stationLabel = new QLabel(QStringLiteral("位置:"));
+    stationInput = new QComboBox;
+
+    for(auto onestation:stations){
+        stationInput->addItem(QString::fromStdString(onestation->getName()));
+    }
+
+    if(map_stations.contains(station))
+        stationInput->setCurrentText(QString::fromStdString(map_stations.value(station)->getName()));
 
     tipLabel = new QLabel("");
 
@@ -28,6 +39,8 @@ DialogModifyAgv::DialogModifyAgv(int id, QString name, QString ip, int port, QWi
     gridLayout->addWidget(ipInput,1,1);
     gridLayout->addWidget(portLabel,2,0);
     gridLayout->addWidget(portInput,2,1);
+    gridLayout->addWidget(stationLabel,3,0);
+    gridLayout->addWidget(stationInput,3,1);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout;
     hboxLayout->addWidget(okBtn);
@@ -44,8 +57,21 @@ DialogModifyAgv::DialogModifyAgv(int id, QString name, QString ip, int port, QWi
 
     connect(&msgCenter,SIGNAL(tip(QString)),tipLabel,SLOT(setText(QString)));
     connect(&msgCenter,SIGNAL(modifyAgvSuccess()),this,SLOT(accept()));
+    connect(&msgCenter,SIGNAL(mapGetSuccess()),this,SLOT(stationsUpdate()));
 }
-
+void DialogModifyAgv::stationsUpdate()
+{
+    stations.clear();
+    map_stations.clear();
+    auto ae = g_onemap.getAllElement();
+    for(auto e:ae){
+        if(e->getSpiritType() == MapSpirit::Map_Sprite_Type_Point){
+            MapPoint *pp = static_cast<MapPoint *>(e);
+            stations.push_back(pp);
+            map_stations.insert(pp->getId(), pp);
+        }
+    }
+}
 void DialogModifyAgv::onOkBtn()
 {
     if(nameInput->text().trimmed().length() == 0){
@@ -61,5 +87,10 @@ void DialogModifyAgv::onOkBtn()
         return ;
     }
 
-    msgCenter.modifyagv(m_id,nameInput->text().trimmed(),ipInput->text().trimmed(),portInput->text().toInt());
+    if(stationInput->currentText().trimmed().length() == 0){
+        QMessageBox::warning(this,QStringLiteral("填写不合法"),QStringLiteral("站点不能为空"));
+        return ;
+    }
+
+    msgCenter.modifyagv(m_id,nameInput->text().trimmed(),ipInput->text().trimmed(),portInput->text().toInt(), stations[stationInput->currentIndex()]->getId());
 }

@@ -7,19 +7,19 @@ MonitorMapItemBkg::MonitorMapItemBkg(MapBackground *_bkg, QGraphicsItem *parent)
     setZValue(1);
     setFlags(ItemIsSelectable| QGraphicsItem::ItemIsFocusable);
     setAcceptHoverEvents(true);
-    setPos(bkg->getX(),bkg->getY());
+//    setPos(bkg->getX(),bkg->getY());
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 }
 
 //外接区域
 QRectF MonitorMapItemBkg::boundingRect() const
 {
-    return QRectF(0, 0, bkg->getWidth(), bkg->getHeight());
+    return QRectF(bkg->getX(), bkg->getY(), bkg->getWidth(), bkg->getHeight());
 }
 
 void MonitorMapItemBkg::my_update()
 {
-    setPos(bkg->getX(),bkg->getY());
+    //setPos(bkg->getX(),bkg->getY());
     prepareGeometryChange();
     update();
 }

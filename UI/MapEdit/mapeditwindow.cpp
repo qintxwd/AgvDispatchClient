@@ -60,6 +60,9 @@ void MapEditWindow::init()
     connect(blockView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
     connect(groupView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockProperty,SLOT(slot_showSpirit(MapSpirit *)));
 
+    connect(blockView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
+    connect(groupView,SIGNAL(sig_chooseSpirit(MapSpirit*)),dockView,SLOT(slot_selectChanged(MapSpirit *)));
+
     connect(this,SIGNAL(sig_setSelectHand()),dockView,SIGNAL(sig_selectHand()));
     connect(this,SIGNAL(sig_setSelectSelect()),dockView,SIGNAL(sig_selectSelect()));
     connect(this,SIGNAL(sig_addBkg(int)),dockView,SLOT(slot_addBkg(int)));
@@ -113,7 +116,7 @@ void MapEditWindow::slot_load_map_success()
 void MapEditWindow::slot_set_map_success()
 {
     this->oneMap = g_onemap.clone();
-    //TODO:重新载入
+    //TODO:重新载入//还是要重启
 }
 
 void MapEditWindow::createStatusBar()
@@ -193,6 +196,12 @@ void MapEditWindow::createActions()
 
     viewsMenu->addAction(dockView->toggleViewAction());
     viewsToolBar->addAction(dockView->toggleViewAction());
+
+    viewsMenu->addAction(blockView->toggleViewAction());
+    viewsToolBar->addAction(blockView->toggleViewAction());
+
+    viewsMenu->addAction(groupView->toggleViewAction());
+    viewsToolBar->addAction(groupView->toggleViewAction());
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutAct = helpMenu->addAction(tr("&About"));

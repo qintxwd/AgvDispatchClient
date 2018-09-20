@@ -88,7 +88,8 @@ SOURCES += \
     UI/Monitor/monitormapitemagv.cpp \
     qyhbuffer.cpp \
     UI/MapEdit/dialoggroupedit.cpp \
-    UI/MapEdit/dockgroup.cpp
+    UI/MapEdit/dockgroup.cpp \
+    UI/DeviceLog/dockdevice.cpp
 
 HEADERS += \
     global.h \
@@ -155,7 +156,8 @@ HEADERS += \
     UI/Monitor/monitormapitemagv.h \
     qyhbuffer.h \
     UI/MapEdit/dialoggroupedit.h \
-    UI/MapEdit/dockgroup.h
+    UI/MapEdit/dockgroup.h \
+    UI/DeviceLog/dockdevice.h
 
 FORMS +=
 

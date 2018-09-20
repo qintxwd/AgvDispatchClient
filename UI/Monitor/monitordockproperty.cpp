@@ -18,7 +18,7 @@ void MonitorDockProperty::initTabTable()
     tableWidget_blank = new QTableWidget(0,2);
 
     tableWidget_point = new QTableWidget(11,2);
-    tableWidget_path = new QTableWidget(8,2);
+    tableWidget_path = new QTableWidget(9,2);
     tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
     tableWidget_block = new QTableWidget(2,2);
@@ -94,6 +94,8 @@ void MonitorDockProperty::initTableContent()
     point_comboxType->addItem(QStringLiteral("卸货点"));
     point_comboxType->addItem(QStringLiteral("装卸货点"));
     point_comboxType->addItem(QStringLiteral("开机原点"));
+    point_comboxType->addItem(QStringLiteral("不可调头点"));
+
     connect(point_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
     point_itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
     point_itemKeyX->setTextAlignment(Qt::AlignCenter);
@@ -196,6 +198,11 @@ void MonitorDockProperty::initTableContent()
     path_itemKeyLength->setFlags(path_itemKeyLength->flags()&(~Qt::ItemIsEditable));
     path_lengthInput  = new QLineEdit(QString(""));
     connect(path_lengthInput,SIGNAL(textEdited(QString)),this,SLOT(slot_LengthChanged(QString)));
+    path_itemKeySpeed = new QTableWidgetItem(QStringLiteral("Speed"));
+    path_itemKeySpeed->setTextAlignment(Qt::AlignCenter);
+    path_itemKeySpeed->setFlags(path_itemKeySpeed->flags()&(~Qt::ItemIsEditable));
+    path_speedInput  = new QLineEdit(QString(""));
+    connect(path_speedInput,SIGNAL(textEdited(QString)),this,SLOT(slot_SpeedChanged(QString)));
 
     ///////floor
     floor_itemKeyId = new QTableWidgetItem("ID");
@@ -314,6 +321,8 @@ void MonitorDockProperty::initTableContent()
     tableWidget_path->setCellWidget(6,1,path_yP2Input);
     tableWidget_path->setItem(7, 0, path_itemKeyLength);
     tableWidget_path->setCellWidget(7,1,path_lengthInput);
+    tableWidget_path->setItem(8, 0, path_itemKeySpeed);
+    tableWidget_path->setCellWidget(8,1,path_speedInput);
 
     tableWidget_floor->setItem(0, 0, floor_itemKeyId);
     tableWidget_floor->setItem(0, 1, floor_itemValueId);
@@ -360,6 +369,7 @@ void MonitorDockProperty::initTableContent()
     point_yInput->setEnabled(false);
     point_xRealInput->setEnabled(false);
     point_yRealInput->setEnabled(false);
+    point_aRealInput->setEnabled(false);
     point_xLabelInput->setEnabled(false);
     point_yLabelInput->setEnabled(false);
     point_comboxMapChange->setEnabled(false);
@@ -370,6 +380,7 @@ void MonitorDockProperty::initTableContent()
     path_xP2Input->setEnabled(false);
     path_yP2Input->setEnabled(false);
     path_lengthInput->setEnabled(false);
+    path_speedInput->setEnabled(false);
     floor_nameInput->setEnabled(false);
     bkg_nameInput->setEnabled(false);
     bkg_xInput->setEnabled(false);
@@ -535,12 +546,14 @@ void MonitorDockProperty::slot_PointXChanged(QString x)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setX(x.toInt());
+    (static_cast<MapPoint *>(spirit))->setRealX(x.toInt());
     emit sig_propertyChanged(spirit);;
 }
 void MonitorDockProperty::slot_PointYChanged(QString y)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setY(y.toInt());
+    (static_cast<MapPoint *>(spirit))->setRealY(y.toInt());
     emit sig_propertyChanged(spirit);
 }
 void MonitorDockProperty::slot_PointRealXChanged(QString realx)

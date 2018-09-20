@@ -30,14 +30,18 @@ DialogAddTask::DialogAddTask(QWidget *parent) : QDialog(parent)
 
     QHBoxLayout *h1 = new QHBoxLayout;
     QHBoxLayout *h2 = new QHBoxLayout;
+    QHBoxLayout *h3 = new QHBoxLayout;
     QVBoxLayout *v1 = new QVBoxLayout;
 
     h1->addWidget(agvLabel);
     h1->addWidget(agvCombobox);
     h2->addWidget(priorityLabel);
     h2->addWidget(priorityCombobox);
+    h3->addWidget(runtimeLabel);
+    h3->addWidget(runtimeInput);
     v1->addItem(h1);
     v1->addItem(h2);
+    v1->addItem(h3);
 
     baseGroupbox->setLayout(v1);
 

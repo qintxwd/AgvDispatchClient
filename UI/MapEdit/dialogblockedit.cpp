@@ -61,6 +61,7 @@ void DialogBlockEdit::init()
     //set model
     foreach (auto id, unselectIds) {
         auto item = onemap->getSpiritById(id);
+        if(item == nullptr)continue;
         QString type = "";
         if(item->getSpiritType() == MapSpirit::Map_Sprite_Type_Path){
             type = "PPATH";

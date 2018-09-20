@@ -83,7 +83,7 @@ void MonitorScene::build()
                 if(s->getPoint()->getId() == ppp->getStart()){start = s;}
                 if(s->getPoint()->getId() == ppp->getEnd()){end = s;}
             }
-            if(start == nullptr || end == nullptr)return ;
+            if(start == nullptr || end == nullptr)continue ;
 
             MonitorMapItemQuadraticBezier *l = new MonitorMapItemQuadraticBezier(start,end,ppp);
             connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
@@ -97,7 +97,7 @@ void MonitorScene::build()
                 if(s->getPoint()->getId() == ppp->getStart()){start = s;}
                 if(s->getPoint()->getId() == ppp->getEnd()){end = s;}
             }
-            if(start == nullptr || end == nullptr)return ;
+            if(start == nullptr || end == nullptr)continue ;
 
             MonitorMapItemCubicBezier *l = new MonitorMapItemCubicBezier(start,end,ppp);
             connect(l,SIGNAL(sig_propertyChanged(MapSpirit*)),this,SIGNAL(sig_propertyChanged(MapSpirit*)));
@@ -117,7 +117,7 @@ void MonitorScene::build()
 
     connect(this,SIGNAL(selectionChanged()),this,SLOT(onSelectItemChanged()));
     //connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double)),this,SIGNAL(sig_pub_agv_postion(int,QString,double,double,double)));
-    connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double,QStringList)),this,SLOT(slot_pub_agv_postion(int,QString,double,double,double,QStringList)));
+    connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double, QStringList, int)),this,SLOT(slot_pub_agv_postion(int,QString,double,double,double,QStringList,int)));
     connect(&msgCenter,SIGNAL(sig_pub_agv_occus()),this,SLOT(slot_agv_occus_set_color()));
 }
 
@@ -224,14 +224,14 @@ void MonitorScene::slot_agv_occus_set_color()
 
 }
 
-void MonitorScene::slot_pub_agv_postion(int id, QString name, double x, double y, double theta, QStringList qsl)
+void MonitorScene::slot_pub_agv_postion(int id, QString name, double x, double y, double theta, QStringList qsl, int _floor)
 {
     if(!agvIds.contains(id)){
         agvIds<<id;
-        MonitorMapItemAgv *itemAgv = new MonitorMapItemAgv(id,name);
+        MonitorMapItemAgv *itemAgv = new MonitorMapItemAgv(id,name, floor->getId());
         itemAgv->setPos(x,y);
         itemAgv->setRotation(-1*theta);
-        connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double,QStringList)),itemAgv,SLOT(slot_update_pos(int,QString,double,double,double,QStringList)));
+        connect(&msgCenter,SIGNAL(sig_pub_agv_position(int,QString,double,double,double,QStringList, int)),itemAgv,SLOT(slot_update_pos(int,QString,double,double,double,QStringList, int)));
         addItem(itemAgv);
         agvs.push_back(itemAgv);
     }

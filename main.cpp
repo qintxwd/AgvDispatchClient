@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<Json::Value>("Json::Value");
     qRegisterMetaType<USER_LOG>("USER_LOG");
+    qRegisterMetaType<DEVICE_LOG>("DEVICE_LOG");
     //设置应用的窗口名称
     app.setApplicationDisplayName("HRG Dispatch client");
     QCoreApplication::setOrganizationName("HRG(Hit Robot Group)");

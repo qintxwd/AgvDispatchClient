@@ -22,6 +22,7 @@ void DockProperty::initTabTable()
     tableWidget_floor = new QTableWidget(5,2);
     tableWidget_bkg = new QTableWidget(6,2);
     tableWidget_block = new QTableWidget(2,2);
+    tableWidget_group = new QTableWidget(2,2);
 
     QStringList labels;
     labels << QStringLiteral("属性")
@@ -59,12 +60,18 @@ void DockProperty::initTabTable()
     tableWidget_block->setShowGrid(true);
     tableWidget_block->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    tableWidget_group->setHorizontalHeaderLabels(labels);
+    tableWidget_group->verticalHeader()->hide();
+    tableWidget_group->setShowGrid(true);
+    tableWidget_group->setContextMenuPolicy(Qt::CustomContextMenu);
+
     tabwidget->addTab(tableWidget_blank,"");
     tabwidget->addTab(tableWidget_point,"");
     tabwidget->addTab(tableWidget_path,"");
     tabwidget->addTab(tableWidget_floor,"");
     tabwidget->addTab(tableWidget_bkg,"");
     tabwidget->addTab(tableWidget_block,"");
+    tabwidget->addTab(tableWidget_group,"");
     tabwidget->setCurrentIndex(0);
 }
 
@@ -94,6 +101,7 @@ void DockProperty::initTableContent()
     point_comboxType->addItem(QStringLiteral("卸货点"));
     point_comboxType->addItem(QStringLiteral("装卸货点"));
     point_comboxType->addItem(QStringLiteral("开机原点"));
+    point_comboxType->addItem(QStringLiteral("不可调头点"));
     connect(point_comboxType,SIGNAL(currentIndexChanged(int)),this,SLOT(slot_PointTypeChanged(int)));
     point_itemKeyX = new QTableWidgetItem(QStringLiteral("X"));
     point_itemKeyX->setTextAlignment(Qt::AlignCenter);
@@ -277,6 +285,20 @@ void DockProperty::initTableContent()
     block_nameInput  = new QLineEdit("");
     connect(block_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_BlockNameChanged(QString)));
 
+    ///////group
+    group_itemKeyId = new QTableWidgetItem("ID");
+    group_itemKeyId->setTextAlignment(Qt::AlignCenter);
+    group_itemKeyId->setFlags(group_itemKeyId->flags()&(~Qt::ItemIsEditable));
+    group_itemValueId = new QTableWidgetItem("");
+    group_itemValueId->setTextAlignment(Qt::AlignCenter);
+    group_itemValueId->setFlags(group_itemValueId->flags()&(~Qt::ItemIsEditable));
+    group_itemKeyName = new QTableWidgetItem("NAME");
+    group_itemKeyName->setTextAlignment(Qt::AlignCenter);
+    group_itemKeyName->setFlags(group_itemKeyName->flags()&(~Qt::ItemIsEditable));
+    group_nameInput  = new QLineEdit("");
+    connect(group_nameInput,SIGNAL(textEdited(QString)),this,SLOT(slot_GroupNameChanged(QString)));
+
+
     ////////////add to table widget
     tableWidget_point->setItem(0, 0, point_itemKeyId);
     tableWidget_point->setItem(0, 1, point_itemValueId);
@@ -352,6 +374,11 @@ void DockProperty::initTableContent()
     tableWidget_block->setItem(1, 0, block_itemKeyName);
     tableWidget_block->setCellWidget(1,1,block_nameInput);
 
+    tableWidget_group->setItem(0, 0, group_itemKeyId);
+    tableWidget_group->setItem(0, 1, group_itemValueId);
+    tableWidget_group->setItem(1, 0, group_itemKeyName);
+    tableWidget_group->setCellWidget(1,1,group_nameInput);
+
 }
 
 //地图修改的属性，这边更新
@@ -372,6 +399,8 @@ void DockProperty::slot_propertyChanged(MapSpirit *_spirit)
         showBkg();
     }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Block){
         showBlock();
+    }else if(spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Group){
+        showGroup();
     }
 }
 
@@ -402,6 +431,9 @@ void DockProperty::slot_showSpirit(MapSpirit *s)
         break;
     case MapSpirit::Map_Sprite_Type_Block:
         showBlock();
+        break;
+    case MapSpirit::Map_Sprite_Type_Group:
+        showGroup();
         break;
     default:
         break;
@@ -493,6 +525,18 @@ void DockProperty::showBlock()
     tabwidget->setCurrentIndex(5);
 }
 
+
+void DockProperty::showGroup()
+{
+    //清空原来的数据
+    if(spirit==nullptr)return ;
+    MapGroup *group = static_cast<MapGroup *>(spirit);
+    group_itemValueId->setText(QString("%1").arg(group->getId()));
+    group_nameInput->setText(QString::fromStdString(group->getName()));
+    tableWidget_group->update();
+    tabwidget->setCurrentIndex(6);
+}
+
 void DockProperty::slot_PointNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
@@ -510,12 +554,14 @@ void DockProperty::slot_PointXChanged(QString x)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setX(x.toInt());
+    //(static_cast<MapPoint *>(spirit))->setRealX(x.toInt());
     emit sig_propertyChanged(spirit);;
 }
 void DockProperty::slot_PointYChanged(QString y)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapPoint *>(spirit))->setY(y.toInt());
+    //(static_cast<MapPoint *>(spirit))->setRealY(y.toInt());
     emit sig_propertyChanged(spirit);
 }
 void DockProperty::slot_PointRealXChanged(QString realx)
@@ -677,6 +723,14 @@ void DockProperty::slot_BlockNameChanged(QString name)
 {
     if(spirit == nullptr)return ;
     (static_cast<MapBlock *>(spirit))->setName(name.toStdString());
+    emit sig_propertyChanged(spirit);
+}
+
+
+void DockProperty::slot_GroupNameChanged(QString name)
+{
+    if(spirit == nullptr)return ;
+    (static_cast<MapGroup *>(spirit))->setName(name.toStdString());
     emit sig_propertyChanged(spirit);
 }
 

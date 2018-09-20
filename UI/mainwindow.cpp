@@ -185,6 +185,10 @@ void MainWindow::createActions()
     addDockWidget(Qt::RightDockWidgetArea,dock_user_log);
     viewsMenu->addAction(dock_user_log->toggleViewAction());
     viewsToolBar->addAction(dock_user_log->toggleViewAction());
+    dock_device_log = new DockDevice();
+    addDockWidget(Qt::RightDockWidgetArea,dock_device_log);
+    viewsMenu->addAction(dock_device_log->toggleViewAction());
+    viewsToolBar->addAction(dock_device_log->toggleViewAction());
     dock_task = new DockTask();
     addDockWidget(Qt::LeftDockWidgetArea,dock_task);
     viewsMenu->addAction(dock_task->toggleViewAction());
@@ -245,6 +249,15 @@ void MainWindow::createActions()
 
     viewsMenu->addAction(blockView->toggleViewAction());
     viewsToolBar->addAction(blockView->toggleViewAction());
+
+    viewsMenu->addAction(dockView->toggleViewAction());
+    viewsToolBar->addAction(dockView->toggleViewAction());
+
+    viewsMenu->addAction(blockView->toggleViewAction());
+    viewsToolBar->addAction(blockView->toggleViewAction());
+
+//    viewsMenu->addAction(dockView->toggleViewAction());
+//    viewsToolBar->addAction(dockView->toggleViewAction());
 }
 
 void MainWindow::about()

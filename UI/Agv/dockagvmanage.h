@@ -21,6 +21,10 @@ public slots:
     void addAgv();
     void deleteAgv();
     void modifyAgv();
+    void stopAgv();
+    void pauseAgv();
+    void resumeAgv();
+    void controlAgv(int params);
     void deleteSuccess();
     void modifySuccess();
 private:

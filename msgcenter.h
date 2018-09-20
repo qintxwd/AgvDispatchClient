@@ -25,6 +25,8 @@ typedef struct _AGV_BASE_INFO
     QString name;
     QString ip;
     int port;
+    int station;
+    int status;
 }AGV_BASE_INFO;
 
 //AGV位置信息
@@ -106,13 +108,17 @@ public:
 
     void addagv(QString name, QString ip, int port, int station);
 
-    void modifyagv(int id,QString name,QString ip,int port);
-
+    void modifyagv(int id, QString name, QString ip, int port, int station);
+    void controlagv(int id, int params);
     void subAgvPosition();
     void cancelSubAgvPosition();
 
     //查询历史日志
     void queryLog(QString from,QString to,bool trace = true,bool debug = true,bool info = true,bool warn = true,bool error = true,bool fatal = true);
+    void queryDeviceLog(int station);
+
+    //电梯控制
+    void elevatorControl(int groupid, int status);
 
     ////////////////////////////////////地图
     //载入地图信息
@@ -183,6 +189,7 @@ signals:
     ////////////////////////日志查询
     void queryLogSuccess();
     void pubOneLog(USER_LOG log);
+    void pubOneLog(DEVICE_LOG log);
 
     //////////////////////////任务
     void taskDetailSuccess();
@@ -195,7 +202,7 @@ signals:
     void cancelTaskSuccess();
 
     //获取到一个agv位置信息
-    void sig_pub_agv_position(int id,QString name,double x,double y,double theta,QStringList occus);
+    void sig_pub_agv_position(int id,QString name,double x,double y,double theta,QStringList occus,int floor);
 
     void sig_pub_agv_occus();
     //订阅成功
@@ -230,8 +237,11 @@ private:
     void response_agv_add(const Json::Value &response);
     void response_agv_delete(const Json::Value &response);
     void response_agv_modify(const Json::Value &response);
-
+    void response_agv_control(const Json::Value &response);
     void pub_agv_position(const Json::Value &response);
+
+    //电梯管理
+    void response_elevator_control(const Json::Value &response);
 
     //任务部分
     void response_task_add(const Json::Value &response);
@@ -253,6 +263,7 @@ private:
     void response_cancelSubAgvStatus(const Json::Value &response);
     void response_cancelSubTask(const Json::Value &response);
 
+	void response_device_log(const Json::Value &response);
 
     void parseOneMsg(const Json::Value &response);
 

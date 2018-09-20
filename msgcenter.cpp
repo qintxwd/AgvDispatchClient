@@ -3,6 +3,7 @@
 #include "global.h"
 #include "base64.h"
 #include <iostream>
+#include <cmath>
 
 MsgCenter::MsgCenter(QObject *parent) : QObject(parent),
     quit(false),
@@ -153,6 +154,9 @@ void MsgCenter::parseOneMsg(const Json::Value &response)
     { MSG_TODO_TRAFFIC_CONTROL_LINE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_RELEASE_STATION,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_TRAFFIC_RELEASE_LINE,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
+    { MSG_TODO_AGV_MANAGE_STOP,std::bind(&MsgCenter::response_agv_control,this,std::placeholders::_1) },
+    { MSG_TODO_QUERY_DEVICE_LOG,std::bind(&MsgCenter::response_device_log,this,std::placeholders::_1) },
+    { MSG_TODO_ELEVATOR_CONTROL,std::bind(&MsgCenter::response_elevator_control,this,std::placeholders::_1) },
     { MSG_TODO_PUB_AGV_POSITION,std::bind(&MsgCenter::pub_agv_position,this,std::placeholders::_1) },
     { MSG_TODO_PUB_AGV_STATUS,std::bind(&MsgCenter::response_user_login,this,std::placeholders::_1) },
     { MSG_TODO_PUB_LOG,std::bind(&MsgCenter::pub_agv_log,this,std::placeholders::_1) },
@@ -244,7 +248,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
         Json::Value station = response["points"][i];
         int id = station["id"].asInt();
         std::string name = station["name"].asString();
-        int station_type = station["point_type"].asInt();
+        int station_type = station["type"].asInt();
         int x = station["x"].asInt();
         int y = station["y"].asInt();
         int realX = station["realX"].asInt();
@@ -356,9 +360,10 @@ void MsgCenter::response_map_get(const Json::Value &response)
     {
         Json::Value group = response["groups"][i];
         int id = group["id"].asInt();
+        int groupType = group["type"].asInt();
         std::string name = group["name"].asString();
         Json::Value spirits = group["spirits"];
-        MapGroup *p = new MapGroup(id,name);
+        MapGroup *p = new MapGroup(id,name,groupType);
         for(int k=0;k<spirits.size();++k){
             Json::Value spirit = spirits[k];
             p->addSpirit(spirit.asInt());
@@ -383,6 +388,7 @@ void MsgCenter::response_agv_list(const Json::Value &response)
         temp.ip = QString::fromStdString(agv["ip"].asString());
         temp.name = QString::fromStdString(agv["name"].asString());
         temp.port = agv["port"].asInt();
+        temp.station = agv["nowStation"].asInt();
         agvbaseinfos.push_back(temp);
     }
     emit listAgvSuccess();
@@ -403,6 +409,33 @@ void MsgCenter::response_agv_modify(const Json::Value &response)
     emit modifyAgvSuccess();
 }
 
+void MsgCenter::response_agv_control(const Json::Value &response)
+{
+    //
+}
+
+void MsgCenter::response_elevator_control(const Json::Value &response)
+{
+    //
+}
+
+void MsgCenter::response_device_log(const Json::Value &response)
+{
+    //
+    Json::Value logs = response["records"];
+    for(int i=0;i<logs.size();++i){
+        Json::Value log = logs[i];
+        DEVICE_LOG device_log;
+        device_log.id = log["id"].asInt();
+        device_log.temperature = log["temperature"].asInt();
+        device_log.start_voltage = log["start_voltage"].asInt();
+        device_log.end_voltage = log["end_voltage"].asInt();
+        device_log.charge_time = log["charge_time"].asInt();
+        device_log.charge_power = log["charge_power"].asInt();
+        emit pubOneLog(device_log);
+    }
+}
+
 void MsgCenter::pub_agv_position(const Json::Value &response)
 {
     Json::Value json_agvs = response["agvs"];
@@ -413,10 +446,26 @@ void MsgCenter::pub_agv_position(const Json::Value &response)
         double x = json_one_agv["x"].asDouble();
         double y = json_one_agv["y"].asDouble();
         double theta = json_one_agv["theta"].asDouble();
+        int floor = json_one_agv["floor"].asInt();
         QString occurs = QString::fromStdString(json_one_agv["occurs"].asString());
         QStringList ocs = occurs.split(";");
+        for(int i = 0; i < agvbaseinfos.size(); i++)
+        {
+            AGV_BASE_INFO agv = agvbaseinfos.at(i);
+            if(agv.id == id)
+            {
+                int current_station= json_one_agv["nowStation"].asInt();
+                if(agv.station != current_station)
+                {
+                    agv.station = current_station;
+                    agvbaseinfos[i] = agv;
+                    emit listAgvSuccess();
 
-        emit sig_pub_agv_position(id,name,x,y,theta,ocs);
+                }
+                break;
+            }
+        }
+        emit sig_pub_agv_position(id,name,x,y,theta,ocs,floor);
     }
 
     //更新道路占用颜色
@@ -645,15 +694,28 @@ void MsgCenter::addagv(QString name,QString ip,int port,int station)
 }
 
 
-void MsgCenter::modifyagv(int id,QString name,QString ip,int port)
+void MsgCenter::modifyagv(int id,QString name,QString ip,int port, int station)
 {
     Json::Value request;
     iniRequsttMsg(request);
-    request["todo"] = MSG_TODO_AGV_MANAGE_ADD;
+    request["todo"] = MSG_TODO_AGV_MANAGE_MODIFY;
     request["id"] = id;
     request["name"] = name.toStdString();
     request["ip"] = ip.toStdString();
     request["port"] = port;
+    request["nowStation"] = station;
+    request["lastStation"] = 0;
+    request["nextStation"] = 0;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::controlagv(int id, int params)
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_AGV_MANAGE_STOP;
+    request["id"] = id;
+    request["params"] = params;
     requestWaitResponse(request);
 }
 
@@ -807,7 +869,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["realA"] = p->getRealA();
             pv["labelXoffset"] = p->getLabelXoffset();
             pv["labelYoffset"] = p->getLabelYoffset();
-            pv["mapChange"] = p->getMapChange();
+            pv["mapchange"] = p->getMapChange();
             pv["locked"] = p->getLocked();
             pv["ip"] = p->getIp();
             pv["port"] = p->getPort();
@@ -827,10 +889,16 @@ void MsgCenter::mapSave(OneMap *onemap)
             pv["p1y"] = p->getP1y();
             pv["p2x"] = p->getP2x();
             pv["p2y"] = p->getP2y();
-            pv["length"] = p->getLength();
-            pv["locked"] = p->getLocked();
             pv["speed"] = p->getSpeed();
-            v_paths.append(pv);
+            MapPoint * startPoint = static_cast<MapPoint *>(onemap->getSpiritById(p->getStart()));
+            MapPoint * endPoint = static_cast<MapPoint *>(onemap->getSpiritById(p->getEnd()));
+            if(startPoint && endPoint)
+            {
+                pv["length"] = std::sqrt((startPoint->getRealX()- endPoint->getRealX())*(startPoint->getRealX()- endPoint->getRealX())+(startPoint->getRealY()- endPoint->getRealY())*(startPoint->getRealY()- endPoint->getRealY()))/10;
+                //            pv["length"] = p->getLength();
+                pv["locked"] = p->getLocked();
+                v_paths.append(pv);
+            }
         }
         else if (spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Background) {
             MapBackground *p = static_cast<MapBackground *>(spirit);
@@ -902,6 +970,7 @@ void MsgCenter::mapSave(OneMap *onemap)
             Json::Value pv;
             pv["id"] = p->getId();
             pv["name"] = p->getName();
+            pv["type"] = p->getGroupType();
             Json::Value ppv;
             auto ps = p->getSpirits();
             int kk = 0;
@@ -936,5 +1005,25 @@ void MsgCenter::mapLoad()
     Json::Value request;
     iniRequsttMsg(request);
     request["todo"] = MSG_TODO_MAP_GET_MAP;
+    requestWaitResponse(request);
+}
+
+void MsgCenter::queryDeviceLog(int station)
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_QUERY_DEVICE_LOG;
+    request["stationid"] = station;
+    requestWaitResponse(request);
+}
+
+
+void MsgCenter::elevatorControl(int groupid, int status)
+{
+    Json::Value request;
+    iniRequsttMsg(request);
+    request["todo"] = MSG_TODO_ELEVATOR_CONTROL;
+    request["groupid"] = groupid;
+    request["status"] = status;
     requestWaitResponse(request);
 }

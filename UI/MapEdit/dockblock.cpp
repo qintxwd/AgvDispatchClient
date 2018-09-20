@@ -31,8 +31,8 @@ void DockBlock::init()
     connect(editBlock,SIGNAL(triggered(bool)),this,SLOT(slot_editBlock()));
 
     righMenuItem = new QMenu(this);
-    righMenuItem->addAction(removeBlock);
     righMenuItem->addAction(editBlock);
+    righMenuItem->addAction(removeBlock);
     righMenuBlank = new QMenu(this);
     righMenuBlank->addAction(addBlock);
 

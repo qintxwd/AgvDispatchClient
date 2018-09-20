@@ -2,6 +2,8 @@
 #define DIALOGMODIFYAGV_H
 
 #include <QDialog>
+#include "../../msgcenter.h"
+
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -13,12 +15,13 @@ class DialogModifyAgv : public QDialog
 {
     Q_OBJECT
 public:
-    explicit DialogModifyAgv(int id, QString name, QString ip,int port,QWidget *parent = nullptr);
+    explicit DialogModifyAgv(int id, QString name, QString ip,int port, int station, QWidget *parent = nullptr);
 
 signals:
 
 public slots:
     void onOkBtn();
+    void stationsUpdate();
 private:
     QLabel *nameLabel;
     QLineEdit *nameInput;
@@ -29,12 +32,17 @@ private:
     QLabel *portLabel;
     QLineEdit *portInput;
 
+    QLabel *stationLabel;
+    QComboBox *stationInput;
+
     QLabel *tipLabel;
 
     QPushButton *okBtn;
     QPushButton *cancelBtn;
 
     int m_id;
+    QList<MapPoint *> stations;
+    QMap<int, MapPoint*> map_stations;
 };
 
 #endif // DIALOGMODIFYAGV_H

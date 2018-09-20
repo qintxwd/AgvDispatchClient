@@ -77,7 +77,7 @@ public slots:
 
     void slot_setCurTool(int t);
 
-    void slot_pub_agv_postion(int id,QString name,double x,double y,double theta,QStringList qsl);
+    void slot_pub_agv_postion(int id, QString name, double x, double y, double theta,QStringList qsl, int floor);
 
     void slot_agv_occus_set_color();
 private:

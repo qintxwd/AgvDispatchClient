@@ -4,11 +4,17 @@
 #include <list>
 #include "mapspirit.h"
 
-//一个区块，只允许部分车辆通行
+//一个区块 区块内只能有一个车
+enum
+{
+    COMMON_GROUP = 1,
+    HALT_GROUP = 2,
+    ELEVATOR_GROUP = 3
+};
 class MapGroup : public MapSpirit
 {
 public:
-    explicit MapGroup(int _id, std::string _name);
+    explicit MapGroup(int _id, std::string _name, int _type);
     virtual ~MapGroup();
     virtual MapSpirit *clone();
     MapGroup(const MapGroup& b) = delete;
@@ -18,8 +24,11 @@ public:
     void addSpirit(int spirit){spirits.push_back(spirit);}
     void removeSpirit(int spirit){spirits.remove(spirit);}
     std::list<int> getSpirits(){return spirits;}
+    int getGroupType() const {return groupType;}
+
 private:
     std::list<int> spirits;//区块
+    int groupType;
 };
 
 #endif // MAPGROUP_H

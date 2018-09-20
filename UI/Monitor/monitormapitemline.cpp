@@ -32,8 +32,8 @@ void MonitorMapItemLine::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
     painter->setRenderHint(QPainter::Antialiasing,true);
 
-    const int polygonLength = 10;
-    const int polygonAngle = 10;
+    const int polygonLength = 30;
+    const int polygonAngle = 20;
     double angle;
 
     triangle_end[0] = endStation->pos();

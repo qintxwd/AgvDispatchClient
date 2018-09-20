@@ -47,17 +47,17 @@ void MonitorViewer::wheelEvent(QWheelEvent *event)
     if (event->modifiers() & Qt::ControlModifier) {
         if (event->delta() > 0)
         {
-            if(kk<20){
-                ++kk;
+//            if(kk<20){
+//                ++kk;
                 scale(scaleFactor, scaleFactor);
-            }
+//            }
         }
         else
         {
-            if(kk>-20){
-                --kk;
+//            if(kk>-20){
+//                --kk;
                 scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-            }
+//            }
         }
         viewport()->update();
         event->accept();

@@ -40,15 +40,49 @@
 
 #define SQL_MAX_LENGTH                  (2048)
 
-//消息类型
+#define LOG_TIME_LENGTH          (32)
+#define LOG_MSG_LENGTH          (1024)
+
+//result位的定义
+enum
+{
+    RETURN_MSG_RESULT_SUCCESS = 0,//全局的成功
+    RETURN_MSG_RESULT_FAIL,//全局的错误
+};
+
+//error_code位的定义
+enum {
+    RETURN_MSG_ERROR_NO_ERROR = 0,
+    RETURN_MSG_ERROR_CODE_UNKNOW,//未知错误
+    RETURN_MSG_ERROR_CODE_PARAMS,//数据长度有问题
+    RETURN_MSG_ERROR_CODE_PERMISSION_DENIED,//
+    RETURN_MSG_ERROR_CODE_USERNAME_NOT_EXIST,//登陆用户名不存在
+    RETURN_MSG_ERROR_CODE_PASSWORD_ERROR,//登陆密码错误
+    RETURN_MSG_ERROR_CODE_NOT_LOGIN,//用户未登录
+    RETURN_MSG_ERROR_CODE_QUERY_SQL_FAIL,
+    RETURN_MSG_ERROR_CODE_SAVE_SQL_FAIL,//保存数据库失败
+    RETURN_MSG_ERROR_CODE_TASKING,//有任务正在执行
+    RETURN_MSG_ERROR_CODE_NOT_CTREATING,//不是正在创建地图的时候添加 站点啊、直线、曲线
+    RETURN_MSG_ERROR_CODE_CTREATING,//正在创建地图的时候获取地图
+	RETURN_MSG_ERROR_CODE_UNFINDED,//未找到
+};
+
+////返回消息的结构的额外头
+//typedef struct _MSG_RESPONSE_HEAD
+//{
+//    uint8_t result;//RETURN_MSG_RESULT
+//    uint32_t error_code;//RETURN_MSG_ERROR_CODE_
+//    char error_info[MSG_LONG_STRING_LEN];
+//}MSG_RESPONSE_HEAD;
+
 typedef enum Msg_Type {
-    MSG_TYPE_REQUEST = 0,//客户端请求
-    MSG_TYPE_RESPONSE,//服务器应答
-    MSG_TYPE_PUBLISH,//服务器发布
-    MSG_TYPE_NOTIFY//服务器通知
+	MSG_TYPE_REQUEST = 0,
+	MSG_TYPE_RESPONSE,
+	MSG_TYPE_PUBLISH,
+	MSG_TYPE_NOTIFY
 }MSG_TYPE;
 
-//消息做的事情
+//定义消息头的 todo
 typedef enum Msg_Todo
 {
     //request and response
@@ -86,6 +120,9 @@ typedef enum Msg_Todo
     MSG_TODO_TRAFFIC_RELEASE_STATION,//交通管制 释放,一个站点//stationId[int32]
     MSG_TODO_TRAFFIC_RELEASE_LINE,//交通管制 释放，一条线路//lineId[int32]
 
+    MSG_TODO_AGV_MANAGE_STOP,//停止//id[4]
+    MSG_TODO_QUERY_DEVICE_LOG, //查询设备日志 deviceid
+    MSG_TODO_ELEVATOR_CONTROL, //控制电梯
     //publish request and response
     MSG_TODO_PUB_AGV_POSITION,//发布的agv位置信息，该信息的queuebumber = 0
     MSG_TODO_PUB_AGV_STATUS,//发布的agv状态信息，该信息的queuebumber = 0
@@ -95,31 +132,8 @@ typedef enum Msg_Todo
     //notify
     MSG_TODO_NOTIFY_ALL_MAP_UPDATE,//通知消息 -- 地图更新
     MSG_TODO_NOTIFY_ALL_ERROR,
+
 }MSG_TODO;
-
-//应答 是否成功
-enum
-{
-    RETURN_MSG_RESULT_SUCCESS = 0,//全局的成功
-    RETURN_MSG_RESULT_FAIL,//全局的错误
-};
-
-//应答 错误代码
-enum {
-    RETURN_MSG_ERROR_NO_ERROR = 0,
-    RETURN_MSG_ERROR_CODE_UNKNOW,//未知错误
-    RETURN_MSG_ERROR_CODE_PARAMS,//数据长度有问题
-    RETURN_MSG_ERROR_CODE_PERMISSION_DENIED,//
-    RETURN_MSG_ERROR_CODE_USERNAME_NOT_EXIST,//登陆用户名不存在
-    RETURN_MSG_ERROR_CODE_PASSWORD_ERROR,//登陆密码错误
-    RETURN_MSG_ERROR_CODE_NOT_LOGIN,//用户未登录
-    RETURN_MSG_ERROR_CODE_QUERY_SQL_FAIL,
-    RETURN_MSG_ERROR_CODE_SAVE_SQL_FAIL,//保存数据库失败
-    RETURN_MSG_ERROR_CODE_TASKING,//有任务正在执行
-    RETURN_MSG_ERROR_CODE_NOT_CTREATING,//不是正在创建地图的时候添加 站点啊、直线、曲线
-    RETURN_MSG_ERROR_CODE_CTREATING,//正在创建地图的时候获取地图
-	RETURN_MSG_ERROR_CODE_UNFINDED,//未找到
-};
 
 //用户角色
 enum{
@@ -130,9 +144,76 @@ enum{
     USER_ROLE_DEVELOP,//开发人员
 };
 
+
+//typedef struct _USER_INFO
+//{
+//    uint32_t id;//id号
+//    uint32_t role;//角色
+//    char username[MSG_STRING_LEN];//用户名
+//    char password[MSG_STRING_LEN];//密码
+//    uint8_t status;//登录状态
+//}USER_INFO;
+
+////AGV基本信息
+//typedef struct _AGV_BASE_INFO
+//{
+//    uint32_t id;
+//    char name[MSG_STRING_LEN];
+//    char ip[MSG_STRING_LEN];
+//    uint32_t port;
+//    uint32_t type;
+//}AGV_BASE_INFO;
+
+////AGV位置信息
+//typedef struct _AGV_POSITION_INFO
+//{
+//    uint32_t id;
+//    uint32_t x;
+//    uint32_t y;
+//    int32_t rotation;
+//}AGV_POSITION_INFO;
+
+
+//typedef struct _STATION_INFO
+//{
+//    int32_t id;
+//    int32_t x;
+//    int32_t y;
+//    int32_t floorId;
+//    int32_t occuagv;
+//    char name[MSG_STRING_LEN];
+//}STATION_INFO;
+
+//typedef struct _AGV_LINE
+//{
+//    int32_t id;
+//    int32_t startStation;
+//    int32_t endStation;
+//    int32_t length;
+//}AGV_LINE;
+
+//typedef struct _TASK_INFO
+//{
+//    int32_t id;
+//    char produceTime[MSG_TIME_STRING_LEN];
+//    char doTime[MSG_TIME_STRING_LEN];
+//    char doneTime[MSG_TIME_STRING_LEN];
+//    int32_t excuteAgv;
+//    int32_t status;
+//}TASK_INFO;
+
 //用户日志，显示给用户的日志。
 typedef struct _USER_Log {
-    std::string time;//yyyy-MM-dd hh:mm:ss.fff
-    std::string msg;//日志内容
+    std::string time;
+    std::string msg;
 }USER_LOG;
 
+//设备日志，显示设备的日志。
+typedef struct _DEVICE_Log {
+    int id;
+    int temperature;
+    int start_voltage;
+    int end_voltage;
+    int charge_time;
+    int charge_power;
+}DEVICE_LOG;

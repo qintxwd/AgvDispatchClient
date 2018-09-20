@@ -30,8 +30,9 @@ void DockGroup::init()
     connect(editGroup,SIGNAL(triggered(bool)),this,SLOT(slot_editGroup()));
 
     righMenuItem = new QMenu(this);
-    righMenuItem->addAction(removeGroup);
     righMenuItem->addAction(editGroup);
+    righMenuItem->addAction(removeGroup);
+
     righMenuBlank = new QMenu(this);
     righMenuBlank->addAction(addGroup);
 
@@ -44,12 +45,12 @@ void DockGroup::init()
 
 void DockGroup::slot_selectChanged(QModelIndex index)
 {
-//    QList<MapGroup *> groups = QList<MapGroup *>::fromStdList(oneMap->getGroups());
-//    if(index.row()<groups.length()){
-//        emit sig_chooseSpirit(groups[index.row()]);
-//    }else{
-//        emit sig_chooseSpirit(nullptr);
-//    }
+    QList<MapGroup *> groups = QList<MapGroup *>::fromStdList(oneMap->getGroups());
+    if(index.row()<groups.length()){
+        emit sig_chooseSpirit(groups[index.row()]);
+    }else{
+        emit sig_chooseSpirit(nullptr);
+    }
 }
 
 void DockGroup::slot_onRightClicked(const QPoint& pos)
@@ -66,7 +67,7 @@ void DockGroup::slot_addGroup()
 {
     int id = oneMap->getNextId();
     QString name = QString("group_%1").arg(id);
-    MapGroup *group = new MapGroup(id,name.toStdString());
+    MapGroup *group = new MapGroup(id,name.toStdString(), COMMON_GROUP);
     oneMap->addSpirit(group);
     qsl<<QString("%1 -- %2").arg(group->getId()).arg(QString::fromStdString(group->getName()));
     model->setStringList(qsl);

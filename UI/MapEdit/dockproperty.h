@@ -59,12 +59,15 @@ private slots:
 
     //block edit
     void slot_BlockNameChanged(QString name);
+    //group edit
+    void slot_GroupNameChanged(QString name);
 private:
     void showPoint();
     void showPath();
     void showFloor();
     void showBkg();
     void showBlock();
+    void showGroup();
     MapSpirit *spirit;
     QTableWidget *tableWidget_blank;//空白
     QTableWidget *tableWidget_point;//站点
@@ -72,6 +75,7 @@ private:
     QTableWidget *tableWidget_floor;//楼层
     QTableWidget *tableWidget_bkg;//背景图片
     QTableWidget *tableWidget_block;//区块
+    QTableWidget *tableWidget_group;//group
 
     QTabWidget *tabwidget;
 
@@ -100,6 +104,8 @@ private:
     QLineEdit *point_xLabelInput;
     QTableWidgetItem *point_itemKeyLabelY;
     QLineEdit *point_yLabelInput;
+    QTableWidgetItem *point_itemKeyLabelA;
+    QLineEdit *point_aLabelInput;
     QTableWidgetItem *point_itemKeyMapChange;
     QComboBox *point_comboxMapChange;
 
@@ -156,6 +162,12 @@ private:
     QTableWidgetItem *block_itemValueId;
     QTableWidgetItem *block_itemKeyName;
     QLineEdit *block_nameInput;
+
+    //group
+    QTableWidgetItem *group_itemKeyId;
+    QTableWidgetItem *group_itemValueId;
+    QTableWidgetItem *group_itemKeyName;
+    QLineEdit *group_nameInput;
 
 };
 

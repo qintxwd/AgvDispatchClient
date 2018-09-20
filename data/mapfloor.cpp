@@ -26,7 +26,7 @@ MapSpirit *MapFloor::clone()
     f->setBkg(bkg);
     f->setOriginX(originX);
     f->setOriginY(originY);
-
+	f->setOriginTheta(originTheta);
     return f;
 }
 

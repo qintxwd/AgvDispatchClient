@@ -2,12 +2,13 @@
 #define MONITORMAPITEMAGV_H
 
 #include <QGraphicsObject>
+#include <QTimer>
 
 class MonitorMapItemAgv : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit MonitorMapItemAgv(int _id,QString _name,QGraphicsItem *parent = nullptr);
+    explicit MonitorMapItemAgv(int _id, QString _name, int _floor, QGraphicsItem *parent = nullptr);
 
     enum { Type = UserType + 27};
     int type() const
@@ -28,11 +29,15 @@ public:
 signals:
 
 public slots:
-    void slot_update_pos(int id, QString name, double x, double y, double angle, QStringList occs);
+    void slot_update_pos(int id, QString name, double x, double y, double angle,  QStringList occs, int _floor);
+    void slot_flick();
 private:
     QColor color;
     int agv_id;
     QString name;
+    int floor;//item shuyu nage scene
+
+    QTimer flicktimer;
 };
 
 #endif // MONITORMAPITEMAGV_H

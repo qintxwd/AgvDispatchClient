@@ -855,6 +855,76 @@ void Scene::slot_selectItem(MapSpirit *_spirit)
         if(bkg!=nullptr && bkg->getBkg() == _spirit){
             bkg->setSelected(true);
         }
+    }else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Block){
+        MapBlock *b = static_cast<MapBlock *>(_spirit);
+        auto ss = b->getSpirits();
+        for(auto s:ss){
+            foreach (auto p, iLines) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iStations) {
+                if(p->getPoint()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iStationNames) {
+                if(p->getPoint()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iQbs) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iCbs) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+        }
+    }else if(_spirit->getSpiritType() == MapSpirit::Map_Sprite_Type_Group){
+        MapGroup *b = static_cast<MapGroup *>(_spirit);
+        auto ss = b->getSpirits();
+        for(auto s:ss){
+            foreach (auto p, iLines) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iStations) {
+                if(p->getPoint()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iStationNames) {
+                if(p->getPoint()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iQbs) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+            foreach (auto p, iCbs) {
+                if(p->getPath()->getId() == s){
+                    p->setSelected(true);
+                    break;
+                }
+            }
+        }
     }
 }
 

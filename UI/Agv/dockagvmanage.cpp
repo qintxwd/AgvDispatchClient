@@ -3,6 +3,19 @@
 #include "dialogaddagv.h"
 #include "dialogmodifyagv.h"
 
+//状态
+enum {
+    AGV_STATUS_HANDING = -1,//手动模式中，不可用
+    AGV_STATUS_IDLE = 0,//空闲可用
+    AGV_STATUS_UNCONNECT = 1,//未连接
+    AGV_STATUS_TASKING = 2,//正在执行任务
+    AGV_STATUS_POWER_LOW = 3,//电量低
+    AGV_STATUS_ERROR = 4,//故障
+    AGV_STATUS_GO_CHARGING = 5,//返回充电中
+    AGV_STATUS_CHARGING = 6,//正在充电
+    AGV_STATUS_NOTREADY = 7 //刚连接，尚未上报位置
+};
+
 DockAgvManage::DockAgvManage(QWidget *parent) : QDockWidget(tr("AgvManage"),parent)
 {
     setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -13,17 +26,26 @@ DockAgvManage::DockAgvManage(QWidget *parent) : QDockWidget(tr("AgvManage"),pare
     QPushButton *btnAddAgv = new QPushButton(tr("add agv"));
     QPushButton *btnDeleteAgv = new QPushButton(tr("delete agv"));
     QPushButton *btnModifyAgv = new QPushButton(tr("edit agv"));
+    QPushButton *btnStopAgv = new QPushButton(tr("stop"));
+    QPushButton *btnPauseAgv = new QPushButton(tr("pause"));
+    QPushButton *btnResumeAgv = new QPushButton(tr("resume"));
+
     QHBoxLayout *btnsLayout = new QHBoxLayout;
     btnsLayout->addWidget(btnAddAgv);
     btnsLayout->addWidget(btnDeleteAgv);
     btnsLayout->addWidget(btnModifyAgv);
+    btnsLayout->addWidget(btnStopAgv);
+    btnsLayout->addWidget(btnPauseAgv);
+    btnsLayout->addWidget(btnResumeAgv);
 
-    tableWidget = new QTableWidget(0, 4);
+    tableWidget = new QTableWidget(0, 6);
     QStringList labels;
     labels << QStringLiteral("ID")
            << QStringLiteral("agv name")
+              << QStringLiteral("agv status")
            << QStringLiteral("agv ip")
-           << QStringLiteral("agv port");
+           << QStringLiteral("agv port")
+           << QStringLiteral("agv station");
     tableWidget->setHorizontalHeaderLabels(labels);
     tableWidget->verticalHeader()->hide();
     tableWidget->setShowGrid(false);
@@ -47,6 +69,9 @@ DockAgvManage::DockAgvManage(QWidget *parent) : QDockWidget(tr("AgvManage"),pare
     connect(btnDeleteAgv,SIGNAL(clicked(bool)),this,SLOT(deleteAgv()));
     connect(btnAddAgv,SIGNAL(clicked(bool)),this,SLOT(addAgv()));
     connect(btnModifyAgv,SIGNAL(clicked(bool)),this,SLOT(modifyAgv()));
+    connect(btnStopAgv, SIGNAL(clicked(bool)), this, SLOT(stopAgv()));
+    connect(btnPauseAgv, SIGNAL(clicked(bool)), this, SLOT(pauseAgv()));
+    connect(btnResumeAgv, SIGNAL(clicked(bool)), this, SLOT(resumeAgv()));
 
     connect(&msgCenter,SIGNAL(deleteAgvSuccess()),this,SLOT(deleteSuccess()));
     connect(&msgCenter,SIGNAL(modifyAgvSuccess()),this,SLOT(modifySuccess()));
@@ -86,11 +111,39 @@ void DockAgvManage::modifyAgv()
         return ;
     }
     AGV_BASE_INFO u = agvinfos.at(tableWidget->currentRow());
-    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,u.name,u.ip,u.port,this);
+    DialogModifyAgv *modifyAgvDlg = new DialogModifyAgv(u.id,u.name,u.ip,u.port,u.station, this);
     if(modifyAgvDlg->exec() == QDialog::Accepted){
         msgCenter.agvList();
     }
 
+}
+
+void DockAgvManage::controlAgv(int params)
+{
+    int id = 0;
+    if(tableWidget->currentRow()<0 || tableWidget->currentRow()>=agvinfos.length()){
+
+    }
+    else
+    {
+        id = agvinfos.at(tableWidget->currentRow()).id;
+    }
+    msgCenter.controlagv(id, params);
+}
+
+void DockAgvManage::stopAgv()
+{
+    controlAgv(2);
+}
+
+void DockAgvManage::pauseAgv()
+{
+    controlAgv(1);
+}
+
+void DockAgvManage::resumeAgv()
+{
+    controlAgv(0);
 }
 
 void DockAgvManage::modifySuccess()
@@ -130,12 +183,50 @@ void DockAgvManage::updateTable()
         QTableWidgetItem *itemAgvname = new QTableWidgetItem(u.name);
         itemAgvname->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(i, 1, itemAgvname);
+
+        QString statusStr = "";
+        if(u.status ==  AGV_STATUS_HANDING){
+            //手动模式中，不可用
+            statusStr = QStringLiteral("手动");
+        }else if(u.status ==  AGV_STATUS_IDLE){
+            //空闲可用
+            statusStr = QStringLiteral("空闲");
+        }else if(u.status ==  AGV_STATUS_UNCONNECT){
+            //未连接
+            statusStr = QStringLiteral("未连接");
+        }else if(u.status ==  AGV_STATUS_TASKING){
+            //正在执行任务
+            statusStr = QStringLiteral("执行任务");
+        }else if(u.status ==  AGV_STATUS_POWER_LOW){
+            //电量低
+            statusStr = QStringLiteral("电量低");
+        }else if(u.status ==  AGV_STATUS_ERROR){
+            //故障
+            statusStr = QStringLiteral("故障");
+        }else if(u.status ==  AGV_STATUS_GO_CHARGING){
+            //返回充电中
+            statusStr = QStringLiteral("返回充电");
+        }else if(u.status ==  AGV_STATUS_CHARGING){
+            //正在充电
+            statusStr = QStringLiteral("正在充电");
+        }else if(u.status ==  AGV_STATUS_NOTREADY){
+            //刚连接，尚未上报位置
+            statusStr = QStringLiteral("刚连接");
+        }
+
+
+        QTableWidgetItem *itemAgvStatus = new QTableWidgetItem(statusStr);
+        itemAgvStatus->setTextAlignment(Qt::AlignCenter);
+        tableWidget->setItem(i, 2, itemAgvStatus);
         QTableWidgetItem *itemIp = new QTableWidgetItem(u.ip);
         itemIp->setTextAlignment(Qt::AlignCenter);
-        tableWidget->setItem(i, 2, itemIp);
+        tableWidget->setItem(i, 3, itemIp);
         QTableWidgetItem *itemport = new QTableWidgetItem(QString("%1").arg(u.port));
         itemport->setTextAlignment(Qt::AlignCenter);
-        tableWidget->setItem(i, 3, itemport);
+        tableWidget->setItem(i, 4, itemport);
+        QTableWidgetItem *itemstation = new QTableWidgetItem(QString("%1").arg(u.station));
+        itemport->setTextAlignment(Qt::AlignCenter);
+        tableWidget->setItem(i, 5, itemstation);
     }
     tableWidget->update();
     stack->setCurrentIndex(1);
