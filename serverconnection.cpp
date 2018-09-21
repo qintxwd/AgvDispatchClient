@@ -44,8 +44,10 @@ ServerConnection::~ServerConnection()
 #ifdef WIN32
     closesocket(socketFd);
 #else
+    shutdown(socketFd, SHUT_RD);
     close(socketFd);
 #endif
+    socketFd = -1;
     condition.wakeAll();
     thread_read.join();
     thread_send.join();
@@ -130,6 +132,7 @@ void ServerConnection::init(QString ip, int _port)
             while(!quit && socketFd>0)
             {
                 int recvLen = ::recv(socketFd,perBuffer, MSG_READ_BUFFER_LENGTH, 0);
+                if(quit)break;
                 if (recvLen <= 0)
                 {
                     if (errno == 0 || errno == EINTR || errno == EAGAIN)
@@ -189,9 +192,13 @@ void ServerConnection::init(QString ip, int _port)
             int per_send_length = MSG_READ_BUFFER_LENGTH;
 
             if(length+5<per_send_length){
-                if(length+5 != ::send(socketFd,send_buffer,length+5,0))
-                {
-                    qDebug()<<("send error ") ;
+                try{
+                    if(length+5 != ::send(socketFd,send_buffer,length+5,0))
+                    {
+                        qDebug()<<("send error ") ;
+                    }
+                }catch(const std::exception &e){
+                    continue;
                 }
             }else{
                 int packindex = 0;
@@ -305,16 +312,16 @@ bool ServerConnection::initConnect()
         return false;
     }
 
-//    //设置接收超时为1000ms
-//    int nTimeout=10000;
-//#ifdef WIN32
-//    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
-//#else
-//    if( 0 == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
-//#endif
-//    {
-//        printf("Set SO_RCVTIMEO error !\n" );
-//    }
+    //    //设置接收超时为1000ms
+    //    int nTimeout=10000;
+    //#ifdef WIN32
+    //    if( SOCKET_ERROR == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+    //#else
+    //    if( 0 == setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,(char *)&nTimeout, sizeof( int ) ) )
+    //#endif
+    //    {
+    //        printf("Set SO_RCVTIMEO error !\n" );
+    //    }
 
 
     struct sockaddr_in stServer;

@@ -73,6 +73,7 @@ void MsgCenter::requestWaitResponse(const Json::Value &request)
 {
     emit sendNewRequest();
     //qDebug()<<"send request:"<<" req->"<<request["todo"].asString().c_str()<<" queue->"<<request["queuenumber"].asString().c_str();
+    qDebug()<<"send request:"<<request.toStyledString().c_str();
     if(!tcpClient.send(request)){
         emit sendRequestFail();
         return ;
@@ -256,7 +257,7 @@ void MsgCenter::response_map_get(const Json::Value &response)
         int realA = station["realA"].asInt();
         int labelXoffset = station["labelXoffset"].asInt();
         int labelYoffset = station["labelYoffset"].asInt();
-        bool mapchange = station["mapChange"].asBool();
+        bool mapchange = station["mapchange"].asBool();
         bool locked = station["locked"].asBool();
         std::string ip = station["ip"].asString();
         int port = station["port"].asInt();
